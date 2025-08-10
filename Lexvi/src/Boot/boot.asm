@@ -12,7 +12,7 @@ done:
     mov ax, 0x0000  ; set up infinite loop
     ; setup protected mode
     call enable_protected_mode
-    ; jump to C++ kernel start address (let's say 0x100000)
+    ; jump to C++ kernel start address (0x100000)
     jmp 0x08:0x100000
 
 msg db 'Hello, from bootloader!', 0
