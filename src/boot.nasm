@@ -7,48 +7,59 @@
 
 ; INT instruction -> INTERRUPT
 
-; Setting cursor mode;
-;   - AH -> bios function
-;   - CH -> cursor blink(bits 5 & 6) and top most scan lines (bits 0 - 4)
-;   - CL -> lower most scan lines (bits 0 - 4)
-; Note: CH/CL values are scan line indexes, not pixels directly. Therefore scan line bits determine the height of the cursor
-; Just to test, i want a cursor like this:
-mov ah, 01h
-mov ch, 0b00011111
-mov cl, 0b00011111
-int 10h ; call interrupt 10h
 
-; Setting cursor position
-mov ah, 02h
-mov bh, 00h ; page number & graphics mode
-mov dh, 00h ; row (00h is top)
-mov dl, 00h ; column (00h is left)
-int 10h
+section .text
+    global _start
 
-; Displaying characters 'LEXVI'
-mov ah, 0Eh ; teletype output (prints character and advances cursor)
-mov bh, 0 ; page number
-; mov bl, 0b11111111 ; foreground color
+_start:
+    ; Setting cursor mode;
+    ;   - AH -> bios function
+    ;   - CH -> cursor blink(bits 5 & 6) and top most scan lines (bits 0 - 4)
+    ;   - CL -> lower most scan lines (bits 0 - 4)
+    ; Note: CH/CL values are scan line indexes, not pixels directly. Therefore scan line bits determine the height of the cursor
+    ; Just to test, i want a cursor like this:
+    mov ah, 01h
+    mov ch, 0b00011111
+    mov cl, 0b00011111
+    int 10h ; call interrupt 10h
+    
+    ; Setting cursor position
+    mov ah, 02h
+    mov bh, 00h ; page number & graphics mode
+    mov dh, 00h ; row (00h is top)
+    mov dl, 00h ; column (00h is left)
+    int 10h
+    
+    ; Printing welcome msg
+    mov ax, BootLoaderAddress
+    mov ds, ax
+    mov si, greetingMsg
+printLoop:
+    lodsb ; loads and increments si
+    cmp al, 0 ; compares loaded value to null termination
+    je donePrinting
+    call printChar
+    jmp printLoop
+donePrinting:
 
-mov al, 'L'
-int 10h
-mov al, 'E'
-int 10h
-mov al, 'X'
-int 10h
-mov al, 'V'
-int 10h
-mov al, 'I'
-int 10h
+    jmp $ ; jump to current address -> infinite loop
 
-jp $ ; jump to current address -> infinite loop
+printChar:
+    mov ah, 0Eh ; teletype output (prints character and advances cursor)
+    mov bh, 0 ; page number
+    int 10h
+    ret
 
-; using times command:
-;   - times N <instruction>
-;   - times repeats the instruction N times
-;   - $ gives current address
-;   - $$ address of start of the section
-times 510 - ($ - $$) db 0 ; writes 0 from here to the 510th byte
-; 2 bytes of signature (for BIOS to recognize this as bootloader)
-db 0x55
-db 0xAA
+section .data
+    BootLoaderAddress equ 0x7C0
+    greetingMsg db "Welcome to Lexvi's bootloader", 0 ; 0-terminated string
+
+    ; using times command:
+    ;   - times N <instruction>
+    ;   - times repeats the instruction N times
+    ;   - $ gives current address
+    ;   - $$ address of start of the section
+    times 510 - ($ - $$) db 0 ; writes 0 from here to the 510th byte
+    ; 2 bytes of signature (for BIOS to recognize this as bootloader)
+    db 0x55
+    db 0xAA
