@@ -1,38 +1,43 @@
-section .text
-    global _start
+org 0x8000
+[bits 32]
 
-_start:
-    ; Setting cursor position
-    mov ah, 02h
-    mov bh, 00h ; page number & graphics mode
-    mov dh, 02h ; row (00h is top)
-    mov dl, 00h ; column (00h is left)
-    int 10h
-    
-    ; Printing welcome msg
-    mov ax, cs
+VGA_MEMORY equ 0xB8000
+
+stage2_start:
+    mov ax, 0x10
     mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, 0x90000
 
-    mov si, greetingMsg
-    call printString
+    mov ecx, 80 ; equivalent of newline
+    mov bl, 0x0F
+    mov esi, greetingMsg
+    call print_string_vga
 
-    jmp $ ; jump to current address -> infinite loop
+hang:
+    jmp hang
 
-printChar:
-    mov ah, 0Eh ; teletype output (prints character and advances cursor)
-    mov bh, 0 ; page number
-    int 10h
+print_char_vga:
+    mov edi, VGA_MEMORY     ; load base into register
+    mov edx, ecx
+    shl edx, 1
+    add edi, edx            ; edi = exact byte address in VGA buffer
+    mov ah, bl
+    mov [edi], ax           ; write char + color
     ret
 
-printString:
-    lodsb ; loads and increments si
-    cmp al, 0 ; compares loaded value to null termination
-    je donePrinting
-    call printChar
-    jmp printString
-donePrinting:
+print_string_vga:
+.next_char:
+    lodsb
+    cmp al, 0
+    je .done
+    call print_char_vga
+    inc ecx
+    jmp .next_char
+.done:
     ret
 
-
-section .data
-    greetingMsg db "Welcome to Lexvi's bootloader stage 2", 0 ; 0-terminated string
+greetingMsg db "Welcome to Lexvi's stage 2. Successfully switched to Protected mode(32-bit)", 0
