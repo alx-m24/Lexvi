@@ -42,7 +42,7 @@ _start:
     mov bx, 0x8000   ; BX = 0x8000 -> :BX = 0x0000:0x8000 = phys 0x8000
     
     mov ah, 02h
-    mov al, 1 ; reading 1 sector only
+    mov al, 4 ; reading 3 sectors
     mov ch, 0 ; cylinder 0
     mov cl, 2 ; sector number
     mov dh, 0 ; head 0

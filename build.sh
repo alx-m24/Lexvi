@@ -5,8 +5,15 @@ rm -rf build
 mkdir -p build
 
 # building bootloader
-nasm -f bin src/boot-stage1.nasm -o build/boot-stage1.bin
-nasm -f bin src/boot-stage2.nasm -o build/boot-stage2.bin
+nasm -f bin src/boot/boot-stage1.nasm -o build/boot-stage1.bin
+nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o
+
+# building kernel files
+# gpp -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -c src/kernel/kernel-entry.c -o build/kernel-entry.o
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o
+
+# linking stage 2 and kernel
+ld -m elf_x86_64 -T link.ld build/boot-stage2.o build/kernel-entry.o -o build/boot-stage2.bin --oformat binary
 
 cd build
 
