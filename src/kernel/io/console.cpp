@@ -1,0 +1,44 @@
+#include "kernel/io/console.hpp"
+
+namespace kernel {
+    struct VGA_Character {
+        char character;
+        char colorAttribute;
+    };
+    
+    VGA_Character* VGA_MEMORY = reinterpret_cast<VGA_Character*>(0xB8000);
+    
+    int cursorCol = 0;
+    int cursorRow = 0;
+    
+    constexpr unsigned int MAX_COLUMN = 80;
+    constexpr unsigned int MAX_ROWS = 25;
+    
+    constexpr unsigned int VGA_INDEX(const unsigned int col, const unsigned int row) {
+        return col + row * MAX_COLUMN;
+    }
+    
+    void printf(const char* str) {
+        while (*str != '\0') {
+            if (cursorRow >= MAX_ROWS) { cursorRow = MAX_ROWS - 1; }
+            if (cursorCol >= MAX_COLUMN) { cursorCol = 0; ++cursorRow; }
+    
+            if (*str == '\n') {
+                ++cursorRow;
+                cursorCol = 0;
+                ++str;
+                continue;
+            }
+    
+            VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = { .character = *str, .colorAttribute = 0x0F };
+    
+            ++cursorCol; ++str;
+        }
+    }
+    
+    void clearConsole() {
+        for (int i = 0; i < MAX_COLUMN * MAX_ROWS; ++i) {
+            VGA_MEMORY[i] = { .character = '\0', .colorAttribute = 0x0 };
+        }
+    }
+}

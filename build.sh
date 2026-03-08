@@ -15,14 +15,18 @@ nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
 
 # building kernel
-g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone \
-    -fno-exceptions -fno-rtti \
-    -ffunction-sections \
-    -c src/kernel/kernel-main.cpp -o build/kernel-main.o
+# g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone \
+#     -fno-exceptions -fno-rtti \
+#     -ffunction-sections \
+#     -c src/kernel/kernel-main.cpp -o build/kernel-main.o
 
 # linking stage 2 and kernel
 ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o -o build/boot-stage2.bin --oformat binary
-ld -m elf_x86_64 -T link/kernelMain.ld build/kernel-main.o -o build/kernel-main.bin --oformat binary
+# ld -m elf_x86_64 -T link/kernelMain.ld build/kernel-main.o -o build/kernel-main.bin --oformat binary
+
+cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
+cmake --build build/cmake
+cp build/cmake/kernel-main.bin build/kernel-main.bin
 
 # --- Getting sizes ---
 STAGE2_SIZE=$(stat -c%s "build/boot-stage2.bin")
@@ -57,16 +61,20 @@ nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
 
 # building kernel
-g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone \
-    -fno-exceptions -fno-rtti \
-    -ffunction-sections \
-    -c src/kernel/kernel-main.cpp -o build/kernel-main.o
+# g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone \
+#     -fno-exceptions -fno-rtti \
+#     -ffunction-sections \
+#     -c src/kernel/kernel-main.cpp -o build/kernel-main.o
 
 # linking stage 2 and kernel
 ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o -o build/boot-stage2.bin --oformat binary
-ld -m elf_x86_64 -T link/kernelMain.ld build/kernel-main.o -o build/kernel-main.bin --oformat binary
+# ld -m elf_x86_64 -T link/kernelMain.ld build/kernel-main.o -o build/kernel-main.bin --oformat binary
 
-# Writing to disk
+cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
+cmake --build build/cmake
+cp build/cmake/kernel-main.bin build/kernel-main.bin
+
+# --- Writing to disk ---
 
 cd build
 
