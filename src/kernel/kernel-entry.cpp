@@ -1,5 +1,7 @@
 // Finally Some C++
 
+#include "kernel/kernel-config.hpp"
+
 struct VGA_Character {
     char character;
     char colorAttribute;
@@ -12,10 +14,6 @@ int cursorRow = 0;
 
 constexpr unsigned int MAX_COLUMN = 80;
 constexpr unsigned int MAX_ROWS = 25;
-
-constexpr unsigned int KERNEL_MAIN_LBA = 8;
-constexpr unsigned int KERNEL_MAIN_SECTORS = 16; // TODO
-constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
 constexpr unsigned int VGA_INDEX(const unsigned int col, const unsigned int row) {
     return col + row * MAX_COLUMN;

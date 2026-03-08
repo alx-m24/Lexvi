@@ -1,3 +1,5 @@
+%include "asm/boot-config.nasm"
+
 org 0x7C00
 [bits 16]
 
@@ -44,7 +46,7 @@ _start:
     mov bx, 0x8000   ; BX = 0x8000 -> :BX = 0x0000:0x8000 = phys 0x8000
     
     mov ah, 02h
-    mov al, 5 ; reading 5 sectors
+    mov al, STAGE2_SECTORS
     mov ch, 0 ; cylinder 0
     mov cl, 2 ; sector number
     mov dh, 0 ; head 0

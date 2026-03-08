@@ -41,9 +41,32 @@ void kernel_clearConsole() {
     }
 }
 
+class Parent {
+    public:
+        virtual void OutputIdentity() {
+            kernel_printf("This is the parent\n");
+        }
+};
+
+class Derived : public Parent {
+    void OutputIdentity() override {
+        kernel_printf("This is the child\n");
+    }
+};
+
+void PrintText(Parent* anyDerived) {
+    anyDerived->OutputIdentity(); 
+}
+
 extern "C" void kernel_main() {
     kernel_clearConsole();
-    kernel_printf("Welcome to the main kernel");
+    kernel_printf("Welcome to the main kernel\n");
+
+    Parent parent {};
+    Derived derived {};
+
+    PrintText(&parent);
+    PrintText(&derived);
 
     while (true); 
 }
