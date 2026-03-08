@@ -8,6 +8,8 @@ org 0x7C00
 
 ; INT instruction -> INTERRUPT
 _start:
+    mov [boot_drive], dl
+
     xor ax, ax
     mov ds, ax
     mov es, ax
@@ -42,11 +44,11 @@ _start:
     mov bx, 0x8000   ; BX = 0x8000 -> :BX = 0x0000:0x8000 = phys 0x8000
     
     mov ah, 02h
-    mov al, 4 ; reading 3 sectors
+    mov al, 5 ; reading 5 sectors
     mov ch, 0 ; cylinder 0
     mov cl, 2 ; sector number
     mov dh, 0 ; head 0
-    ; mov dl,  ; hard disk -> already set by BIOS
+    mov dl, [boot_drive]
     int 13h
     
     jc disk_error ; error -> carry flag set
@@ -160,6 +162,8 @@ gdt_descriptor:
 data:
     greetingMsg db "Welcome to Lexvi's bootloader", 0 ; 0-terminated string
     diskErrorMsg db "Failed to read sector 2", 0 ; 0-terminated string
+
+    boot_drive db 0
 
     ; using times command:
     ;   - times N <instruction>
