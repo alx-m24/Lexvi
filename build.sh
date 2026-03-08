@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # clearing output path
 rm -rf build
@@ -30,7 +31,7 @@ KERNEL_MAIN_SIZE=$(stat -c%s "build/kernel-main.bin")
 STAGE2_SECTORS=$((("$STAGE2_SIZE" +511) / 512))
 KERNEL_MAIN_SECTORS=$((("$KERNEL_MAIN_SIZE" +511) / 512))
 
-KERNEL_MAIN_LBA=$((STAGE2_SECTORS + 2))
+KERNEL_MAIN_LBA=$((STAGE2_SECTORS + 1))
 
 # --- Pass 2 / Final Pass ---
 rm -rf build
