@@ -4,7 +4,17 @@
 
 namespace kernel {
     void panic(const char* msg, const char *file, int line) {
-        printf("\nKERNEL PANIC: ", msg, " at ", file, ": ", line, '\n');
+        ScopedColor scopedColor(Color::RED_ON_BLACK);
+
+        printf("\nKERNEL PANIC: ");
+
+        setColor(Color::WHITE_ON_BLACK);
+        printf(msg);
+
+        setColor(Color::YELLOW_ON_BLACK);
+        printf(" at ", file, ": ", line, '\n');
+
+        setColor(Color::WHITE_ON_BLACK);
 
         // Halt forever
         asm volatile ("cli; hlt");
