@@ -1,4 +1,5 @@
 ; org 0x8000
+
 [bits 32]
 
 ; forward declaration
@@ -67,7 +68,7 @@ queryLongMode:
     mov cr3, edi       ; cr3 lets the CPU know where the page tables are
 
     xor eax, eax
-    mov ecx, (4 * SIZEOF_PAGE_TABLE) / 4
+    mov ecx, (5 * SIZEOF_PAGE_TABLE) / 4
     rep stosd          ; writes 4 * SIZEOF_PAGE_TABLE bytes, which is enough space
                        ; for the 4 page tables
     mov edi, cr3       ; reset di back to the beginning of the page table
@@ -80,6 +81,10 @@ queryLongMode:
     mov edi, PDT_ADDR
     mov DWORD [edi], PT_ADDR & PT_ADDR_MASK | PT_PRESENT | PT_READABLE
 
+    mov edi, PDT_ADDR
+    mov DWORD [edi],        PT_ADDR  & PT_ADDR_MASK | PT_PRESENT | PT_READABLE
+    mov DWORD [edi + 8],    PT2_ADDR & PT_ADDR_MASK | PT_PRESENT | PT_READABLE
+
 .fillPageTable:
     mov edi, PT_ADDR
     mov ebx, PT_PRESENT | PT_READABLE
@@ -90,6 +95,15 @@ queryLongMode:
     add ebx, PAGE_SIZE
     add edi, SIZEOF_PT_ENTRY
     loop .SetEntry               ; Set the next entry.
+
+    mov edi, PT2_ADDR
+    mov ebx, 0x200000 | PT_PRESENT | PT_READABLE
+    mov ecx, ENTRIES_PER_PT
+.SetEntry2:
+    mov DWORD [edi], ebx
+    add ebx, PAGE_SIZE
+    add edi, SIZEOF_PT_ENTRY
+    loop .SetEntry2
 
 .enable_PAE:
     mov eax, cr4
@@ -202,6 +216,8 @@ _data:
     PDT_ADDR equ 0x3000
     PT_ADDR equ 0x4000
 
+    PT2_ADDR equ 0x5000
+
     ; the page table only uses certain parts of the actual address
     PT_ADDR_MASK equ 0xffffffffff000
     PT_PRESENT equ 1                 ; marks the entry as in use
@@ -248,21 +264,6 @@ _data:
             .Data.access: db PRESENT | NOT_SYS | RW
             .Data.Flags: db GRAN_4K | SZ_32 | 0xF       ; Flags & Limit (high, bits 16-19)
             .Data.base_hi: db 0
-        .UData: equ $ - GDT
-            .UData.limit_lo: dw 0xffff
-            .UData.base_lo: dw 0
-            .UData.base_mid: db 0
-            .UData.access: db PRESENT | NOT_SYS | RW | 3 << 5
-            .UData.Flags: db GRAN_4K | SZ_32 | 0xF       ; Flags & Limit (high, bits 16-19)
-            .UData.base_hi: db 0
-        .UCode: equ $ - GDT
-            .UCode.limit_lo: dw 0xffff
-            .UCode.base_lo: dw 0
-            .UCode.base_mid: db 0
-            .UCode.access: db PRESENT | NOT_SYS | EXEC | RW | 3 << 5
-            .UCode.flags: db GRAN_4K | LONG_MODE | 0xF   ; Flags & Limit (high, bits 16-19)
-            .UCode.base_hi: db 0
-
         .Pointer:
             dw $ - GDT - 1
             dd GDT

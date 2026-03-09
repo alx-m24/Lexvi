@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace kernel {
     enum class Color : unsigned char {
         BLACK_ON_WHITE = 0xF0,
@@ -29,9 +31,10 @@ namespace kernel {
     inline void printf() {}
     void printf(char c);
     void printf(const char* str);
-    void printf(unsigned int n);
+    void printf(uint32_t n);
+    void printf(uint16_t n);
     void printf(int n);
-    void printfHex(unsigned int n);
+    void printfHex(uint64_t n);
 
     template<typename T, typename... Other>
     void printf(const T& first, const Other&... other) {

@@ -1,6 +1,6 @@
 #include "kernel/error/error.hpp"
 
-#include "kernel/io/console.hpp"
+#include "kernel/console/console.hpp"
 
 namespace kernel {
     void panic(const char* msg, const char *file, int line) {

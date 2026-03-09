@@ -1,4 +1,4 @@
-#include "kernel/io/console.hpp"
+#include "kernel/console/console.hpp"
 
 namespace kernel {
     struct VGA_Character {
@@ -62,7 +62,7 @@ namespace kernel {
         }
     }
    
-    void printf(unsigned int n) {
+    void printf(uint32_t n) {
         if (n == 0) {
             printf('0');
             return;
@@ -80,6 +80,10 @@ namespace kernel {
             printf(buffer[--i]);
         }
     }
+
+    void printf(uint16_t n) {
+        printf(static_cast<uint32_t>(n));
+    }
     
     void printf(int n) {
         if (n < 0) {
@@ -90,14 +94,18 @@ namespace kernel {
         printf(static_cast<unsigned int>(n));
     }
 
-   void printfHex(unsigned int n) {
-        char buffer[9]; // 8 digits + null
-        for(int i = 7; i >= 0; --i) {
-            unsigned int digit = (n >> (i*4)) & 0xF;
-            buffer[7-i] = digit < 10 ? '0'+digit : 'A'+(digit-10);
+    void printfHex(uint64_t n) {
+        char buffer[16]; // 16 hex digits for 64-bit numbers
+
+        for(int i = 15; i >= 0; --i) {
+            uint64_t digit = (n >> (i*4)) & 0xF;
+            buffer[15-i] = digit < 10 ? '0'+digit : 'A'+(digit-10);
         }
-        printf("0x");
-        for(int i = 0; i < 8; ++i) {
+
+        printf('0');
+        printf('x');
+
+        for(int i = 0; i < 16; ++i) {
             printf(buffer[i]);
         }
     }

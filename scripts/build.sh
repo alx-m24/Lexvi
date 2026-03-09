@@ -19,12 +19,11 @@ ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
-cmake --build build/cmake
-cp build/cmake/kernel-main.bin build/kernel-main.bin
+cmake --build build/cmake --target kernel-main
 
 # --- Getting sizes ---
 STAGE2_SIZE=$(stat -c%s "build/boot-stage2.bin")
-KERNEL_MAIN_SIZE=$(stat -c%s "build/kernel-main.bin")
+KERNEL_MAIN_SIZE=$(stat -c%s "build/cmake/kernel-main.bin")
 
 STAGE2_SECTORS=$((("$STAGE2_SIZE" +511) / 512))
 KERNEL_MAIN_SECTORS=$((("$KERNEL_MAIN_SIZE" +511) / 512))
@@ -59,9 +58,8 @@ ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
-cmake --build build/cmake
+cmake --build build/cmake --target kernel-main
 
-cp build/cmake/kernel-main.bin build/kernel-main.bin
 ln -s cmake/compile_commands.json build/compile_commands.json
 
 # --- Writing to disk ---
@@ -78,4 +76,4 @@ dd if=boot-stage1.bin of=lexvi.img bs=512 count=1 conv=notrunc
 dd if=boot-stage2.bin of=lexvi.img bs=512 seek=1 conv=notrunc
 
 #4. Write kernel starting from sector 8
-dd if=kernel-main.bin of=lexvi.img bs=512 seek=${KERNEL_MAIN_LBA} conv=notrunc
+dd if=cmake/kernel-main.bin of=lexvi.img bs=512 seek=${KERNEL_MAIN_LBA} conv=notrunc
