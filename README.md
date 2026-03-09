@@ -37,7 +37,7 @@ These tools come **pre-installed or are easily available on most Linux systems**
 ### Running the Build
 
 ```bash
-./build.sh
+./scripts/build.sh
 ```
 
 By default, this produces a **virtual disk image (`.img`)** file. The build script automatically calculates the correct padding and sector counts for bootloader and kernel loading, you don't need to configure these manually.
@@ -52,7 +52,7 @@ Since the project uses **CMake** as its build system, adding new kernel componen
 
 1. Write your `.cpp` (or `.asm`) file and place it in the appropriate source directory.
 2. Add it to `CMakeLists.txt`.
-3. Re-run `./build.sh`.
+3. Re-run `./scripts/build.sh`.
 
 That's it! No complex makefile archaeology required.
 
@@ -77,7 +77,7 @@ This is one of the more technically demanding aspects of OS development, and it 
 QEMU works out of the box with the generated `.img` file:
 
 ```bash
-qemu-system-i386 -drive format=raw,file=lexvi.img
+qemu-system-i386 -drive format=raw,file=build/lexvi.img
 ```
 
 No extra setup needed.
@@ -95,7 +95,7 @@ Open `vboxAttach.sh` and update the following variables to match your VirtualBox
 Once configured, running the script will generate the correct `.vdi` and attach it to your VM.
 
 ```bash
-./vboxAttach.sh
+./scripts/vboxAttach.sh
 ```
 
 > Do not run `vboxAttach.sh` without editing these variables first, it will not know which machine or disk to target.
