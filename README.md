@@ -10,11 +10,11 @@ The project is **open source**. Contributions, forks, and experiments are welcom
 
 ```mermaid
 pie title Languages
-    "Assembly (bootloader)" : 51.8
-    "C++ (kernel)" : 25.6
-    "Shell (build & utility scripts)" : 17.4
-    "CMake (C++ build scripts)" : 3.3
-    "Linker Script (manual memory placements)" : 1.9
+    "Assembly (bootloader)" : 32.3
+    "C++ (kernel)" : 53.1
+    "Shell (build & utility scripts)" : 8.4
+    "CMake (C++ build scripts)" : 4.1
+    "Linker Script (manual memory placements)" : 2.1
 ```
 
 ---
