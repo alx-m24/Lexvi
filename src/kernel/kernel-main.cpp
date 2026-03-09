@@ -1,33 +1,17 @@
 // Finally outside bootloader
 
 #include "kernel/io/console.hpp"
-
-class Parent {
-    public:
-        virtual void OutputIdentity() {
-            kernel::printf("This is the parent\n");
-        }
-};
-
-class Derived : public Parent {
-    void OutputIdentity() override {
-        kernel::printf("This is the child\n");
-    }
-};
-
-void PrintText(Parent* anyDerived) {
-    anyDerived->OutputIdentity(); 
-}
+#include "kernel/error/error.hpp"
 
 extern "C" void kernel_main() {
     kernel::clearConsole();
-    kernel::printf("Welcome to the main kernel\n");
+    kernel::printf("Hi from kernel_main\n");
 
-    Parent parent {};
-    Derived derived {};
+    kernel::printf(-895, '\n');
 
-    PrintText(&parent);
-    PrintText(&derived);
+    kernel::printf("Hi i am testing variadics: ", 10, 'c', '\n', "Test over\n");
+
+    KERNEL_PANIC("this is only a test panic"); 
 
     while (true); 
 }

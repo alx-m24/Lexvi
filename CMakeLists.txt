@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(KernelMain CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Tell CMake to use ld directly, not the compiler for linking
 set(CMAKE_CXX_LINK_EXECUTABLE
@@ -11,6 +12,7 @@ set(CMAKE_CXX_LINK_EXECUTABLE
 add_executable(kernel-main
     src/kernel/kernel-main.cpp
     src/kernel/io/console.cpp
+    src/kernel/error/error.cpp
 )
 
 target_compile_options(kernel-main PRIVATE

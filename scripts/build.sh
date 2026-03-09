@@ -60,7 +60,9 @@ ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
 cmake --build build/cmake
+
 cp build/cmake/kernel-main.bin build/kernel-main.bin
+ln -s cmake/compile_commands.json build/compile_commands.json
 
 # --- Writing to disk ---
 
