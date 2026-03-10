@@ -6,25 +6,19 @@ namespace kernel {
     namespace {
         volatile uint64_t ticksSinceStart = 0;
     }
+    // Defined in timer.hpp
+    uint32_t callBackNum = 0;
+    TickCallback_T callbacks[MAX_TICK_CALLBACKS_NUM] {};
 
-
-    uint64_t getTicksSinceStart() {
+    uint64_t getCurrentTick() {
         return ticksSinceStart;
-    }
-    
-    void busySleepUntil(uint64_t tick) {
-        while (ticksSinceStart < tick);
     }
 
     void timerTick() {
         ticksSinceStart = ticksSinceStart + 1;
-    }
-    
-    void busySleepMs(uint32_t ms) {
-        busySleepUntil(ticksSinceStart + (ms * CLOCK_FREQ / 1000));
-    }
-    
-    void busySleep_seconds(uint32_t seconds) {
-        busySleepMs(seconds * 1000u);
+
+        for (uint32_t i = 0; i < callBackNum; ++i) {
+            callbacks[i]();
+        }
     }
 }

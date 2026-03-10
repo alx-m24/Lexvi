@@ -77,7 +77,7 @@ extern "C" void isr_handler(interrupt_frame_t *frame) {
 
         switch (static_cast<IRQ>(irq)) {
             case IRQ::SYSTEM_TIMER: kernel::timerTick(); break;
-            case IRQ::KEYBOARD: HandleKeyBoardIRQ(); break;
+            case IRQ::KEYBOARD: kernel::HandleKeyBoardIRQ(); break;
             default: kernel::printf("Unknown IRQ: ", static_cast<uint32_t>(irq), '\n'); break;
         }
 
@@ -126,7 +126,7 @@ void idt_load(void) {
 
 void idt_init(void) {
     pic_remap();
-    pit_init(CLOCK_FREQ);
+    pit_init(kernel::CLOCK_FREQ);
 
     idt_set(0,  (void*)isr_stub_0,  IDT_TRAP_GATE);
     idt_set(1,  (void*)isr_stub_1,  IDT_TRAP_GATE);

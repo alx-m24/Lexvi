@@ -41,4 +41,14 @@ namespace kernel {
         printf(first);
         printf(other...);
     }
+
+    void backSpace();
+
+    enum class MovementDirection : bool {
+        LEFT,
+        RIGHT,
+    };
+    void moveVisualCursor(MovementDirection movementDirection);
+
+    void cursorTick();
 }

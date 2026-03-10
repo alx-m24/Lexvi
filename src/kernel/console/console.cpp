@@ -1,9 +1,14 @@
 #include "kernel/console/console.hpp"
+#include "kernel/time/time.hpp"
 
 namespace kernel {
     struct VGA_Character {
         char character;
         char colorAttribute;
+
+        operator bool() const {
+            return character && colorAttribute;
+        }
     };
     
     VGA_Character* VGA_MEMORY = reinterpret_cast<VGA_Character*>(0xB8000);
@@ -21,6 +26,24 @@ namespace kernel {
 
     static char getColorAttribute(Color colorAttribute) {
         return static_cast<char>(colorAttribute);
+    }
+
+    static void AdvanceCursor() {
+        ++cursorCol;
+        if (cursorRow >= MAX_ROWS) { cursorRow = MAX_ROWS - 1; }
+        if (cursorCol >= MAX_COLUMN) { cursorCol = 0; ++cursorRow; }
+    }
+
+    static void MoveBackCursor() {
+        if (cursorCol == 0) {
+            if (cursorRow == 0) return;
+
+            cursorCol = MAX_COLUMN - 1;
+            cursorRow -= 1;
+        }
+        else {
+            cursorCol -= 1;
+        }
     }
     
     void clearConsole() {
@@ -42,10 +65,18 @@ namespace kernel {
     };
     
     void printf(char c) {
-        if (cursorRow >= MAX_ROWS) { cursorRow = MAX_ROWS - 1; }
-        if (cursorCol >= MAX_COLUMN) { cursorCol = 0; ++cursorRow; }
-    
+        if (c == '\0') return;
+
+        if (c == '\b') {
+            backSpace();
+            return;
+        }
+        if (c == '\t') {
+            printf("    ");
+            return;
+        }
         if (c == '\n') {
+            VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = {};
             ++cursorRow;
             cursorCol = 0;
             return;
@@ -53,7 +84,7 @@ namespace kernel {
     
         VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = { .character = c, .colorAttribute = getColorAttribute(currentColorAttribute) };
     
-        ++cursorCol;
+        AdvanceCursor();
     }
 
     void printf(const char* str) {
@@ -108,5 +139,48 @@ namespace kernel {
         for(int i = 0; i < 16; ++i) {
             printf(buffer[i]);
         }
+    }
+
+
+    void backSpace() {
+        VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = {};
+        MoveBackCursor();
+        cursorTick();
+    }
+
+    VGA_Character hoveredChar = {};
+    void moveVisualCursor(MovementDirection movementDirection) {
+        VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = hoveredChar;
+        if (movementDirection == MovementDirection::LEFT) {
+            MoveBackCursor();
+        }
+        else {
+            if (VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)]) {
+                AdvanceCursor();
+            }
+        }
+        if (hoveredChar) {
+            MoveBackCursor();
+            AdvanceCursor();
+        }
+        hoveredChar = VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)];
+        cursorTick();
+    }
+
+    uint64_t lastBlink = 0;
+    bool shown = false;
+    void cursorTick() {
+        constexpr uint64_t BLINK_FREQ = 4; // Hz
+        constexpr uint64_t BLINK_INTERVAL = CLOCK_FREQ / BLINK_FREQ;
+        uint64_t now = getCurrentTick();
+        if (now - lastBlink < BLINK_INTERVAL) return;
+        lastBlink = now;
+        if (shown) {
+            printf(' ');
+        } else {
+            printf('_');
+        }
+        MoveBackCursor();
+        shown = !shown;
     }
 }
