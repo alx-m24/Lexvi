@@ -41,6 +41,8 @@ EOF
 cat > include/kernel/kernel-config.hpp << EOF
 #pragma once
 
+// This is an auto-generated header file from the build.sh script
+
 constexpr unsigned int KERNEL_MAIN_LBA = ${KERNEL_MAIN_LBA};
 constexpr unsigned int KERNEL_MAIN_SECTORS = ${KERNEL_MAIN_SECTORS};
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
