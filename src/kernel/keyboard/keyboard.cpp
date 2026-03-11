@@ -160,6 +160,7 @@ namespace kernel {
             unsigned char pressCode = scanCode & 0x7F;
             if (pressCode == 0x2A || pressCode == 0x36) { shift_held = false; return; }
             keys_held[pressCode] = false;
+            last_press_time[pressCode] = 0;
         }
     }
 }
