@@ -10,8 +10,18 @@
 #include "kernel/acpi/sdt.hpp"
 #include "kernel/gdt/gdt.hpp"
 
+#include "kernel/console/tui/rectangle.hpp"
+#include "kernel/console/tui/outline.hpp"
 
 #include "kernel/time/time.hpp"
+
+kernel::Window mainWindow {};
+kernel::Window inputWindow {};
+kernel::Window logWindow {};
+
+static void blinkInputWindowCursorTick() {
+    inputWindow.BlinkCursor();
+}
 
 void Kernel::Init() {
     kernel::clearConsole();
@@ -38,16 +48,23 @@ void Kernel::Init() {
         kernel::printf("Successfully initialized kernel!\n");
     }
 
-    kernel::setTickCallbacks(kernel::cursorTick, kernel::KeyBoardTick);
-
-
-    kernel::Window mainWindow{};
     mainWindow.clear();
-    
-    mainWindow.printf("Hi from main window\n");
-    mainWindow.printf("This is a small test of the new console size", '\n', '\t', "Hopefully all this code works well\n", 69.67, '\n', 789u, '\n', -10, '\n', -897.5, '\n');
 
-    while (true);
+    inputWindow = kernel::Window(&mainWindow, mainWindow.getWidth() / 2, mainWindow.getHeight(), 0, 0);
+    logWindow = kernel::Window(&mainWindow, mainWindow.getWidth() / 2, mainWindow.getHeight(), mainWindow.getWidth() / 2, 0);
+
+    kernel::setLogWindow(&logWindow);
+    kernel::setTickCallbacks(blinkInputWindowCursorTick, kernel::KeyBoardTick);
+    
+    inputWindow.Draw(kernel::Outline(0, 0, inputWindow.getWidth(), inputWindow.getHeight()));
+    inputWindow.setPrintableArea(1, 1, inputWindow.getWidth() - 1, inputWindow.getHeight() - 1);
+
+    logWindow.Draw(kernel::Outline(0, 0, logWindow.getWidth(), logWindow.getHeight()));
+    logWindow.setPrintableArea(1, 1, logWindow.getWidth() - 1, logWindow.getHeight() - 1);
+
+    logWindow.printf("Hi from log window\n");
+    logWindow.printf("This is a small test of the new console size", '\n', '\t', "Hopefully all this code works well\n", 69.67, '\n', 789u, '\n', -10, '\n', -897.5, '\n');
+
 }
 
 void Kernel::Run() {
@@ -59,12 +76,12 @@ void Kernel::Run() {
             uint8_t key;
             if (kernel::keyboard::readEscape(key)) {
                 switch (key) {
-                    case kernel::keyboard::KEY_LEFT: kernel::moveVisualCursor(kernel::MovementDirection::LEFT); break;
-                    case kernel::keyboard::KEY_RIGHT: kernel::moveVisualCursor(kernel::MovementDirection::RIGHT); break;
+                    case kernel::keyboard::KEY_LEFT: inputWindow.moveVisualCursor(kernel::MovementDirection::LEFT); break;
+                    case kernel::keyboard::KEY_RIGHT: inputWindow.moveVisualCursor(kernel::MovementDirection::RIGHT); break;
                 }
             }
         } else {
-            kernel::printf(c);
+            inputWindow.printf(c);
         }
     }
 }

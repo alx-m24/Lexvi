@@ -44,6 +44,7 @@ namespace kernel {
     void printf(uint64_t n);
     void printf(uint32_t n);
     void printf(uint16_t n);
+    void printf(double d);
     void printf(int n);
     void printfHex(uint64_t n);
 
@@ -62,4 +63,7 @@ namespace kernel {
     void moveVisualCursor(MovementDirection movementDirection);
 
     void cursorTick();
+
+    class Window;
+    void setLogWindow(Window* window);
 }

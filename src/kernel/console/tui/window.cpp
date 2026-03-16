@@ -3,6 +3,7 @@
 #include "kernel/console/fonts/font8*8_basic.h"
 #include "kernel/console/console.hpp"
 #include "kernel/error/error.hpp"
+#include "kernel/time/time.hpp"
 
 #include "asm/instructions.hpp"
 
@@ -53,6 +54,8 @@ namespace kernel {
         KERNEL_ASSERT(parent != nullptr);
         KERNEL_ASSERT(offsetX + width  <= parent->m_width);
         KERNEL_ASSERT(offsetY + height <= parent->m_height);
+
+        setPrintableArea(0, 0, width, height);
     }
 
     uint64_t Window::getIndex(uint32_t col, uint32_t row) const {
@@ -68,23 +71,37 @@ namespace kernel {
 
     void Window::AdvanceCursor() {
         m_cursorX += 1;
-        if (m_cursorX >= m_width) {
-            m_cursorX = 0;
+        if (m_cursorX >= m_maxPrintX) {
+            m_cursorX = m_minPrintX;
             m_cursorY += 1;
         }
-        if (m_cursorY >= m_height) {
-            m_cursorY = m_height - 1; // clamp to lowest line for now
+        if (m_cursorY >= m_maxPrintY) {
+            m_cursorY = m_maxPrintY - 1; // clamp to lowest line for now
         }
     }
 
     void Window::RetreatCursor() {
-        if (m_cursorX > 0) {
+        if (m_cursorX > m_minPrintX) {
             m_cursorX -= 1;
         }
-        else if (m_cursorY > 0) {
+        else if (m_cursorY > m_minPrintY) {
             m_cursorY -= 1;
-            m_cursorX = m_width - 1;
+            m_cursorX = m_maxPrintX - 1;
         }
+    }
+
+    void Window::moveVisualCursor(MovementDirection movementDirection) {
+        DrawCharacter(m_cursorX, m_cursorY, m_hoveredChar);
+    
+        if (movementDirection == MovementDirection::LEFT) {
+            RetreatCursor();
+        } else {
+            AdvanceCursor();
+        }
+    
+        m_hoveredChar = Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)]; // save new pos
+        lastBlink = 0;
+        BlinkCursor();
     }
 
     void Window::clear() {
@@ -93,27 +110,32 @@ namespace kernel {
                 Globals::VGA_MEMORY[getIndex(col, row)] = {};
             }
         }
-        m_cursorX = m_cursorY = 0;
+        m_cursorX = m_minPrintX;
+        m_cursorY = m_minPrintY;
     }
 
     void Window::printf(char c) {
         if (c == '\0') return;
 
         if (c == '\b') {
+            Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)] = {};
             RetreatCursor();
             Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)] = {};
+            lastBlink = 0;
+            BlinkCursor();
             return;
         }
 
         if (c == '\n') {
+            DrawCharacter(m_cursorX, m_cursorY, m_hoveredChar);
             m_cursorY += 1;
-            if (m_cursorY >= m_height) m_cursorY = m_height - 1;
-            m_cursorX = 0;
+            if (m_cursorY >= m_maxPrintY) m_cursorY = m_maxPrintY - 1;
+            m_cursorX = m_minPrintX;
             return;
         }
 
         if (c == '\r') {
-            m_cursorX = 0;
+            m_cursorX = m_minPrintX;
             return;
         }
 
@@ -125,7 +147,7 @@ namespace kernel {
             return;
         }
 
-        Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)] = VGA_Character{ .character = c, .colorAttribute = getColorAttribute(m_activeColor) };
+        DrawCharacter(m_cursorX, m_cursorY, c);
         AdvanceCursor();
     }
 
@@ -197,6 +219,47 @@ namespace kernel {
 
         for (int i = index - 1; i >= 0; --i) {
             printf(num[i]);
+        }
+    }
+            
+    void Window::setPrintableArea(uint16_t minX, uint16_t minY, uint16_t maxX, uint16_t maxY) {
+        m_minPrintX = minX;
+        m_minPrintY = minY;
+        m_maxPrintX = maxX;
+        m_maxPrintY = maxY;
+
+        if (m_cursorX < m_minPrintX) m_cursorX = m_minPrintX;
+        if (m_cursorY < m_minPrintY) m_cursorY = m_minPrintY;
+        if (m_cursorX >= m_maxPrintX) m_cursorX = m_maxPrintX;
+        if (m_cursorY >= m_maxPrintY) m_cursorY = m_maxPrintY;
+    }
+
+    void Window::DrawCharacter(uint16_t x, uint16_t y, char fillChar) {
+        Globals::VGA_MEMORY[getIndex(x, y)] = { fillChar, getColorAttribute(m_activeColor) };
+    }
+    void Window::DrawCharacter(uint16_t x, uint16_t y, VGA_Character fillChar) {
+        Globals::VGA_MEMORY[getIndex(x, y)] = fillChar;
+    }
+
+    void Window::setActiveColor(Color color) {
+        m_activeColor = color;
+    }
+
+    void Window::BlinkCursor() {
+        constexpr uint64_t BLINK_FREQ = 4;
+        constexpr uint64_t BLINK_INTERVAL = CLOCK_FREQ / BLINK_FREQ;
+        uint64_t now = getCurrentTick();
+        if (now - lastBlink < BLINK_INTERVAL) return;
+        lastBlink = now;
+    
+        shown = !shown;
+        if (shown) {
+            // show cursor symbol, but save what's underneath first
+            m_hoveredChar = Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)];
+            Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)] = { '_', getColorAttribute(m_activeColor) };
+        } else {
+            // restore the character that was under the cursor
+            Globals::VGA_MEMORY[getIndex(m_cursorX, m_cursorY)] = m_hoveredChar;
         }
     }
 }
