@@ -2,16 +2,7 @@
 #include "kernel/time/time.hpp"
 
 namespace kernel {
-    struct VGA_Character {
-        char character;
-        char colorAttribute;
-
-        operator bool() const {
-            return character && colorAttribute;
-        }
-    };
-    
-    VGA_Character* VGA_MEMORY = reinterpret_cast<VGA_Character*>(0xB8000);
+   VGA_Character* VGA_MEMORY = reinterpret_cast<VGA_Character*>(0xB8000);
     
     int cursorCol = 0;
     int cursorRow = 0;
@@ -24,7 +15,7 @@ namespace kernel {
         return col + row * MAX_COLUMN;
     }
 
-    static char getColorAttribute(Color colorAttribute) {
+    char getColorAttribute(Color colorAttribute) {
         return static_cast<char>(colorAttribute);
     }
 
@@ -50,6 +41,7 @@ namespace kernel {
         for (int i = 0; i < MAX_COLUMN * MAX_ROWS; ++i) {
             VGA_MEMORY[i] = { .character = '\0', .colorAttribute = getColorAttribute(Color::FULL_BLACK) };
         }
+        cursorCol = cursorRow = 0;
     }
 
     void setColor(Color color) {
@@ -105,6 +97,25 @@ namespace kernel {
         while (n > 0) {
             buffer[i++] = (n % 10) + '0';
             n = n / 10;
+        }
+    
+        while (i > 0) {
+            printf(buffer[--i]);
+        }
+    }
+    
+    void printf(uint64_t n) {
+        if (n == 0) {
+            printf('0');
+            return;
+        }
+
+        char buffer[20];
+        int i = 0;
+    
+        while (n > 0) {
+            buffer[i++] = (n % 20) + '0';
+            n = n / 20;
         }
     
         while (i > 0) {

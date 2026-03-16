@@ -1,0 +1,2649 @@
+
+build/cmake/kernel-main.elf:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000100000 <kernel_main>:
+  100000:	48 bc 00 60 11 00 00 	movabs $0x116000,%rsp
+  100007:	00 00 00 
+  10000a:	48 31 ed             	xor    %rbp,%rbp
+  10000d:	48 bb 10 55 10 00 00 	movabs $0x105510,%rbx
+  100014:	00 00 00 
+
+0000000000100017 <kernel_main.ctor_loop>:
+  100017:	48 81 fb 10 55 10 00 	cmp    $0x105510,%rbx
+  10001e:	7d 0b                	jge    10002b <kernel_main.ctor_done>
+  100020:	48 8b 03             	mov    (%rbx),%rax
+  100023:	ff d0                	call   *%rax
+  100025:	48 83 c3 08          	add    $0x8,%rbx
+  100029:	eb ec                	jmp    100017 <kernel_main.ctor_loop>
+
+000000000010002b <kernel_main.ctor_done>:
+  10002b:	e8 2b 15 00 00       	call   10155b <kernel_main_cpp>
+
+0000000000100030 <kernel_main.hang>:
+  100030:	fa                   	cli
+  100031:	f4                   	hlt
+  100032:	eb fc                	jmp    100030 <kernel_main.hang>
+  100034:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  10003b:	00 00 00 
+  10003e:	66 90                	xchg   %ax,%ax
+
+0000000000100040 <isr_stub_0>:
+  100040:	6a 00                	push   $0x0
+  100042:	6a 00                	push   $0x0
+  100044:	e9 eb 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100049 <isr_stub_1>:
+  100049:	6a 00                	push   $0x0
+  10004b:	6a 01                	push   $0x1
+  10004d:	e9 e2 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100052 <isr_stub_2>:
+  100052:	6a 00                	push   $0x0
+  100054:	6a 02                	push   $0x2
+  100056:	e9 d9 00 00 00       	jmp    100134 <isr_common>
+
+000000000010005b <isr_stub_3>:
+  10005b:	6a 00                	push   $0x0
+  10005d:	6a 03                	push   $0x3
+  10005f:	e9 d0 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100064 <isr_stub_4>:
+  100064:	6a 00                	push   $0x0
+  100066:	6a 04                	push   $0x4
+  100068:	e9 c7 00 00 00       	jmp    100134 <isr_common>
+
+000000000010006d <isr_stub_5>:
+  10006d:	6a 00                	push   $0x0
+  10006f:	6a 05                	push   $0x5
+  100071:	e9 be 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100076 <isr_stub_6>:
+  100076:	6a 00                	push   $0x0
+  100078:	6a 06                	push   $0x6
+  10007a:	e9 b5 00 00 00       	jmp    100134 <isr_common>
+
+000000000010007f <isr_stub_7>:
+  10007f:	6a 00                	push   $0x0
+  100081:	6a 07                	push   $0x7
+  100083:	e9 ac 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100088 <isr_stub_9>:
+  100088:	6a 00                	push   $0x0
+  10008a:	6a 09                	push   $0x9
+  10008c:	e9 a3 00 00 00       	jmp    100134 <isr_common>
+
+0000000000100091 <isr_stub_16>:
+  100091:	6a 00                	push   $0x0
+  100093:	6a 10                	push   $0x10
+  100095:	e9 9a 00 00 00       	jmp    100134 <isr_common>
+
+000000000010009a <isr_stub_18>:
+  10009a:	6a 00                	push   $0x0
+  10009c:	6a 12                	push   $0x12
+  10009e:	e9 91 00 00 00       	jmp    100134 <isr_common>
+
+00000000001000a3 <isr_stub_19>:
+  1000a3:	6a 00                	push   $0x0
+  1000a5:	6a 13                	push   $0x13
+  1000a7:	e9 88 00 00 00       	jmp    100134 <isr_common>
+
+00000000001000ac <isr_stub_8>:
+  1000ac:	6a 08                	push   $0x8
+  1000ae:	e9 81 00 00 00       	jmp    100134 <isr_common>
+
+00000000001000b3 <isr_stub_10>:
+  1000b3:	6a 0a                	push   $0xa
+  1000b5:	eb 7d                	jmp    100134 <isr_common>
+
+00000000001000b7 <isr_stub_11>:
+  1000b7:	6a 0b                	push   $0xb
+  1000b9:	eb 79                	jmp    100134 <isr_common>
+
+00000000001000bb <isr_stub_12>:
+  1000bb:	6a 0c                	push   $0xc
+  1000bd:	eb 75                	jmp    100134 <isr_common>
+
+00000000001000bf <isr_stub_13>:
+  1000bf:	6a 0d                	push   $0xd
+  1000c1:	eb 71                	jmp    100134 <isr_common>
+
+00000000001000c3 <isr_stub_14>:
+  1000c3:	6a 0e                	push   $0xe
+  1000c5:	eb 6d                	jmp    100134 <isr_common>
+
+00000000001000c7 <isr_stub_17>:
+  1000c7:	6a 11                	push   $0x11
+  1000c9:	eb 69                	jmp    100134 <isr_common>
+
+00000000001000cb <irq_stub_0>:
+  1000cb:	6a 00                	push   $0x0
+  1000cd:	6a 20                	push   $0x20
+  1000cf:	eb 63                	jmp    100134 <isr_common>
+
+00000000001000d1 <irq_stub_1>:
+  1000d1:	6a 00                	push   $0x0
+  1000d3:	6a 21                	push   $0x21
+  1000d5:	eb 5d                	jmp    100134 <isr_common>
+
+00000000001000d7 <irq_stub_2>:
+  1000d7:	6a 00                	push   $0x0
+  1000d9:	6a 22                	push   $0x22
+  1000db:	eb 57                	jmp    100134 <isr_common>
+
+00000000001000dd <irq_stub_3>:
+  1000dd:	6a 00                	push   $0x0
+  1000df:	6a 23                	push   $0x23
+  1000e1:	eb 51                	jmp    100134 <isr_common>
+
+00000000001000e3 <irq_stub_4>:
+  1000e3:	6a 00                	push   $0x0
+  1000e5:	6a 24                	push   $0x24
+  1000e7:	eb 4b                	jmp    100134 <isr_common>
+
+00000000001000e9 <irq_stub_5>:
+  1000e9:	6a 00                	push   $0x0
+  1000eb:	6a 25                	push   $0x25
+  1000ed:	eb 45                	jmp    100134 <isr_common>
+
+00000000001000ef <irq_stub_6>:
+  1000ef:	6a 00                	push   $0x0
+  1000f1:	6a 26                	push   $0x26
+  1000f3:	eb 3f                	jmp    100134 <isr_common>
+
+00000000001000f5 <irq_stub_7>:
+  1000f5:	6a 00                	push   $0x0
+  1000f7:	6a 27                	push   $0x27
+  1000f9:	eb 39                	jmp    100134 <isr_common>
+
+00000000001000fb <irq_stub_8>:
+  1000fb:	6a 00                	push   $0x0
+  1000fd:	6a 28                	push   $0x28
+  1000ff:	eb 33                	jmp    100134 <isr_common>
+
+0000000000100101 <irq_stub_9>:
+  100101:	6a 00                	push   $0x0
+  100103:	6a 29                	push   $0x29
+  100105:	eb 2d                	jmp    100134 <isr_common>
+
+0000000000100107 <irq_stub_10>:
+  100107:	6a 00                	push   $0x0
+  100109:	6a 2a                	push   $0x2a
+  10010b:	eb 27                	jmp    100134 <isr_common>
+
+000000000010010d <irq_stub_11>:
+  10010d:	6a 00                	push   $0x0
+  10010f:	6a 2b                	push   $0x2b
+  100111:	eb 21                	jmp    100134 <isr_common>
+
+0000000000100113 <irq_stub_12>:
+  100113:	6a 00                	push   $0x0
+  100115:	6a 2c                	push   $0x2c
+  100117:	eb 1b                	jmp    100134 <isr_common>
+
+0000000000100119 <irq_stub_13>:
+  100119:	6a 00                	push   $0x0
+  10011b:	6a 2d                	push   $0x2d
+  10011d:	eb 15                	jmp    100134 <isr_common>
+
+000000000010011f <irq_stub_14>:
+  10011f:	6a 00                	push   $0x0
+  100121:	6a 2e                	push   $0x2e
+  100123:	eb 0f                	jmp    100134 <isr_common>
+
+0000000000100125 <irq_stub_15>:
+  100125:	6a 00                	push   $0x0
+  100127:	6a 2f                	push   $0x2f
+  100129:	eb 09                	jmp    100134 <isr_common>
+
+000000000010012b <isr_stub_128>:
+  10012b:	6a 00                	push   $0x0
+  10012d:	68 80 00 00 00       	push   $0x80
+  100132:	eb 3c                	jmp    100170 <sys_common>
+
+0000000000100134 <isr_common>:
+  100134:	50                   	push   %rax
+  100135:	53                   	push   %rbx
+  100136:	51                   	push   %rcx
+  100137:	52                   	push   %rdx
+  100138:	56                   	push   %rsi
+  100139:	57                   	push   %rdi
+  10013a:	55                   	push   %rbp
+  10013b:	41 50                	push   %r8
+  10013d:	41 51                	push   %r9
+  10013f:	41 52                	push   %r10
+  100141:	41 53                	push   %r11
+  100143:	41 54                	push   %r12
+  100145:	41 55                	push   %r13
+  100147:	41 56                	push   %r14
+  100149:	41 57                	push   %r15
+  10014b:	48 89 e7             	mov    %rsp,%rdi
+  10014e:	e8 7b 0c 00 00       	call   100dce <isr_handler>
+  100153:	41 5f                	pop    %r15
+  100155:	41 5e                	pop    %r14
+  100157:	41 5d                	pop    %r13
+  100159:	41 5c                	pop    %r12
+  10015b:	41 5b                	pop    %r11
+  10015d:	41 5a                	pop    %r10
+  10015f:	41 59                	pop    %r9
+  100161:	41 58                	pop    %r8
+  100163:	5d                   	pop    %rbp
+  100164:	5f                   	pop    %rdi
+  100165:	5e                   	pop    %rsi
+  100166:	5a                   	pop    %rdx
+  100167:	59                   	pop    %rcx
+  100168:	5b                   	pop    %rbx
+  100169:	58                   	pop    %rax
+  10016a:	48 83 c4 10          	add    $0x10,%rsp
+  10016e:	48 cf                	iretq
+
+0000000000100170 <sys_common>:
+  100170:	50                   	push   %rax
+  100171:	53                   	push   %rbx
+  100172:	51                   	push   %rcx
+  100173:	52                   	push   %rdx
+  100174:	56                   	push   %rsi
+  100175:	57                   	push   %rdi
+  100176:	55                   	push   %rbp
+  100177:	41 50                	push   %r8
+  100179:	41 51                	push   %r9
+  10017b:	41 52                	push   %r10
+  10017d:	41 53                	push   %r11
+  10017f:	41 54                	push   %r12
+  100181:	41 55                	push   %r13
+  100183:	41 56                	push   %r14
+  100185:	41 57                	push   %r15
+  100187:	48 89 e7             	mov    %rsp,%rdi
+  10018a:	e8 3f 0c 00 00       	call   100dce <isr_handler>
+  10018f:	41 5f                	pop    %r15
+  100191:	41 5e                	pop    %r14
+  100193:	41 5d                	pop    %r13
+  100195:	41 5c                	pop    %r12
+  100197:	41 5b                	pop    %r11
+  100199:	41 5a                	pop    %r10
+  10019b:	41 59                	pop    %r9
+  10019d:	41 58                	pop    %r8
+  10019f:	5d                   	pop    %rbp
+  1001a0:	5f                   	pop    %rdi
+  1001a1:	5e                   	pop    %rsi
+  1001a2:	5a                   	pop    %rdx
+  1001a3:	59                   	pop    %rcx
+  1001a4:	5b                   	pop    %rbx
+  1001a5:	48 83 c4 08          	add    $0x8,%rsp
+  1001a9:	48 83 c4 10          	add    $0x10,%rsp
+  1001ad:	48 cf                	iretq
+
+00000000001001af <_Z3inbt>:
+  1001af:	f3 0f 1e fa          	endbr64
+  1001b3:	55                   	push   %rbp
+  1001b4:	48 89 e5             	mov    %rsp,%rbp
+  1001b7:	48 83 ec 18          	sub    $0x18,%rsp
+  1001bb:	89 f8                	mov    %edi,%eax
+  1001bd:	66 89 45 ec          	mov    %ax,-0x14(%rbp)
+  1001c1:	0f b7 45 ec          	movzwl -0x14(%rbp),%eax
+  1001c5:	89 c2                	mov    %eax,%edx
+  1001c7:	ec                   	in     (%dx),%al
+  1001c8:	88 45 ff             	mov    %al,-0x1(%rbp)
+  1001cb:	0f b6 45 ff          	movzbl -0x1(%rbp),%eax
+  1001cf:	c9                   	leave
+  1001d0:	c3                   	ret
+
+00000000001001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>:
+  1001d1:	f3 0f 1e fa          	endbr64
+  1001d5:	55                   	push   %rbp
+  1001d6:	48 89 e5             	mov    %rsp,%rbp
+  1001d9:	48 83 ec 18          	sub    $0x18,%rsp
+  1001dd:	89 f8                	mov    %edi,%eax
+  1001df:	88 45 ec             	mov    %al,-0x14(%rbp)
+  1001e2:	8b 05 7c 40 00 00    	mov    0x407c(%rip),%eax        # 104264 <_ZN6kernel12_GLOBAL__N_110queue_tailE>
+  1001e8:	83 c0 01             	add    $0x1,%eax
+  1001eb:	83 e0 3f             	and    $0x3f,%eax
+  1001ee:	89 45 fc             	mov    %eax,-0x4(%rbp)
+  1001f1:	8b 05 69 40 00 00    	mov    0x4069(%rip),%eax        # 104260 <_ZN6kernel12_GLOBAL__N_110queue_headE>
+  1001f7:	39 45 fc             	cmp    %eax,-0x4(%rbp)
+  1001fa:	74 21                	je     10021d <_ZN6kernel12_GLOBAL__N_17enqueueEc+0x4c>
+  1001fc:	8b 05 62 40 00 00    	mov    0x4062(%rip),%eax        # 104264 <_ZN6kernel12_GLOBAL__N_110queue_tailE>
+  100202:	89 c1                	mov    %eax,%ecx
+  100204:	48 8d 15 15 40 00 00 	lea    0x4015(%rip),%rdx        # 104220 <_ZN6kernel12_GLOBAL__N_19key_queueE>
+  10020b:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  10020f:	88 04 11             	mov    %al,(%rcx,%rdx,1)
+  100212:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100215:	89 05 49 40 00 00    	mov    %eax,0x4049(%rip)        # 104264 <_ZN6kernel12_GLOBAL__N_110queue_tailE>
+  10021b:	eb 01                	jmp    10021e <_ZN6kernel12_GLOBAL__N_17enqueueEc+0x4d>
+  10021d:	90                   	nop
+  10021e:	c9                   	leave
+  10021f:	c3                   	ret
+
+0000000000100220 <_ZN6kernel12_GLOBAL__N_17dequeueEv>:
+  100220:	f3 0f 1e fa          	endbr64
+  100224:	55                   	push   %rbp
+  100225:	48 89 e5             	mov    %rsp,%rbp
+  100228:	48 83 ec 10          	sub    $0x10,%rsp
+  10022c:	8b 15 2e 40 00 00    	mov    0x402e(%rip),%edx        # 104260 <_ZN6kernel12_GLOBAL__N_110queue_headE>
+  100232:	8b 05 2c 40 00 00    	mov    0x402c(%rip),%eax        # 104264 <_ZN6kernel12_GLOBAL__N_110queue_tailE>
+  100238:	39 c2                	cmp    %eax,%edx
+  10023a:	75 07                	jne    100243 <_ZN6kernel12_GLOBAL__N_17dequeueEv+0x23>
+  10023c:	b8 00 00 00 00       	mov    $0x0,%eax
+  100241:	eb 2c                	jmp    10026f <_ZN6kernel12_GLOBAL__N_17dequeueEv+0x4f>
+  100243:	8b 05 17 40 00 00    	mov    0x4017(%rip),%eax        # 104260 <_ZN6kernel12_GLOBAL__N_110queue_headE>
+  100249:	89 c2                	mov    %eax,%edx
+  10024b:	48 8d 05 ce 3f 00 00 	lea    0x3fce(%rip),%rax        # 104220 <_ZN6kernel12_GLOBAL__N_19key_queueE>
+  100252:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
+  100256:	88 45 ff             	mov    %al,-0x1(%rbp)
+  100259:	8b 05 01 40 00 00    	mov    0x4001(%rip),%eax        # 104260 <_ZN6kernel12_GLOBAL__N_110queue_headE>
+  10025f:	83 c0 01             	add    $0x1,%eax
+  100262:	83 e0 3f             	and    $0x3f,%eax
+  100265:	89 05 f5 3f 00 00    	mov    %eax,0x3ff5(%rip)        # 104260 <_ZN6kernel12_GLOBAL__N_110queue_headE>
+  10026b:	0f b6 45 ff          	movzbl -0x1(%rbp),%eax
+  10026f:	c9                   	leave
+  100270:	c3                   	ret
+
+0000000000100271 <_ZN6kernel12_GLOBAL__N_111resolveCharEh>:
+  100271:	f3 0f 1e fa          	endbr64
+  100275:	55                   	push   %rbp
+  100276:	48 89 e5             	mov    %rsp,%rbp
+  100279:	48 83 ec 08          	sub    $0x8,%rsp
+  10027d:	89 f8                	mov    %edi,%eax
+  10027f:	88 45 fc             	mov    %al,-0x4(%rbp)
+  100282:	80 7d fc 3a          	cmpb   $0x3a,-0x4(%rbp)
+  100286:	76 07                	jbe    10028f <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x1e>
+  100288:	b8 00 00 00 00       	mov    $0x0,%eax
+  10028d:	eb 4d                	jmp    1002dc <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x6b>
+  10028f:	0f b6 05 6a 3f 00 00 	movzbl 0x3f6a(%rip),%eax        # 104200 <_ZN6kernel12_GLOBAL__N_110shift_heldE>
+  100296:	84 c0                	test   %al,%al
+  100298:	74 13                	je     1002ad <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x3c>
+  10029a:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  10029e:	48 98                	cltq
+  1002a0:	48 8d 15 19 20 00 00 	lea    0x2019(%rip),%rdx        # 1022c0 <_ZN6kernel12_GLOBAL__N_1L23shift_scancode_to_asciiE>
+  1002a7:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  1002ab:	eb 2f                	jmp    1002dc <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x6b>
+  1002ad:	0f b6 05 4d 3f 00 00 	movzbl 0x3f4d(%rip),%eax        # 104201 <_ZN6kernel12_GLOBAL__N_19caps_lockE>
+  1002b4:	84 c0                	test   %al,%al
+  1002b6:	74 13                	je     1002cb <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x5a>
+  1002b8:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  1002bc:	48 98                	cltq
+  1002be:	48 8d 15 3b 20 00 00 	lea    0x203b(%rip),%rdx        # 102300 <_ZN6kernel12_GLOBAL__N_1L22caps_scancode_to_asciiE>
+  1002c5:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  1002c9:	eb 11                	jmp    1002dc <_ZN6kernel12_GLOBAL__N_111resolveCharEh+0x6b>
+  1002cb:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  1002cf:	48 98                	cltq
+  1002d1:	48 8d 15 a8 1f 00 00 	lea    0x1fa8(%rip),%rdx        # 102280 <_ZN6kernel12_GLOBAL__N_1L17scancode_to_asciiE>
+  1002d8:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  1002dc:	c9                   	leave
+  1002dd:	c3                   	ret
+
+00000000001002de <_ZN6kernel8keyboard10readEscapeERh>:
+  1002de:	f3 0f 1e fa          	endbr64
+  1002e2:	55                   	push   %rbp
+  1002e3:	48 89 e5             	mov    %rsp,%rbp
+  1002e6:	48 83 ec 20          	sub    $0x20,%rsp
+  1002ea:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+  1002ee:	e8 a2 00 00 00       	call   100395 <_ZN6kernel8keyboard7getCharEv>
+  1002f3:	3c 5b                	cmp    $0x5b,%al
+  1002f5:	0f 95 c0             	setne  %al
+  1002f8:	84 c0                	test   %al,%al
+  1002fa:	74 07                	je     100303 <_ZN6kernel8keyboard10readEscapeERh+0x25>
+  1002fc:	b8 00 00 00 00       	mov    $0x0,%eax
+  100301:	eb 69                	jmp    10036c <_ZN6kernel8keyboard10readEscapeERh+0x8e>
+  100303:	e8 8d 00 00 00       	call   100395 <_ZN6kernel8keyboard7getCharEv>
+  100308:	88 45 ff             	mov    %al,-0x1(%rbp)
+  10030b:	0f be 45 ff          	movsbl -0x1(%rbp),%eax
+  10030f:	83 f8 44             	cmp    $0x44,%eax
+  100312:	74 45                	je     100359 <_ZN6kernel8keyboard10readEscapeERh+0x7b>
+  100314:	83 f8 44             	cmp    $0x44,%eax
+  100317:	7f 4e                	jg     100367 <_ZN6kernel8keyboard10readEscapeERh+0x89>
+  100319:	83 f8 43             	cmp    $0x43,%eax
+  10031c:	74 2d                	je     10034b <_ZN6kernel8keyboard10readEscapeERh+0x6d>
+  10031e:	83 f8 43             	cmp    $0x43,%eax
+  100321:	7f 44                	jg     100367 <_ZN6kernel8keyboard10readEscapeERh+0x89>
+  100323:	83 f8 41             	cmp    $0x41,%eax
+  100326:	74 07                	je     10032f <_ZN6kernel8keyboard10readEscapeERh+0x51>
+  100328:	83 f8 42             	cmp    $0x42,%eax
+  10032b:	74 10                	je     10033d <_ZN6kernel8keyboard10readEscapeERh+0x5f>
+  10032d:	eb 38                	jmp    100367 <_ZN6kernel8keyboard10readEscapeERh+0x89>
+  10032f:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  100333:	c6 00 80             	movb   $0x80,(%rax)
+  100336:	b8 01 00 00 00       	mov    $0x1,%eax
+  10033b:	eb 2f                	jmp    10036c <_ZN6kernel8keyboard10readEscapeERh+0x8e>
+  10033d:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  100341:	c6 00 81             	movb   $0x81,(%rax)
+  100344:	b8 01 00 00 00       	mov    $0x1,%eax
+  100349:	eb 21                	jmp    10036c <_ZN6kernel8keyboard10readEscapeERh+0x8e>
+  10034b:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  10034f:	c6 00 83             	movb   $0x83,(%rax)
+  100352:	b8 01 00 00 00       	mov    $0x1,%eax
+  100357:	eb 13                	jmp    10036c <_ZN6kernel8keyboard10readEscapeERh+0x8e>
+  100359:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  10035d:	c6 00 82             	movb   $0x82,(%rax)
+  100360:	b8 01 00 00 00       	mov    $0x1,%eax
+  100365:	eb 05                	jmp    10036c <_ZN6kernel8keyboard10readEscapeERh+0x8e>
+  100367:	b8 00 00 00 00       	mov    $0x0,%eax
+  10036c:	c9                   	leave
+  10036d:	c3                   	ret
+
+000000000010036e <_ZN6kernel8keyboard9isKeyHeldEh>:
+  10036e:	f3 0f 1e fa          	endbr64
+  100372:	55                   	push   %rbp
+  100373:	48 89 e5             	mov    %rsp,%rbp
+  100376:	48 83 ec 08          	sub    $0x8,%rsp
+  10037a:	89 f8                	mov    %edi,%eax
+  10037c:	88 45 fc             	mov    %al,-0x4(%rbp)
+  10037f:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  100383:	83 e0 7f             	and    $0x7f,%eax
+  100386:	48 98                	cltq
+  100388:	48 8d 15 71 2d 00 00 	lea    0x2d71(%rip),%rdx        # 103100 <_ZN6kernel12_GLOBAL__N_19keys_heldE>
+  10038f:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  100393:	c9                   	leave
+  100394:	c3                   	ret
+
+0000000000100395 <_ZN6kernel8keyboard7getCharEv>:
+  100395:	f3 0f 1e fa          	endbr64
+  100399:	55                   	push   %rbp
+  10039a:	48 89 e5             	mov    %rsp,%rbp
+  10039d:	e8 7e fe ff ff       	call   100220 <_ZN6kernel12_GLOBAL__N_17dequeueEv>
+  1003a2:	5d                   	pop    %rbp
+  1003a3:	c3                   	ret
+
+00000000001003a4 <_ZN6kernel12KeyBoardTickEv>:
+  1003a4:	f3 0f 1e fa          	endbr64
+  1003a8:	55                   	push   %rbp
+  1003a9:	48 89 e5             	mov    %rsp,%rbp
+  1003ac:	48 83 ec 20          	sub    $0x20,%rsp
+  1003b0:	e8 54 13 00 00       	call   101709 <_ZN6kernel14getCurrentTickEv>
+  1003b5:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  1003b9:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+  1003c0:	eb 7d                	jmp    10043f <_ZN6kernel12KeyBoardTickEv+0x9b>
+  1003c2:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  1003c5:	48 98                	cltq
+  1003c7:	48 8d 15 32 2d 00 00 	lea    0x2d32(%rip),%rdx        # 103100 <_ZN6kernel12_GLOBAL__N_19keys_heldE>
+  1003ce:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  1003d2:	83 f0 01             	xor    $0x1,%eax
+  1003d5:	84 c0                	test   %al,%al
+  1003d7:	75 61                	jne    10043a <_ZN6kernel12KeyBoardTickEv+0x96>
+  1003d9:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  1003dc:	48 98                	cltq
+  1003de:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  1003e5:	00 
+  1003e6:	48 8d 05 13 36 00 00 	lea    0x3613(%rip),%rax        # 103a00 <_ZN6kernel12_GLOBAL__N_116next_repeat_timeE>
+  1003ed:	48 8b 04 02          	mov    (%rdx,%rax,1),%rax
+  1003f1:	48 39 45 f0          	cmp    %rax,-0x10(%rbp)
+  1003f5:	72 44                	jb     10043b <_ZN6kernel12KeyBoardTickEv+0x97>
+  1003f7:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  1003fa:	0f b6 c0             	movzbl %al,%eax
+  1003fd:	89 c7                	mov    %eax,%edi
+  1003ff:	e8 6d fe ff ff       	call   100271 <_ZN6kernel12_GLOBAL__N_111resolveCharEh>
+  100404:	88 45 ef             	mov    %al,-0x11(%rbp)
+  100407:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  10040b:	74 0b                	je     100418 <_ZN6kernel12KeyBoardTickEv+0x74>
+  10040d:	0f be 45 ef          	movsbl -0x11(%rbp),%eax
+  100411:	89 c7                	mov    %eax,%edi
+  100413:	e8 b9 fd ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100418:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  10041c:	48 8d 48 21          	lea    0x21(%rax),%rcx
+  100420:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100423:	48 98                	cltq
+  100425:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  10042c:	00 
+  10042d:	48 8d 05 cc 35 00 00 	lea    0x35cc(%rip),%rax        # 103a00 <_ZN6kernel12_GLOBAL__N_116next_repeat_timeE>
+  100434:	48 89 0c 02          	mov    %rcx,(%rdx,%rax,1)
+  100438:	eb 01                	jmp    10043b <_ZN6kernel12KeyBoardTickEv+0x97>
+  10043a:	90                   	nop
+  10043b:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+  10043f:	81 7d fc ff 00 00 00 	cmpl   $0xff,-0x4(%rbp)
+  100446:	0f 8e 76 ff ff ff    	jle    1003c2 <_ZN6kernel12KeyBoardTickEv+0x1e>
+  10044c:	90                   	nop
+  10044d:	90                   	nop
+  10044e:	c9                   	leave
+  10044f:	c3                   	ret
+
+0000000000100450 <_ZN6kernel17HandleKeyBoardIRQEv>:
+  100450:	f3 0f 1e fa          	endbr64
+  100454:	55                   	push   %rbp
+  100455:	48 89 e5             	mov    %rsp,%rbp
+  100458:	48 83 ec 20          	sub    $0x20,%rsp
+  10045c:	bf 64 00 00 00       	mov    $0x64,%edi
+  100461:	e8 49 fd ff ff       	call   1001af <_Z3inbt>
+  100466:	88 45 ff             	mov    %al,-0x1(%rbp)
+  100469:	0f b6 45 ff          	movzbl -0x1(%rbp),%eax
+  10046d:	83 e0 01             	and    $0x1,%eax
+  100470:	85 c0                	test   %eax,%eax
+  100472:	0f 84 d8 02 00 00    	je     100750 <_ZN6kernel17HandleKeyBoardIRQEv+0x300>
+  100478:	0f b6 45 ff          	movzbl -0x1(%rbp),%eax
+  10047c:	83 e0 20             	and    $0x20,%eax
+  10047f:	85 c0                	test   %eax,%eax
+  100481:	0f 85 cc 02 00 00    	jne    100753 <_ZN6kernel17HandleKeyBoardIRQEv+0x303>
+  100487:	bf 60 00 00 00       	mov    $0x60,%edi
+  10048c:	e8 1e fd ff ff       	call   1001af <_Z3inbt>
+  100491:	88 45 fe             	mov    %al,-0x2(%rbp)
+  100494:	c6 45 fd 7f          	movb   $0x7f,-0x3(%rbp)
+  100498:	c6 45 fc 80          	movb   $0x80,-0x4(%rbp)
+  10049c:	80 7d fe e0          	cmpb   $0xe0,-0x2(%rbp)
+  1004a0:	75 0c                	jne    1004ae <_ZN6kernel17HandleKeyBoardIRQEv+0x5e>
+  1004a2:	c6 05 59 3d 00 00 01 	movb   $0x1,0x3d59(%rip)        # 104202 <_ZN6kernel12_GLOBAL__N_18extendedE>
+  1004a9:	e9 a9 02 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  1004ae:	0f b6 05 4d 3d 00 00 	movzbl 0x3d4d(%rip),%eax        # 104202 <_ZN6kernel12_GLOBAL__N_18extendedE>
+  1004b5:	84 c0                	test   %al,%al
+  1004b7:	0f 84 5a 01 00 00    	je     100617 <_ZN6kernel17HandleKeyBoardIRQEv+0x1c7>
+  1004bd:	c6 05 3e 3d 00 00 00 	movb   $0x0,0x3d3e(%rip)        # 104202 <_ZN6kernel12_GLOBAL__N_18extendedE>
+  1004c4:	80 7d fe 7e          	cmpb   $0x7e,-0x2(%rbp)
+  1004c8:	0f 87 db 00 00 00    	ja     1005a9 <_ZN6kernel17HandleKeyBoardIRQEv+0x159>
+  1004ce:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1004d2:	83 f8 50             	cmp    $0x50,%eax
+  1004d5:	74 54                	je     10052b <_ZN6kernel17HandleKeyBoardIRQEv+0xdb>
+  1004d7:	83 f8 50             	cmp    $0x50,%eax
+  1004da:	0f 8f c9 00 00 00    	jg     1005a9 <_ZN6kernel17HandleKeyBoardIRQEv+0x159>
+  1004e0:	83 f8 4d             	cmp    $0x4d,%eax
+  1004e3:	74 70                	je     100555 <_ZN6kernel17HandleKeyBoardIRQEv+0x105>
+  1004e5:	83 f8 4d             	cmp    $0x4d,%eax
+  1004e8:	0f 8f bb 00 00 00    	jg     1005a9 <_ZN6kernel17HandleKeyBoardIRQEv+0x159>
+  1004ee:	83 f8 48             	cmp    $0x48,%eax
+  1004f1:	74 0e                	je     100501 <_ZN6kernel17HandleKeyBoardIRQEv+0xb1>
+  1004f3:	83 f8 4b             	cmp    $0x4b,%eax
+  1004f6:	0f 84 83 00 00 00    	je     10057f <_ZN6kernel17HandleKeyBoardIRQEv+0x12f>
+  1004fc:	e9 a8 00 00 00       	jmp    1005a9 <_ZN6kernel17HandleKeyBoardIRQEv+0x159>
+  100501:	c6 05 78 2c 00 00 01 	movb   $0x1,0x2c78(%rip)        # 103180 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x80>
+  100508:	bf 1b 00 00 00       	mov    $0x1b,%edi
+  10050d:	e8 bf fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100512:	bf 5b 00 00 00       	mov    $0x5b,%edi
+  100517:	e8 b5 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  10051c:	bf 41 00 00 00       	mov    $0x41,%edi
+  100521:	e8 ab fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100526:	e9 2c 02 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  10052b:	c6 05 4f 2c 00 00 01 	movb   $0x1,0x2c4f(%rip)        # 103181 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x81>
+  100532:	bf 1b 00 00 00       	mov    $0x1b,%edi
+  100537:	e8 95 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  10053c:	bf 5b 00 00 00       	mov    $0x5b,%edi
+  100541:	e8 8b fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100546:	bf 42 00 00 00       	mov    $0x42,%edi
+  10054b:	e8 81 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100550:	e9 02 02 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100555:	c6 05 27 2c 00 00 01 	movb   $0x1,0x2c27(%rip)        # 103183 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x83>
+  10055c:	bf 1b 00 00 00       	mov    $0x1b,%edi
+  100561:	e8 6b fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100566:	bf 5b 00 00 00       	mov    $0x5b,%edi
+  10056b:	e8 61 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100570:	bf 43 00 00 00       	mov    $0x43,%edi
+  100575:	e8 57 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  10057a:	e9 d8 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  10057f:	c6 05 fc 2b 00 00 01 	movb   $0x1,0x2bfc(%rip)        # 103182 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x82>
+  100586:	bf 1b 00 00 00       	mov    $0x1b,%edi
+  10058b:	e8 41 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  100590:	bf 5b 00 00 00       	mov    $0x5b,%edi
+  100595:	e8 37 fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  10059a:	bf 44 00 00 00       	mov    $0x44,%edi
+  10059f:	e8 2d fc ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  1005a4:	e9 ae 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  1005a9:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1005ad:	84 c0                	test   %al,%al
+  1005af:	0f 89 a1 01 00 00    	jns    100756 <_ZN6kernel17HandleKeyBoardIRQEv+0x306>
+  1005b5:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1005b9:	83 e0 7f             	and    $0x7f,%eax
+  1005bc:	83 f8 50             	cmp    $0x50,%eax
+  1005bf:	74 32                	je     1005f3 <_ZN6kernel17HandleKeyBoardIRQEv+0x1a3>
+  1005c1:	83 f8 50             	cmp    $0x50,%eax
+  1005c4:	0f 8f 8c 01 00 00    	jg     100756 <_ZN6kernel17HandleKeyBoardIRQEv+0x306>
+  1005ca:	83 f8 4d             	cmp    $0x4d,%eax
+  1005cd:	74 30                	je     1005ff <_ZN6kernel17HandleKeyBoardIRQEv+0x1af>
+  1005cf:	83 f8 4d             	cmp    $0x4d,%eax
+  1005d2:	0f 8f 7e 01 00 00    	jg     100756 <_ZN6kernel17HandleKeyBoardIRQEv+0x306>
+  1005d8:	83 f8 48             	cmp    $0x48,%eax
+  1005db:	74 0a                	je     1005e7 <_ZN6kernel17HandleKeyBoardIRQEv+0x197>
+  1005dd:	83 f8 4b             	cmp    $0x4b,%eax
+  1005e0:	74 29                	je     10060b <_ZN6kernel17HandleKeyBoardIRQEv+0x1bb>
+  1005e2:	e9 6f 01 00 00       	jmp    100756 <_ZN6kernel17HandleKeyBoardIRQEv+0x306>
+  1005e7:	c6 05 92 2b 00 00 00 	movb   $0x0,0x2b92(%rip)        # 103180 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x80>
+  1005ee:	e9 64 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  1005f3:	c6 05 87 2b 00 00 00 	movb   $0x0,0x2b87(%rip)        # 103181 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x81>
+  1005fa:	e9 58 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  1005ff:	c6 05 7d 2b 00 00 00 	movb   $0x0,0x2b7d(%rip)        # 103183 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x83>
+  100606:	e9 4c 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  10060b:	c6 05 70 2b 00 00 00 	movb   $0x0,0x2b70(%rip)        # 103182 <_ZN6kernel12_GLOBAL__N_19keys_heldE+0x82>
+  100612:	e9 40 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100617:	80 7d fe 7e          	cmpb   $0x7e,-0x2(%rbp)
+  10061b:	0f 87 d8 00 00 00    	ja     1006f9 <_ZN6kernel17HandleKeyBoardIRQEv+0x2a9>
+  100621:	80 7d fe 2a          	cmpb   $0x2a,-0x2(%rbp)
+  100625:	74 06                	je     10062d <_ZN6kernel17HandleKeyBoardIRQEv+0x1dd>
+  100627:	80 7d fe 36          	cmpb   $0x36,-0x2(%rbp)
+  10062b:	75 0c                	jne    100639 <_ZN6kernel17HandleKeyBoardIRQEv+0x1e9>
+  10062d:	c6 05 cc 3b 00 00 01 	movb   $0x1,0x3bcc(%rip)        # 104200 <_ZN6kernel12_GLOBAL__N_110shift_heldE>
+  100634:	e9 1e 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100639:	80 7d fe 3a          	cmpb   $0x3a,-0x2(%rbp)
+  10063d:	75 15                	jne    100654 <_ZN6kernel17HandleKeyBoardIRQEv+0x204>
+  10063f:	0f b6 05 bb 3b 00 00 	movzbl 0x3bbb(%rip),%eax        # 104201 <_ZN6kernel12_GLOBAL__N_19caps_lockE>
+  100646:	83 f0 01             	xor    $0x1,%eax
+  100649:	88 05 b2 3b 00 00    	mov    %al,0x3bb2(%rip)        # 104201 <_ZN6kernel12_GLOBAL__N_19caps_lockE>
+  10064f:	e9 03 01 00 00       	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100654:	e8 b0 10 00 00       	call   101709 <_ZN6kernel14getCurrentTickEv>
+  100659:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  10065d:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  100661:	48 98                	cltq
+  100663:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  10066a:	00 
+  10066b:	48 8d 05 8e 2b 00 00 	lea    0x2b8e(%rip),%rax        # 103200 <_ZN6kernel12_GLOBAL__N_115last_press_timeE>
+  100672:	48 8b 04 02          	mov    (%rdx,%rax,1),%rax
+  100676:	48 8b 55 f0          	mov    -0x10(%rbp),%rdx
+  10067a:	48 29 c2             	sub    %rax,%rdx
+  10067d:	48 81 fa f4 01 00 00 	cmp    $0x1f4,%rdx
+  100684:	76 54                	jbe    1006da <_ZN6kernel17HandleKeyBoardIRQEv+0x28a>
+  100686:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  10068a:	48 98                	cltq
+  10068c:	48 8d 15 6d 2a 00 00 	lea    0x2a6d(%rip),%rdx        # 103100 <_ZN6kernel12_GLOBAL__N_19keys_heldE>
+  100693:	c6 04 10 01          	movb   $0x1,(%rax,%rdx,1)
+  100697:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  10069b:	48 8b 55 f0          	mov    -0x10(%rbp),%rdx
+  10069f:	48 8d 8a f4 01 00 00 	lea    0x1f4(%rdx),%rcx
+  1006a6:	48 98                	cltq
+  1006a8:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  1006af:	00 
+  1006b0:	48 8d 05 49 33 00 00 	lea    0x3349(%rip),%rax        # 103a00 <_ZN6kernel12_GLOBAL__N_116next_repeat_timeE>
+  1006b7:	48 89 0c 02          	mov    %rcx,(%rdx,%rax,1)
+  1006bb:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1006bf:	89 c7                	mov    %eax,%edi
+  1006c1:	e8 ab fb ff ff       	call   100271 <_ZN6kernel12_GLOBAL__N_111resolveCharEh>
+  1006c6:	88 45 ef             	mov    %al,-0x11(%rbp)
+  1006c9:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  1006cd:	74 0b                	je     1006da <_ZN6kernel17HandleKeyBoardIRQEv+0x28a>
+  1006cf:	0f be 45 ef          	movsbl -0x11(%rbp),%eax
+  1006d3:	89 c7                	mov    %eax,%edi
+  1006d5:	e8 f7 fa ff ff       	call   1001d1 <_ZN6kernel12_GLOBAL__N_17enqueueEc>
+  1006da:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1006de:	48 98                	cltq
+  1006e0:	48 8d 0c c5 00 00 00 	lea    0x0(,%rax,8),%rcx
+  1006e7:	00 
+  1006e8:	48 8d 15 11 2b 00 00 	lea    0x2b11(%rip),%rdx        # 103200 <_ZN6kernel12_GLOBAL__N_115last_press_timeE>
+  1006ef:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  1006f3:	48 89 04 11          	mov    %rax,(%rcx,%rdx,1)
+  1006f7:	eb 5e                	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  1006f9:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  1006fd:	84 c0                	test   %al,%al
+  1006ff:	79 56                	jns    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100701:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  100705:	83 e0 7f             	and    $0x7f,%eax
+  100708:	88 45 fb             	mov    %al,-0x5(%rbp)
+  10070b:	80 7d fb 2a          	cmpb   $0x2a,-0x5(%rbp)
+  10070f:	74 06                	je     100717 <_ZN6kernel17HandleKeyBoardIRQEv+0x2c7>
+  100711:	80 7d fb 36          	cmpb   $0x36,-0x5(%rbp)
+  100715:	75 09                	jne    100720 <_ZN6kernel17HandleKeyBoardIRQEv+0x2d0>
+  100717:	c6 05 e2 3a 00 00 00 	movb   $0x0,0x3ae2(%rip)        # 104200 <_ZN6kernel12_GLOBAL__N_110shift_heldE>
+  10071e:	eb 37                	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100720:	0f b6 45 fb          	movzbl -0x5(%rbp),%eax
+  100724:	48 98                	cltq
+  100726:	48 8d 15 d3 29 00 00 	lea    0x29d3(%rip),%rdx        # 103100 <_ZN6kernel12_GLOBAL__N_19keys_heldE>
+  10072d:	c6 04 10 00          	movb   $0x0,(%rax,%rdx,1)
+  100731:	0f b6 45 fb          	movzbl -0x5(%rbp),%eax
+  100735:	48 98                	cltq
+  100737:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  10073e:	00 
+  10073f:	48 8d 05 ba 2a 00 00 	lea    0x2aba(%rip),%rax        # 103200 <_ZN6kernel12_GLOBAL__N_115last_press_timeE>
+  100746:	48 c7 04 02 00 00 00 	movq   $0x0,(%rdx,%rax,1)
+  10074d:	00 
+  10074e:	eb 07                	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100750:	90                   	nop
+  100751:	eb 04                	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100753:	90                   	nop
+  100754:	eb 01                	jmp    100757 <_ZN6kernel17HandleKeyBoardIRQEv+0x307>
+  100756:	90                   	nop
+  100757:	c9                   	leave
+  100758:	c3                   	ret
+
+0000000000100759 <_Z14handle_syscallRK17interrupt_frame_t>:
+  100759:	f3 0f 1e fa          	endbr64
+  10075d:	55                   	push   %rbp
+  10075e:	48 89 e5             	mov    %rsp,%rbp
+  100761:	48 83 ec 30          	sub    $0x30,%rsp
+  100765:	48 89 7d d8          	mov    %rdi,-0x28(%rbp)
+  100769:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  10076d:	48 8b 40 70          	mov    0x70(%rax),%rax
+  100771:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  100775:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  100779:	48 8b 40 48          	mov    0x48(%rax),%rax
+  10077d:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+  100781:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  100785:	48 8b 40 50          	mov    0x50(%rax),%rax
+  100789:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+  10078d:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  100791:	48 8b 40 58          	mov    0x58(%rax),%rax
+  100795:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  100799:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
+  1007a0:	c9                   	leave
+  1007a1:	c3                   	ret
+
+00000000001007a2 <_ZNK6kernel13VGA_CharactercvbEv>:
+  1007a2:	f3 0f 1e fa          	endbr64
+  1007a6:	55                   	push   %rbp
+  1007a7:	48 89 e5             	mov    %rsp,%rbp
+  1007aa:	48 83 ec 08          	sub    $0x8,%rsp
+  1007ae:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  1007b2:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  1007b6:	0f b6 00             	movzbl (%rax),%eax
+  1007b9:	84 c0                	test   %al,%al
+  1007bb:	74 13                	je     1007d0 <_ZNK6kernel13VGA_CharactercvbEv+0x2e>
+  1007bd:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  1007c1:	0f b6 40 01          	movzbl 0x1(%rax),%eax
+  1007c5:	84 c0                	test   %al,%al
+  1007c7:	74 07                	je     1007d0 <_ZNK6kernel13VGA_CharactercvbEv+0x2e>
+  1007c9:	b8 01 00 00 00       	mov    $0x1,%eax
+  1007ce:	eb 05                	jmp    1007d5 <_ZNK6kernel13VGA_CharactercvbEv+0x33>
+  1007d0:	b8 00 00 00 00       	mov    $0x0,%eax
+  1007d5:	c9                   	leave
+  1007d6:	c3                   	ret
+
+00000000001007d7 <_ZN6kernelL9VGA_INDEXEjj>:
+  1007d7:	55                   	push   %rbp
+  1007d8:	48 89 e5             	mov    %rsp,%rbp
+  1007db:	48 83 ec 08          	sub    $0x8,%rsp
+  1007df:	89 7d fc             	mov    %edi,-0x4(%rbp)
+  1007e2:	89 75 f8             	mov    %esi,-0x8(%rbp)
+  1007e5:	8b 55 f8             	mov    -0x8(%rbp),%edx
+  1007e8:	89 d0                	mov    %edx,%eax
+  1007ea:	c1 e0 02             	shl    $0x2,%eax
+  1007ed:	01 d0                	add    %edx,%eax
+  1007ef:	c1 e0 04             	shl    $0x4,%eax
+  1007f2:	89 c2                	mov    %eax,%edx
+  1007f4:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  1007f7:	01 d0                	add    %edx,%eax
+  1007f9:	c9                   	leave
+  1007fa:	c3                   	ret
+
+00000000001007fb <_ZN6kernelL17getColorAttributeENS_5ColorE>:
+  1007fb:	f3 0f 1e fa          	endbr64
+  1007ff:	55                   	push   %rbp
+  100800:	48 89 e5             	mov    %rsp,%rbp
+  100803:	48 83 ec 08          	sub    $0x8,%rsp
+  100807:	89 f8                	mov    %edi,%eax
+  100809:	88 45 fc             	mov    %al,-0x4(%rbp)
+  10080c:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  100810:	c9                   	leave
+  100811:	c3                   	ret
+
+0000000000100812 <_ZN6kernelL13AdvanceCursorEv>:
+  100812:	f3 0f 1e fa          	endbr64
+  100816:	55                   	push   %rbp
+  100817:	48 89 e5             	mov    %rsp,%rbp
+  10081a:	8b 05 48 3a 00 00    	mov    0x3a48(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100820:	83 c0 01             	add    $0x1,%eax
+  100823:	89 05 3f 3a 00 00    	mov    %eax,0x3a3f(%rip)        # 104268 <_ZN6kernel9cursorColE>
+  100829:	8b 05 3d 3a 00 00    	mov    0x3a3d(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  10082f:	83 f8 18             	cmp    $0x18,%eax
+  100832:	76 0a                	jbe    10083e <_ZN6kernelL13AdvanceCursorEv+0x2c>
+  100834:	c7 05 2e 3a 00 00 18 	movl   $0x18,0x3a2e(%rip)        # 10426c <_ZN6kernel9cursorRowE>
+  10083b:	00 00 00 
+  10083e:	8b 05 24 3a 00 00    	mov    0x3a24(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100844:	83 f8 4f             	cmp    $0x4f,%eax
+  100847:	76 19                	jbe    100862 <_ZN6kernelL13AdvanceCursorEv+0x50>
+  100849:	c7 05 15 3a 00 00 00 	movl   $0x0,0x3a15(%rip)        # 104268 <_ZN6kernel9cursorColE>
+  100850:	00 00 00 
+  100853:	8b 05 13 3a 00 00    	mov    0x3a13(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100859:	83 c0 01             	add    $0x1,%eax
+  10085c:	89 05 0a 3a 00 00    	mov    %eax,0x3a0a(%rip)        # 10426c <_ZN6kernel9cursorRowE>
+  100862:	90                   	nop
+  100863:	5d                   	pop    %rbp
+  100864:	c3                   	ret
+
+0000000000100865 <_ZN6kernelL14MoveBackCursorEv>:
+  100865:	f3 0f 1e fa          	endbr64
+  100869:	55                   	push   %rbp
+  10086a:	48 89 e5             	mov    %rsp,%rbp
+  10086d:	8b 05 f5 39 00 00    	mov    0x39f5(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100873:	85 c0                	test   %eax,%eax
+  100875:	75 25                	jne    10089c <_ZN6kernelL14MoveBackCursorEv+0x37>
+  100877:	8b 05 ef 39 00 00    	mov    0x39ef(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  10087d:	85 c0                	test   %eax,%eax
+  10087f:	74 2c                	je     1008ad <_ZN6kernelL14MoveBackCursorEv+0x48>
+  100881:	c7 05 dd 39 00 00 4f 	movl   $0x4f,0x39dd(%rip)        # 104268 <_ZN6kernel9cursorColE>
+  100888:	00 00 00 
+  10088b:	8b 05 db 39 00 00    	mov    0x39db(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100891:	83 e8 01             	sub    $0x1,%eax
+  100894:	89 05 d2 39 00 00    	mov    %eax,0x39d2(%rip)        # 10426c <_ZN6kernel9cursorRowE>
+  10089a:	eb 12                	jmp    1008ae <_ZN6kernelL14MoveBackCursorEv+0x49>
+  10089c:	8b 05 c6 39 00 00    	mov    0x39c6(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  1008a2:	83 e8 01             	sub    $0x1,%eax
+  1008a5:	89 05 bd 39 00 00    	mov    %eax,0x39bd(%rip)        # 104268 <_ZN6kernel9cursorColE>
+  1008ab:	eb 01                	jmp    1008ae <_ZN6kernelL14MoveBackCursorEv+0x49>
+  1008ad:	90                   	nop
+  1008ae:	5d                   	pop    %rbp
+  1008af:	c3                   	ret
+
+00000000001008b0 <_ZN6kernel12clearConsoleEv>:
+  1008b0:	f3 0f 1e fa          	endbr64
+  1008b4:	55                   	push   %rbp
+  1008b5:	48 89 e5             	mov    %rsp,%rbp
+  1008b8:	53                   	push   %rbx
+  1008b9:	48 83 ec 10          	sub    $0x10,%rsp
+  1008bd:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)
+  1008c4:	eb 28                	jmp    1008ee <_ZN6kernel12clearConsoleEv+0x3e>
+  1008c6:	48 8b 05 33 27 00 00 	mov    0x2733(%rip),%rax        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  1008cd:	8b 55 f4             	mov    -0xc(%rbp),%edx
+  1008d0:	48 63 d2             	movslq %edx,%rdx
+  1008d3:	48 01 d2             	add    %rdx,%rdx
+  1008d6:	48 8d 1c 10          	lea    (%rax,%rdx,1),%rbx
+  1008da:	bf 00 00 00 00       	mov    $0x0,%edi
+  1008df:	e8 17 ff ff ff       	call   1007fb <_ZN6kernelL17getColorAttributeENS_5ColorE>
+  1008e4:	c6 03 00             	movb   $0x0,(%rbx)
+  1008e7:	88 43 01             	mov    %al,0x1(%rbx)
+  1008ea:	83 45 f4 01          	addl   $0x1,-0xc(%rbp)
+  1008ee:	8b 45 f4             	mov    -0xc(%rbp),%eax
+  1008f1:	3d cf 07 00 00       	cmp    $0x7cf,%eax
+  1008f6:	76 ce                	jbe    1008c6 <_ZN6kernel12clearConsoleEv+0x16>
+  1008f8:	90                   	nop
+  1008f9:	90                   	nop
+  1008fa:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+  1008fe:	c9                   	leave
+  1008ff:	c3                   	ret
+
+0000000000100900 <_ZN6kernel8setColorENS_5ColorE>:
+  100900:	f3 0f 1e fa          	endbr64
+  100904:	55                   	push   %rbp
+  100905:	48 89 e5             	mov    %rsp,%rbp
+  100908:	48 83 ec 08          	sub    $0x8,%rsp
+  10090c:	89 f8                	mov    %edi,%eax
+  10090e:	88 45 fc             	mov    %al,-0x4(%rbp)
+  100911:	0f b6 45 fc          	movzbl -0x4(%rbp),%eax
+  100915:	88 05 ed 26 00 00    	mov    %al,0x26ed(%rip)        # 103008 <_ZN6kernel21currentColorAttributeE>
+  10091b:	90                   	nop
+  10091c:	c9                   	leave
+  10091d:	c3                   	ret
+
+000000000010091e <_ZN6kernel11ScopedColorC1ERKNS_5ColorE>:
+  10091e:	f3 0f 1e fa          	endbr64
+  100922:	55                   	push   %rbp
+  100923:	48 89 e5             	mov    %rsp,%rbp
+  100926:	48 83 ec 10          	sub    $0x10,%rsp
+  10092a:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  10092e:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  100932:	0f b6 15 cf 26 00 00 	movzbl 0x26cf(%rip),%edx        # 103008 <_ZN6kernel21currentColorAttributeE>
+  100939:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  10093d:	88 10                	mov    %dl,(%rax)
+  10093f:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  100943:	0f b6 00             	movzbl (%rax),%eax
+  100946:	88 05 bc 26 00 00    	mov    %al,0x26bc(%rip)        # 103008 <_ZN6kernel21currentColorAttributeE>
+  10094c:	90                   	nop
+  10094d:	c9                   	leave
+  10094e:	c3                   	ret
+  10094f:	90                   	nop
+
+0000000000100950 <_ZN6kernel11ScopedColorD1Ev>:
+  100950:	f3 0f 1e fa          	endbr64
+  100954:	55                   	push   %rbp
+  100955:	48 89 e5             	mov    %rsp,%rbp
+  100958:	48 83 ec 08          	sub    $0x8,%rsp
+  10095c:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  100960:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  100964:	0f b6 00             	movzbl (%rax),%eax
+  100967:	88 05 9b 26 00 00    	mov    %al,0x269b(%rip)        # 103008 <_ZN6kernel21currentColorAttributeE>
+  10096d:	90                   	nop
+  10096e:	c9                   	leave
+  10096f:	c3                   	ret
+
+0000000000100970 <_ZN6kernel6printfEc>:
+  100970:	f3 0f 1e fa          	endbr64
+  100974:	55                   	push   %rbp
+  100975:	48 89 e5             	mov    %rsp,%rbp
+  100978:	53                   	push   %rbx
+  100979:	48 83 ec 18          	sub    $0x18,%rsp
+  10097d:	89 f8                	mov    %edi,%eax
+  10097f:	88 45 ec             	mov    %al,-0x14(%rbp)
+  100982:	80 7d ec 00          	cmpb   $0x0,-0x14(%rbp)
+  100986:	0f 84 ba 00 00 00    	je     100a46 <_ZN6kernel6printfEc+0xd6>
+  10098c:	80 7d ec 08          	cmpb   $0x8,-0x14(%rbp)
+  100990:	75 0a                	jne    10099c <_ZN6kernel6printfEc+0x2c>
+  100992:	e8 8c 02 00 00       	call   100c23 <_ZN6kernel9backSpaceEv>
+  100997:	e9 ab 00 00 00       	jmp    100a47 <_ZN6kernel6printfEc+0xd7>
+  10099c:	80 7d ec 09          	cmpb   $0x9,-0x14(%rbp)
+  1009a0:	75 14                	jne    1009b6 <_ZN6kernel6printfEc+0x46>
+  1009a2:	48 8d 05 bb 19 00 00 	lea    0x19bb(%rip),%rax        # 102364 <_ZN6kernelL8MAX_ROWSE+0x4>
+  1009a9:	48 89 c7             	mov    %rax,%rdi
+  1009ac:	e8 9c 00 00 00       	call   100a4d <_ZN6kernel6printfEPKc>
+  1009b1:	e9 91 00 00 00       	jmp    100a47 <_ZN6kernel6printfEc+0xd7>
+  1009b6:	80 7d ec 0a          	cmpb   $0xa,-0x14(%rbp)
+  1009ba:	75 46                	jne    100a02 <_ZN6kernel6printfEc+0x92>
+  1009bc:	48 8b 1d 3d 26 00 00 	mov    0x263d(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  1009c3:	8b 05 a3 38 00 00    	mov    0x38a3(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  1009c9:	89 c2                	mov    %eax,%edx
+  1009cb:	8b 05 97 38 00 00    	mov    0x3897(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  1009d1:	89 d6                	mov    %edx,%esi
+  1009d3:	89 c7                	mov    %eax,%edi
+  1009d5:	e8 fd fd ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  1009da:	89 c0                	mov    %eax,%eax
+  1009dc:	48 01 c0             	add    %rax,%rax
+  1009df:	48 01 d8             	add    %rbx,%rax
+  1009e2:	66 c7 00 00 00       	movw   $0x0,(%rax)
+  1009e7:	8b 05 7f 38 00 00    	mov    0x387f(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  1009ed:	83 c0 01             	add    $0x1,%eax
+  1009f0:	89 05 76 38 00 00    	mov    %eax,0x3876(%rip)        # 10426c <_ZN6kernel9cursorRowE>
+  1009f6:	c7 05 68 38 00 00 00 	movl   $0x0,0x3868(%rip)        # 104268 <_ZN6kernel9cursorColE>
+  1009fd:	00 00 00 
+  100a00:	eb 45                	jmp    100a47 <_ZN6kernel6printfEc+0xd7>
+  100a02:	48 8b 1d f7 25 00 00 	mov    0x25f7(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  100a09:	8b 05 5d 38 00 00    	mov    0x385d(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100a0f:	89 c2                	mov    %eax,%edx
+  100a11:	8b 05 51 38 00 00    	mov    0x3851(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100a17:	89 d6                	mov    %edx,%esi
+  100a19:	89 c7                	mov    %eax,%edi
+  100a1b:	e8 b7 fd ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  100a20:	89 c0                	mov    %eax,%eax
+  100a22:	48 01 c0             	add    %rax,%rax
+  100a25:	48 01 c3             	add    %rax,%rbx
+  100a28:	0f b6 05 d9 25 00 00 	movzbl 0x25d9(%rip),%eax        # 103008 <_ZN6kernel21currentColorAttributeE>
+  100a2f:	89 c7                	mov    %eax,%edi
+  100a31:	e8 c5 fd ff ff       	call   1007fb <_ZN6kernelL17getColorAttributeENS_5ColorE>
+  100a36:	0f b6 55 ec          	movzbl -0x14(%rbp),%edx
+  100a3a:	88 13                	mov    %dl,(%rbx)
+  100a3c:	88 43 01             	mov    %al,0x1(%rbx)
+  100a3f:	e8 ce fd ff ff       	call   100812 <_ZN6kernelL13AdvanceCursorEv>
+  100a44:	eb 01                	jmp    100a47 <_ZN6kernel6printfEc+0xd7>
+  100a46:	90                   	nop
+  100a47:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+  100a4b:	c9                   	leave
+  100a4c:	c3                   	ret
+
+0000000000100a4d <_ZN6kernel6printfEPKc>:
+  100a4d:	f3 0f 1e fa          	endbr64
+  100a51:	55                   	push   %rbp
+  100a52:	48 89 e5             	mov    %rsp,%rbp
+  100a55:	48 83 ec 10          	sub    $0x10,%rsp
+  100a59:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  100a5d:	eb 16                	jmp    100a75 <_ZN6kernel6printfEPKc+0x28>
+  100a5f:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  100a63:	0f b6 00             	movzbl (%rax),%eax
+  100a66:	0f be c0             	movsbl %al,%eax
+  100a69:	89 c7                	mov    %eax,%edi
+  100a6b:	e8 00 ff ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100a70:	48 83 45 f8 01       	addq   $0x1,-0x8(%rbp)
+  100a75:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  100a79:	0f b6 00             	movzbl (%rax),%eax
+  100a7c:	84 c0                	test   %al,%al
+  100a7e:	75 df                	jne    100a5f <_ZN6kernel6printfEPKc+0x12>
+  100a80:	90                   	nop
+  100a81:	90                   	nop
+  100a82:	c9                   	leave
+  100a83:	c3                   	ret
+
+0000000000100a84 <_ZN6kernel6printfEj>:
+  100a84:	f3 0f 1e fa          	endbr64
+  100a88:	55                   	push   %rbp
+  100a89:	48 89 e5             	mov    %rsp,%rbp
+  100a8c:	48 83 ec 20          	sub    $0x20,%rsp
+  100a90:	89 7d ec             	mov    %edi,-0x14(%rbp)
+  100a93:	83 7d ec 00          	cmpl   $0x0,-0x14(%rbp)
+  100a97:	75 0f                	jne    100aa8 <_ZN6kernel6printfEj+0x24>
+  100a99:	bf 30 00 00 00       	mov    $0x30,%edi
+  100a9e:	e8 cd fe ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100aa3:	e9 81 00 00 00       	jmp    100b29 <_ZN6kernel6printfEj+0xa5>
+  100aa8:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+  100aaf:	eb 52                	jmp    100b03 <_ZN6kernel6printfEj+0x7f>
+  100ab1:	8b 4d ec             	mov    -0x14(%rbp),%ecx
+  100ab4:	89 ca                	mov    %ecx,%edx
+  100ab6:	b8 cd cc cc cc       	mov    $0xcccccccd,%eax
+  100abb:	48 0f af c2          	imul   %rdx,%rax
+  100abf:	48 c1 e8 20          	shr    $0x20,%rax
+  100ac3:	89 c2                	mov    %eax,%edx
+  100ac5:	c1 ea 03             	shr    $0x3,%edx
+  100ac8:	89 d0                	mov    %edx,%eax
+  100aca:	c1 e0 02             	shl    $0x2,%eax
+  100acd:	01 d0                	add    %edx,%eax
+  100acf:	01 c0                	add    %eax,%eax
+  100ad1:	29 c1                	sub    %eax,%ecx
+  100ad3:	89 ca                	mov    %ecx,%edx
+  100ad5:	89 d0                	mov    %edx,%eax
+  100ad7:	83 c0 30             	add    $0x30,%eax
+  100ada:	89 c1                	mov    %eax,%ecx
+  100adc:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100adf:	8d 50 01             	lea    0x1(%rax),%edx
+  100ae2:	89 55 fc             	mov    %edx,-0x4(%rbp)
+  100ae5:	48 98                	cltq
+  100ae7:	88 4c 05 f2          	mov    %cl,-0xe(%rbp,%rax,1)
+  100aeb:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  100aee:	89 c2                	mov    %eax,%edx
+  100af0:	b8 cd cc cc cc       	mov    $0xcccccccd,%eax
+  100af5:	48 0f af c2          	imul   %rdx,%rax
+  100af9:	48 c1 e8 20          	shr    $0x20,%rax
+  100afd:	c1 e8 03             	shr    $0x3,%eax
+  100b00:	89 45 ec             	mov    %eax,-0x14(%rbp)
+  100b03:	83 7d ec 00          	cmpl   $0x0,-0x14(%rbp)
+  100b07:	75 a8                	jne    100ab1 <_ZN6kernel6printfEj+0x2d>
+  100b09:	eb 18                	jmp    100b23 <_ZN6kernel6printfEj+0x9f>
+  100b0b:	83 6d fc 01          	subl   $0x1,-0x4(%rbp)
+  100b0f:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100b12:	48 98                	cltq
+  100b14:	0f b6 44 05 f2       	movzbl -0xe(%rbp,%rax,1),%eax
+  100b19:	0f be c0             	movsbl %al,%eax
+  100b1c:	89 c7                	mov    %eax,%edi
+  100b1e:	e8 4d fe ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100b23:	83 7d fc 00          	cmpl   $0x0,-0x4(%rbp)
+  100b27:	7f e2                	jg     100b0b <_ZN6kernel6printfEj+0x87>
+  100b29:	c9                   	leave
+  100b2a:	c3                   	ret
+
+0000000000100b2b <_ZN6kernel6printfEt>:
+  100b2b:	f3 0f 1e fa          	endbr64
+  100b2f:	55                   	push   %rbp
+  100b30:	48 89 e5             	mov    %rsp,%rbp
+  100b33:	48 83 ec 10          	sub    $0x10,%rsp
+  100b37:	89 f8                	mov    %edi,%eax
+  100b39:	66 89 45 fc          	mov    %ax,-0x4(%rbp)
+  100b3d:	0f b7 45 fc          	movzwl -0x4(%rbp),%eax
+  100b41:	89 c7                	mov    %eax,%edi
+  100b43:	e8 3c ff ff ff       	call   100a84 <_ZN6kernel6printfEj>
+  100b48:	90                   	nop
+  100b49:	c9                   	leave
+  100b4a:	c3                   	ret
+
+0000000000100b4b <_ZN6kernel6printfEi>:
+  100b4b:	f3 0f 1e fa          	endbr64
+  100b4f:	55                   	push   %rbp
+  100b50:	48 89 e5             	mov    %rsp,%rbp
+  100b53:	48 83 ec 10          	sub    $0x10,%rsp
+  100b57:	89 7d fc             	mov    %edi,-0x4(%rbp)
+  100b5a:	83 7d fc 00          	cmpl   $0x0,-0x4(%rbp)
+  100b5e:	79 12                	jns    100b72 <_ZN6kernel6printfEi+0x27>
+  100b60:	48 8d 05 02 18 00 00 	lea    0x1802(%rip),%rax        # 102369 <_ZN6kernelL8MAX_ROWSE+0x9>
+  100b67:	48 89 c7             	mov    %rax,%rdi
+  100b6a:	e8 de fe ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100b6f:	f7 5d fc             	negl   -0x4(%rbp)
+  100b72:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100b75:	89 c7                	mov    %eax,%edi
+  100b77:	e8 08 ff ff ff       	call   100a84 <_ZN6kernel6printfEj>
+  100b7c:	90                   	nop
+  100b7d:	c9                   	leave
+  100b7e:	c3                   	ret
+
+0000000000100b7f <_ZN6kernel9printfHexEm>:
+  100b7f:	f3 0f 1e fa          	endbr64
+  100b83:	55                   	push   %rbp
+  100b84:	48 89 e5             	mov    %rsp,%rbp
+  100b87:	48 83 ec 30          	sub    $0x30,%rsp
+  100b8b:	48 89 7d d8          	mov    %rdi,-0x28(%rbp)
+  100b8f:	c7 45 fc 0f 00 00 00 	movl   $0xf,-0x4(%rbp)
+  100b96:	eb 46                	jmp    100bde <_ZN6kernel9printfHexEm+0x5f>
+  100b98:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  100b9b:	c1 e0 02             	shl    $0x2,%eax
+  100b9e:	48 8b 55 d8          	mov    -0x28(%rbp),%rdx
+  100ba2:	89 c1                	mov    %eax,%ecx
+  100ba4:	48 d3 ea             	shr    %cl,%rdx
+  100ba7:	48 89 d0             	mov    %rdx,%rax
+  100baa:	83 e0 0f             	and    $0xf,%eax
+  100bad:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  100bb1:	48 83 7d f0 09       	cmpq   $0x9,-0x10(%rbp)
+  100bb6:	77 0b                	ja     100bc3 <_ZN6kernel9printfHexEm+0x44>
+  100bb8:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  100bbc:	83 c0 30             	add    $0x30,%eax
+  100bbf:	89 c2                	mov    %eax,%edx
+  100bc1:	eb 09                	jmp    100bcc <_ZN6kernel9printfHexEm+0x4d>
+  100bc3:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  100bc7:	83 c0 37             	add    $0x37,%eax
+  100bca:	89 c2                	mov    %eax,%edx
+  100bcc:	b8 0f 00 00 00       	mov    $0xf,%eax
+  100bd1:	2b 45 fc             	sub    -0x4(%rbp),%eax
+  100bd4:	48 98                	cltq
+  100bd6:	88 54 05 e0          	mov    %dl,-0x20(%rbp,%rax,1)
+  100bda:	83 6d fc 01          	subl   $0x1,-0x4(%rbp)
+  100bde:	83 7d fc 00          	cmpl   $0x0,-0x4(%rbp)
+  100be2:	79 b4                	jns    100b98 <_ZN6kernel9printfHexEm+0x19>
+  100be4:	bf 30 00 00 00       	mov    $0x30,%edi
+  100be9:	e8 82 fd ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100bee:	bf 78 00 00 00       	mov    $0x78,%edi
+  100bf3:	e8 78 fd ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100bf8:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
+  100bff:	eb 18                	jmp    100c19 <_ZN6kernel9printfHexEm+0x9a>
+  100c01:	8b 45 f8             	mov    -0x8(%rbp),%eax
+  100c04:	48 98                	cltq
+  100c06:	0f b6 44 05 e0       	movzbl -0x20(%rbp,%rax,1),%eax
+  100c0b:	0f be c0             	movsbl %al,%eax
+  100c0e:	89 c7                	mov    %eax,%edi
+  100c10:	e8 5b fd ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100c15:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
+  100c19:	83 7d f8 0f          	cmpl   $0xf,-0x8(%rbp)
+  100c1d:	7e e2                	jle    100c01 <_ZN6kernel9printfHexEm+0x82>
+  100c1f:	90                   	nop
+  100c20:	90                   	nop
+  100c21:	c9                   	leave
+  100c22:	c3                   	ret
+
+0000000000100c23 <_ZN6kernel9backSpaceEv>:
+  100c23:	f3 0f 1e fa          	endbr64
+  100c27:	55                   	push   %rbp
+  100c28:	48 89 e5             	mov    %rsp,%rbp
+  100c2b:	53                   	push   %rbx
+  100c2c:	48 83 ec 08          	sub    $0x8,%rsp
+  100c30:	48 8b 1d c9 23 00 00 	mov    0x23c9(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  100c37:	8b 05 2f 36 00 00    	mov    0x362f(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100c3d:	89 c2                	mov    %eax,%edx
+  100c3f:	8b 05 23 36 00 00    	mov    0x3623(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100c45:	89 d6                	mov    %edx,%esi
+  100c47:	89 c7                	mov    %eax,%edi
+  100c49:	e8 89 fb ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  100c4e:	89 c0                	mov    %eax,%eax
+  100c50:	48 01 c0             	add    %rax,%rax
+  100c53:	48 01 d8             	add    %rbx,%rax
+  100c56:	66 c7 00 00 00       	movw   $0x0,(%rax)
+  100c5b:	e8 05 fc ff ff       	call   100865 <_ZN6kernelL14MoveBackCursorEv>
+  100c60:	e8 e7 00 00 00       	call   100d4c <_ZN6kernel10cursorTickEv>
+  100c65:	90                   	nop
+  100c66:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+  100c6a:	c9                   	leave
+  100c6b:	c3                   	ret
+
+0000000000100c6c <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE>:
+  100c6c:	f3 0f 1e fa          	endbr64
+  100c70:	55                   	push   %rbp
+  100c71:	48 89 e5             	mov    %rsp,%rbp
+  100c74:	53                   	push   %rbx
+  100c75:	48 83 ec 18          	sub    $0x18,%rsp
+  100c79:	89 f8                	mov    %edi,%eax
+  100c7b:	88 45 ec             	mov    %al,-0x14(%rbp)
+  100c7e:	48 8b 1d 7b 23 00 00 	mov    0x237b(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  100c85:	8b 05 e1 35 00 00    	mov    0x35e1(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100c8b:	89 c2                	mov    %eax,%edx
+  100c8d:	8b 05 d5 35 00 00    	mov    0x35d5(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100c93:	89 d6                	mov    %edx,%esi
+  100c95:	89 c7                	mov    %eax,%edi
+  100c97:	e8 3b fb ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  100c9c:	89 c0                	mov    %eax,%eax
+  100c9e:	48 01 c0             	add    %rax,%rax
+  100ca1:	48 8d 14 03          	lea    (%rbx,%rax,1),%rdx
+  100ca5:	0f b7 05 c4 35 00 00 	movzwl 0x35c4(%rip),%eax        # 104270 <_ZN6kernel11hoveredCharE>
+  100cac:	66 89 02             	mov    %ax,(%rdx)
+  100caf:	80 7d ec 00          	cmpb   $0x0,-0x14(%rbp)
+  100cb3:	75 07                	jne    100cbc <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE+0x50>
+  100cb5:	e8 ab fb ff ff       	call   100865 <_ZN6kernelL14MoveBackCursorEv>
+  100cba:	eb 37                	jmp    100cf3 <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE+0x87>
+  100cbc:	48 8b 1d 3d 23 00 00 	mov    0x233d(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  100cc3:	8b 05 a3 35 00 00    	mov    0x35a3(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100cc9:	89 c2                	mov    %eax,%edx
+  100ccb:	8b 05 97 35 00 00    	mov    0x3597(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100cd1:	89 d6                	mov    %edx,%esi
+  100cd3:	89 c7                	mov    %eax,%edi
+  100cd5:	e8 fd fa ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  100cda:	89 c0                	mov    %eax,%eax
+  100cdc:	48 01 c0             	add    %rax,%rax
+  100cdf:	48 01 d8             	add    %rbx,%rax
+  100ce2:	48 89 c7             	mov    %rax,%rdi
+  100ce5:	e8 b8 fa ff ff       	call   1007a2 <_ZNK6kernel13VGA_CharactercvbEv>
+  100cea:	84 c0                	test   %al,%al
+  100cec:	74 05                	je     100cf3 <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE+0x87>
+  100cee:	e8 1f fb ff ff       	call   100812 <_ZN6kernelL13AdvanceCursorEv>
+  100cf3:	48 8d 05 76 35 00 00 	lea    0x3576(%rip),%rax        # 104270 <_ZN6kernel11hoveredCharE>
+  100cfa:	48 89 c7             	mov    %rax,%rdi
+  100cfd:	e8 a0 fa ff ff       	call   1007a2 <_ZNK6kernel13VGA_CharactercvbEv>
+  100d02:	84 c0                	test   %al,%al
+  100d04:	74 0a                	je     100d10 <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE+0xa4>
+  100d06:	e8 5a fb ff ff       	call   100865 <_ZN6kernelL14MoveBackCursorEv>
+  100d0b:	e8 02 fb ff ff       	call   100812 <_ZN6kernelL13AdvanceCursorEv>
+  100d10:	48 8b 1d e9 22 00 00 	mov    0x22e9(%rip),%rbx        # 103000 <_ZN6kernel10VGA_MEMORYE>
+  100d17:	8b 05 4f 35 00 00    	mov    0x354f(%rip),%eax        # 10426c <_ZN6kernel9cursorRowE>
+  100d1d:	89 c2                	mov    %eax,%edx
+  100d1f:	8b 05 43 35 00 00    	mov    0x3543(%rip),%eax        # 104268 <_ZN6kernel9cursorColE>
+  100d25:	89 d6                	mov    %edx,%esi
+  100d27:	89 c7                	mov    %eax,%edi
+  100d29:	e8 a9 fa ff ff       	call   1007d7 <_ZN6kernelL9VGA_INDEXEjj>
+  100d2e:	89 c0                	mov    %eax,%eax
+  100d30:	48 01 c0             	add    %rax,%rax
+  100d33:	48 01 d8             	add    %rbx,%rax
+  100d36:	0f b7 00             	movzwl (%rax),%eax
+  100d39:	66 89 05 30 35 00 00 	mov    %ax,0x3530(%rip)        # 104270 <_ZN6kernel11hoveredCharE>
+  100d40:	e8 07 00 00 00       	call   100d4c <_ZN6kernel10cursorTickEv>
+  100d45:	90                   	nop
+  100d46:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+  100d4a:	c9                   	leave
+  100d4b:	c3                   	ret
+
+0000000000100d4c <_ZN6kernel10cursorTickEv>:
+  100d4c:	f3 0f 1e fa          	endbr64
+  100d50:	55                   	push   %rbp
+  100d51:	48 89 e5             	mov    %rsp,%rbp
+  100d54:	48 83 ec 20          	sub    $0x20,%rsp
+  100d58:	48 c7 45 f8 04 00 00 	movq   $0x4,-0x8(%rbp)
+  100d5f:	00 
+  100d60:	48 c7 45 f0 fa 00 00 	movq   $0xfa,-0x10(%rbp)
+  100d67:	00 
+  100d68:	e8 9c 09 00 00       	call   101709 <_ZN6kernel14getCurrentTickEv>
+  100d6d:	48 89 45 e8          	mov    %rax,-0x18(%rbp)
+  100d71:	48 8b 05 00 35 00 00 	mov    0x3500(%rip),%rax        # 104278 <_ZN6kernel9lastBlinkE>
+  100d78:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  100d7c:	48 29 c2             	sub    %rax,%rdx
+  100d7f:	48 81 fa f9 00 00 00 	cmp    $0xf9,%rdx
+  100d86:	76 43                	jbe    100dcb <_ZN6kernel10cursorTickEv+0x7f>
+  100d88:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  100d8c:	48 89 05 e5 34 00 00 	mov    %rax,0x34e5(%rip)        # 104278 <_ZN6kernel9lastBlinkE>
+  100d93:	0f b6 05 e6 34 00 00 	movzbl 0x34e6(%rip),%eax        # 104280 <_ZN6kernel5shownE>
+  100d9a:	84 c0                	test   %al,%al
+  100d9c:	74 0c                	je     100daa <_ZN6kernel10cursorTickEv+0x5e>
+  100d9e:	bf 20 00 00 00       	mov    $0x20,%edi
+  100da3:	e8 c8 fb ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100da8:	eb 0a                	jmp    100db4 <_ZN6kernel10cursorTickEv+0x68>
+  100daa:	bf 5f 00 00 00       	mov    $0x5f,%edi
+  100daf:	e8 bc fb ff ff       	call   100970 <_ZN6kernel6printfEc>
+  100db4:	e8 ac fa ff ff       	call   100865 <_ZN6kernelL14MoveBackCursorEv>
+  100db9:	0f b6 05 c0 34 00 00 	movzbl 0x34c0(%rip),%eax        # 104280 <_ZN6kernel5shownE>
+  100dc0:	83 f0 01             	xor    $0x1,%eax
+  100dc3:	88 05 b7 34 00 00    	mov    %al,0x34b7(%rip)        # 104280 <_ZN6kernel5shownE>
+  100dc9:	eb 01                	jmp    100dcc <_ZN6kernel10cursorTickEv+0x80>
+  100dcb:	90                   	nop
+  100dcc:	c9                   	leave
+  100dcd:	c3                   	ret
+
+0000000000100dce <isr_handler>:
+  100dce:	f3 0f 1e fa          	endbr64
+  100dd2:	55                   	push   %rbp
+  100dd3:	48 89 e5             	mov    %rsp,%rbp
+  100dd6:	48 83 ec 40          	sub    $0x40,%rsp
+  100dda:	48 89 7d c8          	mov    %rdi,-0x38(%rbp)
+  100dde:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100de2:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100de6:	48 3d 80 00 00 00    	cmp    $0x80,%rax
+  100dec:	75 21                	jne    100e0f <isr_handler+0x41>
+  100dee:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100df2:	48 89 c7             	mov    %rax,%rdi
+  100df5:	e8 5f f9 ff ff       	call   100759 <_Z14handle_syscallRK17interrupt_frame_t>
+  100dfa:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+  100dfe:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100e02:	48 8b 55 e0          	mov    -0x20(%rbp),%rdx
+  100e06:	48 89 50 70          	mov    %rdx,0x70(%rax)
+  100e0a:	e9 1d 02 00 00       	jmp    10102c <isr_handler+0x25e>
+  100e0f:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100e13:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100e17:	48 83 f8 1f          	cmp    $0x1f,%rax
+  100e1b:	76 60                	jbe    100e7d <isr_handler+0xaf>
+  100e1d:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100e21:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100e25:	83 e8 20             	sub    $0x20,%eax
+  100e28:	88 45 ef             	mov    %al,-0x11(%rbp)
+  100e2b:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  100e2f:	74 08                	je     100e39 <isr_handler+0x6b>
+  100e31:	80 7d ef 01          	cmpb   $0x1,-0x11(%rbp)
+  100e35:	74 09                	je     100e40 <isr_handler+0x72>
+  100e37:	eb 0e                	jmp    100e47 <isr_handler+0x79>
+  100e39:	e8 dc 08 00 00       	call   10171a <_ZN6kernel9timerTickEv>
+  100e3e:	eb 2d                	jmp    100e6d <isr_handler+0x9f>
+  100e40:	e8 0b f6 ff ff       	call   100450 <_ZN6kernel17HandleKeyBoardIRQEv>
+  100e45:	eb 26                	jmp    100e6d <isr_handler+0x9f>
+  100e47:	c6 45 db 0a          	movb   $0xa,-0x25(%rbp)
+  100e4b:	0f b6 45 ef          	movzbl -0x11(%rbp),%eax
+  100e4f:	89 45 dc             	mov    %eax,-0x24(%rbp)
+  100e52:	48 8d 55 db          	lea    -0x25(%rbp),%rdx
+  100e56:	48 8d 45 dc          	lea    -0x24(%rbp),%rax
+  100e5a:	48 89 c6             	mov    %rax,%rsi
+  100e5d:	48 8d 05 2f 16 00 00 	lea    0x162f(%rip),%rax        # 102493 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x11b>
+  100e64:	48 89 c7             	mov    %rax,%rdi
+  100e67:	e8 80 06 00 00       	call   1014ec <_ZN6kernel6printfIA14_cJjcEEEvRKT_DpRKT0_>
+  100e6c:	90                   	nop
+  100e6d:	0f b6 45 ef          	movzbl -0x11(%rbp),%eax
+  100e71:	89 c7                	mov    %eax,%edi
+  100e73:	e8 28 11 00 00       	call   101fa0 <_Z7pic_eoih>
+  100e78:	e9 af 01 00 00       	jmp    10102c <isr_handler+0x25e>
+  100e7d:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100e81:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100e85:	48 83 f8 13          	cmp    $0x13,%rax
+  100e89:	77 1d                	ja     100ea8 <isr_handler+0xda>
+  100e8b:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100e8f:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100e93:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  100e9a:	00 
+  100e9b:	48 8d 05 be 21 00 00 	lea    0x21be(%rip),%rax        # 103060 <_ZL15exception_names>
+  100ea2:	48 8b 04 02          	mov    (%rdx,%rax,1),%rax
+  100ea6:	eb 07                	jmp    100eaf <isr_handler+0xe1>
+  100ea8:	48 8d 05 f2 15 00 00 	lea    0x15f2(%rip),%rax        # 1024a1 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x129>
+  100eaf:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  100eb3:	48 8d 05 ef 15 00 00 	lea    0x15ef(%rip),%rax        # 1024a9 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x131>
+  100eba:	48 89 c7             	mov    %rax,%rdi
+  100ebd:	e8 8b fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100ec2:	48 8d 05 f4 15 00 00 	lea    0x15f4(%rip),%rax        # 1024bd <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x145>
+  100ec9:	48 89 c7             	mov    %rax,%rdi
+  100ecc:	e8 7c fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100ed1:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100ed5:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100ed9:	48 89 c7             	mov    %rax,%rdi
+  100edc:	e8 9e fc ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100ee1:	48 8d 05 de 15 00 00 	lea    0x15de(%rip),%rax        # 1024c6 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x14e>
+  100ee8:	48 89 c7             	mov    %rax,%rdi
+  100eeb:	e8 5d fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100ef0:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  100ef4:	48 89 c7             	mov    %rax,%rdi
+  100ef7:	e8 51 fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100efc:	48 8d 05 c6 15 00 00 	lea    0x15c6(%rip),%rax        # 1024c9 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x151>
+  100f03:	48 89 c7             	mov    %rax,%rdi
+  100f06:	e8 42 fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f0b:	48 8d 05 ba 15 00 00 	lea    0x15ba(%rip),%rax        # 1024cc <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x154>
+  100f12:	48 89 c7             	mov    %rax,%rdi
+  100f15:	e8 33 fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f1a:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100f1e:	48 8b 80 80 00 00 00 	mov    0x80(%rax),%rax
+  100f25:	48 89 c7             	mov    %rax,%rdi
+  100f28:	e8 52 fc ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100f2d:	48 8d 05 a1 15 00 00 	lea    0x15a1(%rip),%rax        # 1024d5 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15d>
+  100f34:	48 89 c7             	mov    %rax,%rdi
+  100f37:	e8 11 fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f3c:	48 8d 05 94 15 00 00 	lea    0x1594(%rip),%rax        # 1024d7 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15f>
+  100f43:	48 89 c7             	mov    %rax,%rdi
+  100f46:	e8 02 fb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f4b:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100f4f:	48 8b 80 88 00 00 00 	mov    0x88(%rax),%rax
+  100f56:	48 89 c7             	mov    %rax,%rdi
+  100f59:	e8 21 fc ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100f5e:	48 8d 05 70 15 00 00 	lea    0x1570(%rip),%rax        # 1024d5 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15d>
+  100f65:	48 89 c7             	mov    %rax,%rdi
+  100f68:	e8 e0 fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f6d:	48 8d 05 6c 15 00 00 	lea    0x156c(%rip),%rax        # 1024e0 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x168>
+  100f74:	48 89 c7             	mov    %rax,%rdi
+  100f77:	e8 d1 fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f7c:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100f80:	48 8b 80 a0 00 00 00 	mov    0xa0(%rax),%rax
+  100f87:	48 89 c7             	mov    %rax,%rdi
+  100f8a:	e8 f0 fb ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100f8f:	48 8d 05 3f 15 00 00 	lea    0x153f(%rip),%rax        # 1024d5 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15d>
+  100f96:	48 89 c7             	mov    %rax,%rdi
+  100f99:	e8 af fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100f9e:	48 8d 05 44 15 00 00 	lea    0x1544(%rip),%rax        # 1024e9 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x171>
+  100fa5:	48 89 c7             	mov    %rax,%rdi
+  100fa8:	e8 a0 fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100fad:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100fb1:	48 8b 80 90 00 00 00 	mov    0x90(%rax),%rax
+  100fb8:	48 89 c7             	mov    %rax,%rdi
+  100fbb:	e8 bf fb ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100fc0:	48 8d 05 0e 15 00 00 	lea    0x150e(%rip),%rax        # 1024d5 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15d>
+  100fc7:	48 89 c7             	mov    %rax,%rdi
+  100fca:	e8 7e fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100fcf:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  100fd3:	48 8b 40 78          	mov    0x78(%rax),%rax
+  100fd7:	48 83 f8 0e          	cmp    $0xe,%rax
+  100fdb:	75 31                	jne    10100e <isr_handler+0x240>
+  100fdd:	0f 20 d0             	mov    %cr2,%rax
+  100fe0:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  100fe4:	48 8d 05 07 15 00 00 	lea    0x1507(%rip),%rax        # 1024f2 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x17a>
+  100feb:	48 89 c7             	mov    %rax,%rdi
+  100fee:	e8 5a fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  100ff3:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  100ff7:	48 89 c7             	mov    %rax,%rdi
+  100ffa:	e8 80 fb ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  100fff:	48 8d 05 cf 14 00 00 	lea    0x14cf(%rip),%rax        # 1024d5 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x15d>
+  101006:	48 89 c7             	mov    %rax,%rdi
+  101009:	e8 3f fa ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  10100e:	ba 68 00 00 00       	mov    $0x68,%edx
+  101013:	48 8d 05 e6 14 00 00 	lea    0x14e6(%rip),%rax        # 102500 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x188>
+  10101a:	48 89 c6             	mov    %rax,%rsi
+  10101d:	48 8d 05 0f 15 00 00 	lea    0x150f(%rip),%rax        # 102533 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1bb>
+  101024:	48 89 c7             	mov    %rax,%rdi
+  101027:	e8 4a 05 00 00       	call   101576 <_ZN6kernel5panicEPKcS1_i>
+  10102c:	c9                   	leave
+  10102d:	c3                   	ret
+
+000000000010102e <_Z7idt_sethPvh>:
+  10102e:	f3 0f 1e fa          	endbr64
+  101032:	55                   	push   %rbp
+  101033:	48 89 e5             	mov    %rsp,%rbp
+  101036:	48 83 ec 20          	sub    $0x20,%rsp
+  10103a:	89 f9                	mov    %edi,%ecx
+  10103c:	48 89 75 e0          	mov    %rsi,-0x20(%rbp)
+  101040:	89 d0                	mov    %edx,%eax
+  101042:	89 ca                	mov    %ecx,%edx
+  101044:	88 55 ec             	mov    %dl,-0x14(%rbp)
+  101047:	88 45 e8             	mov    %al,-0x18(%rbp)
+  10104a:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+  10104e:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  101052:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  101056:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+  10105a:	89 d1                	mov    %edx,%ecx
+  10105c:	48 98                	cltq
+  10105e:	48 c1 e0 04          	shl    $0x4,%rax
+  101062:	48 89 c2             	mov    %rax,%rdx
+  101065:	48 8d 05 34 32 00 00 	lea    0x3234(%rip),%rax        # 1042a0 <idt>
+  10106c:	66 89 0c 02          	mov    %cx,(%rdx,%rax,1)
+  101070:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101074:	48 c1 e8 10          	shr    $0x10,%rax
+  101078:	48 89 c2             	mov    %rax,%rdx
+  10107b:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  10107f:	89 d1                	mov    %edx,%ecx
+  101081:	48 98                	cltq
+  101083:	48 c1 e0 04          	shl    $0x4,%rax
+  101087:	48 89 c2             	mov    %rax,%rdx
+  10108a:	48 8d 05 15 32 00 00 	lea    0x3215(%rip),%rax        # 1042a6 <idt+0x6>
+  101091:	66 89 0c 02          	mov    %cx,(%rdx,%rax,1)
+  101095:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101099:	48 c1 e8 20          	shr    $0x20,%rax
+  10109d:	48 89 c2             	mov    %rax,%rdx
+  1010a0:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  1010a4:	89 d1                	mov    %edx,%ecx
+  1010a6:	48 98                	cltq
+  1010a8:	48 c1 e0 04          	shl    $0x4,%rax
+  1010ac:	48 89 c2             	mov    %rax,%rdx
+  1010af:	48 8d 05 f2 31 00 00 	lea    0x31f2(%rip),%rax        # 1042a8 <idt+0x8>
+  1010b6:	89 0c 02             	mov    %ecx,(%rdx,%rax,1)
+  1010b9:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  1010bd:	48 98                	cltq
+  1010bf:	48 c1 e0 04          	shl    $0x4,%rax
+  1010c3:	48 89 c2             	mov    %rax,%rdx
+  1010c6:	48 8d 05 d5 31 00 00 	lea    0x31d5(%rip),%rax        # 1042a2 <idt+0x2>
+  1010cd:	66 c7 04 02 08 00    	movw   $0x8,(%rdx,%rax,1)
+  1010d3:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  1010d7:	48 98                	cltq
+  1010d9:	48 c1 e0 04          	shl    $0x4,%rax
+  1010dd:	48 89 c2             	mov    %rax,%rdx
+  1010e0:	48 8d 05 bd 31 00 00 	lea    0x31bd(%rip),%rax        # 1042a4 <idt+0x4>
+  1010e7:	c6 04 02 00          	movb   $0x0,(%rdx,%rax,1)
+  1010eb:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  1010ef:	48 98                	cltq
+  1010f1:	48 c1 e0 04          	shl    $0x4,%rax
+  1010f5:	48 89 c1             	mov    %rax,%rcx
+  1010f8:	48 8d 15 a6 31 00 00 	lea    0x31a6(%rip),%rdx        # 1042a5 <idt+0x5>
+  1010ff:	0f b6 45 e8          	movzbl -0x18(%rbp),%eax
+  101103:	88 04 11             	mov    %al,(%rcx,%rdx,1)
+  101106:	0f b6 45 ec          	movzbl -0x14(%rbp),%eax
+  10110a:	48 98                	cltq
+  10110c:	48 c1 e0 04          	shl    $0x4,%rax
+  101110:	48 89 c2             	mov    %rax,%rdx
+  101113:	48 8d 05 92 31 00 00 	lea    0x3192(%rip),%rax        # 1042ac <idt+0xc>
+  10111a:	c7 04 02 00 00 00 00 	movl   $0x0,(%rdx,%rax,1)
+  101121:	90                   	nop
+  101122:	c9                   	leave
+  101123:	c3                   	ret
+
+0000000000101124 <_Z8idt_loadv>:
+  101124:	f3 0f 1e fa          	endbr64
+  101128:	55                   	push   %rbp
+  101129:	48 89 e5             	mov    %rsp,%rbp
+  10112c:	48 83 ec 10          	sub    $0x10,%rsp
+  101130:	66 c7 45 f6 ff 0f    	movw   $0xfff,-0xa(%rbp)
+  101136:	48 8d 05 63 31 00 00 	lea    0x3163(%rip),%rax        # 1042a0 <idt>
+  10113d:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  101141:	0f 01 5d f6          	lidt   -0xa(%rbp)
+  101145:	90                   	nop
+  101146:	c9                   	leave
+  101147:	c3                   	ret
+
+0000000000101148 <_Z8idt_initv>:
+  101148:	f3 0f 1e fa          	endbr64
+  10114c:	55                   	push   %rbp
+  10114d:	48 89 e5             	mov    %rsp,%rbp
+  101150:	e8 8a 0d 00 00       	call   101edf <_Z9pic_remapv>
+  101155:	bf e8 03 00 00       	mov    $0x3e8,%edi
+  10115a:	e8 79 0e 00 00       	call   101fd8 <_Z8pit_initj>
+  10115f:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101164:	48 c7 c0 40 00 10 00 	mov    $0x100040,%rax
+  10116b:	48 89 c6             	mov    %rax,%rsi
+  10116e:	bf 00 00 00 00       	mov    $0x0,%edi
+  101173:	e8 b6 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  101178:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  10117d:	48 c7 c0 49 00 10 00 	mov    $0x100049,%rax
+  101184:	48 89 c6             	mov    %rax,%rsi
+  101187:	bf 01 00 00 00       	mov    $0x1,%edi
+  10118c:	e8 9d fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  101191:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101196:	48 c7 c0 52 00 10 00 	mov    $0x100052,%rax
+  10119d:	48 89 c6             	mov    %rax,%rsi
+  1011a0:	bf 02 00 00 00       	mov    $0x2,%edi
+  1011a5:	e8 84 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  1011aa:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1011af:	48 c7 c0 5b 00 10 00 	mov    $0x10005b,%rax
+  1011b6:	48 89 c6             	mov    %rax,%rsi
+  1011b9:	bf 03 00 00 00       	mov    $0x3,%edi
+  1011be:	e8 6b fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  1011c3:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1011c8:	48 c7 c0 64 00 10 00 	mov    $0x100064,%rax
+  1011cf:	48 89 c6             	mov    %rax,%rsi
+  1011d2:	bf 04 00 00 00       	mov    $0x4,%edi
+  1011d7:	e8 52 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  1011dc:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1011e1:	48 c7 c0 6d 00 10 00 	mov    $0x10006d,%rax
+  1011e8:	48 89 c6             	mov    %rax,%rsi
+  1011eb:	bf 05 00 00 00       	mov    $0x5,%edi
+  1011f0:	e8 39 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  1011f5:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1011fa:	48 c7 c0 76 00 10 00 	mov    $0x100076,%rax
+  101201:	48 89 c6             	mov    %rax,%rsi
+  101204:	bf 06 00 00 00       	mov    $0x6,%edi
+  101209:	e8 20 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  10120e:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101213:	48 c7 c0 7f 00 10 00 	mov    $0x10007f,%rax
+  10121a:	48 89 c6             	mov    %rax,%rsi
+  10121d:	bf 07 00 00 00       	mov    $0x7,%edi
+  101222:	e8 07 fe ff ff       	call   10102e <_Z7idt_sethPvh>
+  101227:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  10122c:	48 c7 c0 ac 00 10 00 	mov    $0x1000ac,%rax
+  101233:	48 89 c6             	mov    %rax,%rsi
+  101236:	bf 08 00 00 00       	mov    $0x8,%edi
+  10123b:	e8 ee fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  101240:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101245:	48 c7 c0 88 00 10 00 	mov    $0x100088,%rax
+  10124c:	48 89 c6             	mov    %rax,%rsi
+  10124f:	bf 09 00 00 00       	mov    $0x9,%edi
+  101254:	e8 d5 fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  101259:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  10125e:	48 c7 c0 b3 00 10 00 	mov    $0x1000b3,%rax
+  101265:	48 89 c6             	mov    %rax,%rsi
+  101268:	bf 0a 00 00 00       	mov    $0xa,%edi
+  10126d:	e8 bc fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  101272:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101277:	48 c7 c0 b7 00 10 00 	mov    $0x1000b7,%rax
+  10127e:	48 89 c6             	mov    %rax,%rsi
+  101281:	bf 0b 00 00 00       	mov    $0xb,%edi
+  101286:	e8 a3 fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  10128b:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101290:	48 c7 c0 bb 00 10 00 	mov    $0x1000bb,%rax
+  101297:	48 89 c6             	mov    %rax,%rsi
+  10129a:	bf 0c 00 00 00       	mov    $0xc,%edi
+  10129f:	e8 8a fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  1012a4:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1012a9:	48 c7 c0 bf 00 10 00 	mov    $0x1000bf,%rax
+  1012b0:	48 89 c6             	mov    %rax,%rsi
+  1012b3:	bf 0d 00 00 00       	mov    $0xd,%edi
+  1012b8:	e8 71 fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  1012bd:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1012c2:	48 c7 c0 c3 00 10 00 	mov    $0x1000c3,%rax
+  1012c9:	48 89 c6             	mov    %rax,%rsi
+  1012cc:	bf 0e 00 00 00       	mov    $0xe,%edi
+  1012d1:	e8 58 fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  1012d6:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1012db:	48 c7 c0 91 00 10 00 	mov    $0x100091,%rax
+  1012e2:	48 89 c6             	mov    %rax,%rsi
+  1012e5:	bf 10 00 00 00       	mov    $0x10,%edi
+  1012ea:	e8 3f fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  1012ef:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  1012f4:	48 c7 c0 c7 00 10 00 	mov    $0x1000c7,%rax
+  1012fb:	48 89 c6             	mov    %rax,%rsi
+  1012fe:	bf 11 00 00 00       	mov    $0x11,%edi
+  101303:	e8 26 fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  101308:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  10130d:	48 c7 c0 9a 00 10 00 	mov    $0x10009a,%rax
+  101314:	48 89 c6             	mov    %rax,%rsi
+  101317:	bf 12 00 00 00       	mov    $0x12,%edi
+  10131c:	e8 0d fd ff ff       	call   10102e <_Z7idt_sethPvh>
+  101321:	ba 8f 00 00 00       	mov    $0x8f,%edx
+  101326:	48 c7 c0 a3 00 10 00 	mov    $0x1000a3,%rax
+  10132d:	48 89 c6             	mov    %rax,%rsi
+  101330:	bf 13 00 00 00       	mov    $0x13,%edi
+  101335:	e8 f4 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  10133a:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  10133f:	48 c7 c0 cb 00 10 00 	mov    $0x1000cb,%rax
+  101346:	48 89 c6             	mov    %rax,%rsi
+  101349:	bf 20 00 00 00       	mov    $0x20,%edi
+  10134e:	e8 db fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  101353:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101358:	48 c7 c0 d1 00 10 00 	mov    $0x1000d1,%rax
+  10135f:	48 89 c6             	mov    %rax,%rsi
+  101362:	bf 21 00 00 00       	mov    $0x21,%edi
+  101367:	e8 c2 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  10136c:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101371:	48 c7 c0 d7 00 10 00 	mov    $0x1000d7,%rax
+  101378:	48 89 c6             	mov    %rax,%rsi
+  10137b:	bf 22 00 00 00       	mov    $0x22,%edi
+  101380:	e8 a9 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  101385:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  10138a:	48 c7 c0 dd 00 10 00 	mov    $0x1000dd,%rax
+  101391:	48 89 c6             	mov    %rax,%rsi
+  101394:	bf 23 00 00 00       	mov    $0x23,%edi
+  101399:	e8 90 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  10139e:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  1013a3:	48 c7 c0 e3 00 10 00 	mov    $0x1000e3,%rax
+  1013aa:	48 89 c6             	mov    %rax,%rsi
+  1013ad:	bf 24 00 00 00       	mov    $0x24,%edi
+  1013b2:	e8 77 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  1013b7:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  1013bc:	48 c7 c0 e9 00 10 00 	mov    $0x1000e9,%rax
+  1013c3:	48 89 c6             	mov    %rax,%rsi
+  1013c6:	bf 25 00 00 00       	mov    $0x25,%edi
+  1013cb:	e8 5e fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  1013d0:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  1013d5:	48 c7 c0 ef 00 10 00 	mov    $0x1000ef,%rax
+  1013dc:	48 89 c6             	mov    %rax,%rsi
+  1013df:	bf 26 00 00 00       	mov    $0x26,%edi
+  1013e4:	e8 45 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  1013e9:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  1013ee:	48 c7 c0 f5 00 10 00 	mov    $0x1000f5,%rax
+  1013f5:	48 89 c6             	mov    %rax,%rsi
+  1013f8:	bf 27 00 00 00       	mov    $0x27,%edi
+  1013fd:	e8 2c fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  101402:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101407:	48 c7 c0 fb 00 10 00 	mov    $0x1000fb,%rax
+  10140e:	48 89 c6             	mov    %rax,%rsi
+  101411:	bf 28 00 00 00       	mov    $0x28,%edi
+  101416:	e8 13 fc ff ff       	call   10102e <_Z7idt_sethPvh>
+  10141b:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101420:	48 c7 c0 01 01 10 00 	mov    $0x100101,%rax
+  101427:	48 89 c6             	mov    %rax,%rsi
+  10142a:	bf 29 00 00 00       	mov    $0x29,%edi
+  10142f:	e8 fa fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  101434:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101439:	48 c7 c0 07 01 10 00 	mov    $0x100107,%rax
+  101440:	48 89 c6             	mov    %rax,%rsi
+  101443:	bf 2a 00 00 00       	mov    $0x2a,%edi
+  101448:	e8 e1 fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  10144d:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101452:	48 c7 c0 0d 01 10 00 	mov    $0x10010d,%rax
+  101459:	48 89 c6             	mov    %rax,%rsi
+  10145c:	bf 2b 00 00 00       	mov    $0x2b,%edi
+  101461:	e8 c8 fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  101466:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  10146b:	48 c7 c0 13 01 10 00 	mov    $0x100113,%rax
+  101472:	48 89 c6             	mov    %rax,%rsi
+  101475:	bf 2c 00 00 00       	mov    $0x2c,%edi
+  10147a:	e8 af fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  10147f:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  101484:	48 c7 c0 19 01 10 00 	mov    $0x100119,%rax
+  10148b:	48 89 c6             	mov    %rax,%rsi
+  10148e:	bf 2d 00 00 00       	mov    $0x2d,%edi
+  101493:	e8 96 fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  101498:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  10149d:	48 c7 c0 1f 01 10 00 	mov    $0x10011f,%rax
+  1014a4:	48 89 c6             	mov    %rax,%rsi
+  1014a7:	bf 2e 00 00 00       	mov    $0x2e,%edi
+  1014ac:	e8 7d fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  1014b1:	ba 8e 00 00 00       	mov    $0x8e,%edx
+  1014b6:	48 c7 c0 25 01 10 00 	mov    $0x100125,%rax
+  1014bd:	48 89 c6             	mov    %rax,%rsi
+  1014c0:	bf 2f 00 00 00       	mov    $0x2f,%edi
+  1014c5:	e8 64 fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  1014ca:	ba ef 00 00 00       	mov    $0xef,%edx
+  1014cf:	48 c7 c0 2b 01 10 00 	mov    $0x10012b,%rax
+  1014d6:	48 89 c6             	mov    %rax,%rsi
+  1014d9:	bf 80 00 00 00       	mov    $0x80,%edi
+  1014de:	e8 4b fb ff ff       	call   10102e <_Z7idt_sethPvh>
+  1014e3:	e8 3c fc ff ff       	call   101124 <_Z8idt_loadv>
+  1014e8:	fb                   	sti
+  1014e9:	90                   	nop
+  1014ea:	5d                   	pop    %rbp
+  1014eb:	c3                   	ret
+
+00000000001014ec <_ZN6kernel6printfIA14_cJjcEEEvRKT_DpRKT0_>:
+  1014ec:	f3 0f 1e fa          	endbr64
+  1014f0:	55                   	push   %rbp
+  1014f1:	48 89 e5             	mov    %rsp,%rbp
+  1014f4:	48 83 ec 20          	sub    $0x20,%rsp
+  1014f8:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  1014fc:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101500:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101504:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101508:	48 89 c7             	mov    %rax,%rdi
+  10150b:	e8 3d f5 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101510:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101514:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101518:	48 89 d6             	mov    %rdx,%rsi
+  10151b:	48 89 c7             	mov    %rax,%rdi
+  10151e:	e8 03 00 00 00       	call   101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>
+  101523:	90                   	nop
+  101524:	c9                   	leave
+  101525:	c3                   	ret
+
+0000000000101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>:
+  101526:	f3 0f 1e fa          	endbr64
+  10152a:	55                   	push   %rbp
+  10152b:	48 89 e5             	mov    %rsp,%rbp
+  10152e:	48 83 ec 10          	sub    $0x10,%rsp
+  101532:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101536:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  10153a:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  10153e:	8b 00                	mov    (%rax),%eax
+  101540:	89 c7                	mov    %eax,%edi
+  101542:	e8 3d f5 ff ff       	call   100a84 <_ZN6kernel6printfEj>
+  101547:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  10154b:	0f b6 00             	movzbl (%rax),%eax
+  10154e:	0f be c0             	movsbl %al,%eax
+  101551:	89 c7                	mov    %eax,%edi
+  101553:	e8 18 f4 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101558:	90                   	nop
+  101559:	c9                   	leave
+  10155a:	c3                   	ret
+
+000000000010155b <kernel_main_cpp>:
+  10155b:	f3 0f 1e fa          	endbr64
+  10155f:	55                   	push   %rbp
+  101560:	48 89 e5             	mov    %rsp,%rbp
+  101563:	48 83 ec 10          	sub    $0x10,%rsp
+  101567:	48 8d 45 ff          	lea    -0x1(%rbp),%rax
+  10156b:	48 89 c7             	mov    %rax,%rdi
+  10156e:	e8 8b 0b 00 00       	call   1020fe <_ZN6Kernel3RunEv>
+  101573:	90                   	nop
+  101574:	c9                   	leave
+  101575:	c3                   	ret
+
+0000000000101576 <_ZN6kernel5panicEPKcS1_i>:
+  101576:	f3 0f 1e fa          	endbr64
+  10157a:	55                   	push   %rbp
+  10157b:	48 89 e5             	mov    %rsp,%rbp
+  10157e:	48 83 ec 30          	sub    $0x30,%rsp
+  101582:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+  101586:	48 89 75 e0          	mov    %rsi,-0x20(%rbp)
+  10158a:	89 55 dc             	mov    %edx,-0x24(%rbp)
+  10158d:	c6 45 fe 04          	movb   $0x4,-0x2(%rbp)
+  101591:	48 8d 55 fe          	lea    -0x2(%rbp),%rdx
+  101595:	48 8d 45 fd          	lea    -0x3(%rbp),%rax
+  101599:	48 89 d6             	mov    %rdx,%rsi
+  10159c:	48 89 c7             	mov    %rax,%rdi
+  10159f:	e8 7a f3 ff ff       	call   10091e <_ZN6kernel11ScopedColorC1ERKNS_5ColorE>
+  1015a4:	48 8d 05 96 0f 00 00 	lea    0xf96(%rip),%rax        # 102541 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1c9>
+  1015ab:	48 89 c7             	mov    %rax,%rdi
+  1015ae:	e8 9a f4 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1015b3:	bf 0f 00 00 00       	mov    $0xf,%edi
+  1015b8:	e8 43 f3 ff ff       	call   100900 <_ZN6kernel8setColorENS_5ColorE>
+  1015bd:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  1015c1:	48 89 c7             	mov    %rax,%rdi
+  1015c4:	e8 84 f4 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1015c9:	bf 0e 00 00 00       	mov    $0xe,%edi
+  1015ce:	e8 2d f3 ff ff       	call   100900 <_ZN6kernel8setColorENS_5ColorE>
+  1015d3:	c6 45 ff 0a          	movb   $0xa,-0x1(%rbp)
+  1015d7:	48 8d 4d ff          	lea    -0x1(%rbp),%rcx
+  1015db:	48 8d 55 dc          	lea    -0x24(%rbp),%rdx
+  1015df:	48 8d 45 e0          	lea    -0x20(%rbp),%rax
+  1015e3:	49 89 c8             	mov    %rcx,%r8
+  1015e6:	48 89 d1             	mov    %rdx,%rcx
+  1015e9:	48 8d 15 61 0f 00 00 	lea    0xf61(%rip),%rdx        # 102551 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1d9>
+  1015f0:	48 89 c6             	mov    %rax,%rsi
+  1015f3:	48 8d 05 5a 0f 00 00 	lea    0xf5a(%rip),%rax        # 102554 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1dc>
+  1015fa:	48 89 c7             	mov    %rax,%rdi
+  1015fd:	e8 0c 00 00 00       	call   10160e <_ZN6kernel6printfIA5_cJPKcA3_cicEEEvRKT_DpRKT0_>
+  101602:	bf 0f 00 00 00       	mov    $0xf,%edi
+  101607:	e8 f4 f2 ff ff       	call   100900 <_ZN6kernel8setColorENS_5ColorE>
+  10160c:	fa                   	cli
+  10160d:	f4                   	hlt
+
+000000000010160e <_ZN6kernel6printfIA5_cJPKcA3_cicEEEvRKT_DpRKT0_>:
+  10160e:	f3 0f 1e fa          	endbr64
+  101612:	55                   	push   %rbp
+  101613:	48 89 e5             	mov    %rsp,%rbp
+  101616:	48 83 ec 30          	sub    $0x30,%rsp
+  10161a:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  10161e:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101622:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101626:	48 89 4d e0          	mov    %rcx,-0x20(%rbp)
+  10162a:	4c 89 45 d8          	mov    %r8,-0x28(%rbp)
+  10162e:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101632:	48 89 c7             	mov    %rax,%rdi
+  101635:	e8 13 f4 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  10163a:	48 8b 4d d8          	mov    -0x28(%rbp),%rcx
+  10163e:	48 8b 55 e0          	mov    -0x20(%rbp),%rdx
+  101642:	48 8b 75 e8          	mov    -0x18(%rbp),%rsi
+  101646:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  10164a:	48 89 c7             	mov    %rax,%rdi
+  10164d:	e8 03 00 00 00       	call   101655 <_ZN6kernel6printfIPKcJA3_cicEEEvRKT_DpRKT0_>
+  101652:	90                   	nop
+  101653:	c9                   	leave
+  101654:	c3                   	ret
+
+0000000000101655 <_ZN6kernel6printfIPKcJA3_cicEEEvRKT_DpRKT0_>:
+  101655:	f3 0f 1e fa          	endbr64
+  101659:	55                   	push   %rbp
+  10165a:	48 89 e5             	mov    %rsp,%rbp
+  10165d:	48 83 ec 20          	sub    $0x20,%rsp
+  101661:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101665:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101669:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  10166d:	48 89 4d e0          	mov    %rcx,-0x20(%rbp)
+  101671:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101675:	48 8b 00             	mov    (%rax),%rax
+  101678:	48 89 c7             	mov    %rax,%rdi
+  10167b:	e8 cd f3 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101680:	48 8b 55 e0          	mov    -0x20(%rbp),%rdx
+  101684:	48 8b 4d e8          	mov    -0x18(%rbp),%rcx
+  101688:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  10168c:	48 89 ce             	mov    %rcx,%rsi
+  10168f:	48 89 c7             	mov    %rax,%rdi
+  101692:	e8 03 00 00 00       	call   10169a <_ZN6kernel6printfIA3_cJicEEEvRKT_DpRKT0_>
+  101697:	90                   	nop
+  101698:	c9                   	leave
+  101699:	c3                   	ret
+
+000000000010169a <_ZN6kernel6printfIA3_cJicEEEvRKT_DpRKT0_>:
+  10169a:	f3 0f 1e fa          	endbr64
+  10169e:	55                   	push   %rbp
+  10169f:	48 89 e5             	mov    %rsp,%rbp
+  1016a2:	48 83 ec 20          	sub    $0x20,%rsp
+  1016a6:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  1016aa:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  1016ae:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  1016b2:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  1016b6:	48 89 c7             	mov    %rax,%rdi
+  1016b9:	e8 8f f3 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1016be:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  1016c2:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  1016c6:	48 89 d6             	mov    %rdx,%rsi
+  1016c9:	48 89 c7             	mov    %rax,%rdi
+  1016cc:	e8 03 00 00 00       	call   1016d4 <_ZN6kernel6printfIiJcEEEvRKT_DpRKT0_>
+  1016d1:	90                   	nop
+  1016d2:	c9                   	leave
+  1016d3:	c3                   	ret
+
+00000000001016d4 <_ZN6kernel6printfIiJcEEEvRKT_DpRKT0_>:
+  1016d4:	f3 0f 1e fa          	endbr64
+  1016d8:	55                   	push   %rbp
+  1016d9:	48 89 e5             	mov    %rsp,%rbp
+  1016dc:	48 83 ec 10          	sub    $0x10,%rsp
+  1016e0:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  1016e4:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  1016e8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  1016ec:	8b 00                	mov    (%rax),%eax
+  1016ee:	89 c7                	mov    %eax,%edi
+  1016f0:	e8 56 f4 ff ff       	call   100b4b <_ZN6kernel6printfEi>
+  1016f5:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  1016f9:	0f b6 00             	movzbl (%rax),%eax
+  1016fc:	0f be c0             	movsbl %al,%eax
+  1016ff:	89 c7                	mov    %eax,%edi
+  101701:	e8 6a f2 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101706:	90                   	nop
+  101707:	c9                   	leave
+  101708:	c3                   	ret
+
+0000000000101709 <_ZN6kernel14getCurrentTickEv>:
+  101709:	f3 0f 1e fa          	endbr64
+  10170d:	55                   	push   %rbp
+  10170e:	48 89 e5             	mov    %rsp,%rbp
+  101711:	48 8b 05 a8 3d 00 00 	mov    0x3da8(%rip),%rax        # 1054c0 <_ZN6kernel12_GLOBAL__N_115ticksSinceStartE>
+  101718:	5d                   	pop    %rbp
+  101719:	c3                   	ret
+
+000000000010171a <_ZN6kernel9timerTickEv>:
+  10171a:	f3 0f 1e fa          	endbr64
+  10171e:	55                   	push   %rbp
+  10171f:	48 89 e5             	mov    %rsp,%rbp
+  101722:	48 83 ec 10          	sub    $0x10,%rsp
+  101726:	48 8b 05 93 3d 00 00 	mov    0x3d93(%rip),%rax        # 1054c0 <_ZN6kernel12_GLOBAL__N_115ticksSinceStartE>
+  10172d:	48 83 c0 01          	add    $0x1,%rax
+  101731:	48 89 05 88 3d 00 00 	mov    %rax,0x3d88(%rip)        # 1054c0 <_ZN6kernel12_GLOBAL__N_115ticksSinceStartE>
+  101738:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+  10173f:	eb 1c                	jmp    10175d <_ZN6kernel9timerTickEv+0x43>
+  101741:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  101744:	48 8d 14 c5 00 00 00 	lea    0x0(,%rax,8),%rdx
+  10174b:	00 
+  10174c:	48 8d 05 6d 3b 00 00 	lea    0x3b6d(%rip),%rax        # 1052c0 <_ZN6kernel9callbacksE>
+  101753:	48 8b 04 02          	mov    (%rdx,%rax,1),%rax
+  101757:	ff d0                	call   *%rax
+  101759:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+  10175d:	8b 05 3d 3b 00 00    	mov    0x3b3d(%rip),%eax        # 1052a0 <_ZN6kernel11callBackNumE>
+  101763:	39 45 fc             	cmp    %eax,-0x4(%rbp)
+  101766:	72 d9                	jb     101741 <_ZN6kernel9timerTickEv+0x27>
+  101768:	90                   	nop
+  101769:	90                   	nop
+  10176a:	c9                   	leave
+  10176b:	c3                   	ret
+
+000000000010176c <_ZL12validateRSDPPKh>:
+  10176c:	f3 0f 1e fa          	endbr64
+  101770:	55                   	push   %rbp
+  101771:	48 89 e5             	mov    %rsp,%rbp
+  101774:	48 83 ec 18          	sub    $0x18,%rsp
+  101778:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+  10177c:	c6 45 ff 00          	movb   $0x0,-0x1(%rbp)
+  101780:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
+  101787:	eb 17                	jmp    1017a0 <_ZL12validateRSDPPKh+0x34>
+  101789:	8b 45 f8             	mov    -0x8(%rbp),%eax
+  10178c:	48 63 d0             	movslq %eax,%rdx
+  10178f:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  101793:	48 01 d0             	add    %rdx,%rax
+  101796:	0f b6 00             	movzbl (%rax),%eax
+  101799:	00 45 ff             	add    %al,-0x1(%rbp)
+  10179c:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
+  1017a0:	83 7d f8 13          	cmpl   $0x13,-0x8(%rbp)
+  1017a4:	7e e3                	jle    101789 <_ZL12validateRSDPPKh+0x1d>
+  1017a6:	80 7d ff 00          	cmpb   $0x0,-0x1(%rbp)
+  1017aa:	0f 94 c0             	sete   %al
+  1017ad:	c9                   	leave
+  1017ae:	c3                   	ret
+
+00000000001017af <_Z7setRSDPP4RSDP>:
+  1017af:	f3 0f 1e fa          	endbr64
+  1017b3:	55                   	push   %rbp
+  1017b4:	48 89 e5             	mov    %rsp,%rbp
+  1017b7:	53                   	push   %rbx
+  1017b8:	48 83 ec 38          	sub    $0x38,%rsp
+  1017bc:	48 89 7d c8          	mov    %rdi,-0x38(%rbp)
+  1017c0:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  1017c4:	48 8b 08             	mov    (%rax),%rcx
+  1017c7:	48 8b 58 08          	mov    0x8(%rax),%rbx
+  1017cb:	48 89 0d 0e 3d 00 00 	mov    %rcx,0x3d0e(%rip)        # 1054e0 <rsdp>
+  1017d2:	48 89 1d 0f 3d 00 00 	mov    %rbx,0x3d0f(%rip)        # 1054e8 <rsdp+0x8>
+  1017d9:	48 8b 48 10          	mov    0x10(%rax),%rcx
+  1017dd:	48 8b 58 18          	mov    0x18(%rax),%rbx
+  1017e1:	48 89 0d 08 3d 00 00 	mov    %rcx,0x3d08(%rip)        # 1054f0 <rsdp+0x10>
+  1017e8:	48 89 1d 09 3d 00 00 	mov    %rbx,0x3d09(%rip)        # 1054f8 <rsdp+0x18>
+  1017ef:	8b 40 20             	mov    0x20(%rax),%eax
+  1017f2:	89 05 08 3d 00 00    	mov    %eax,0x3d08(%rip)        # 105500 <rsdp+0x20>
+  1017f8:	48 8d 05 65 0d 00 00 	lea    0xd65(%rip),%rax        # 102564 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x4>
+  1017ff:	48 89 c7             	mov    %rax,%rdi
+  101802:	e8 46 f2 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101807:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%rbp)
+  10180e:	eb 1e                	jmp    10182e <_Z7setRSDPP4RSDP+0x7f>
+  101810:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  101813:	48 98                	cltq
+  101815:	48 8d 15 c4 3c 00 00 	lea    0x3cc4(%rip),%rdx        # 1054e0 <rsdp>
+  10181c:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  101820:	0f be c0             	movsbl %al,%eax
+  101823:	89 c7                	mov    %eax,%edi
+  101825:	e8 46 f1 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  10182a:	83 45 ec 01          	addl   $0x1,-0x14(%rbp)
+  10182e:	83 7d ec 07          	cmpl   $0x7,-0x14(%rbp)
+  101832:	7e dc                	jle    101810 <_Z7setRSDPP4RSDP+0x61>
+  101834:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101839:	e8 32 f1 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  10183e:	48 8d 05 35 0d 00 00 	lea    0xd35(%rip),%rax        # 10257a <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1a>
+  101845:	48 89 c7             	mov    %rax,%rdi
+  101848:	e8 00 f2 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  10184d:	c7 45 e8 00 00 00 00 	movl   $0x0,-0x18(%rbp)
+  101854:	eb 1e                	jmp    101874 <_Z7setRSDPP4RSDP+0xc5>
+  101856:	8b 45 e8             	mov    -0x18(%rbp),%eax
+  101859:	48 98                	cltq
+  10185b:	48 8d 15 87 3c 00 00 	lea    0x3c87(%rip),%rdx        # 1054e9 <rsdp+0x9>
+  101862:	0f b6 04 10          	movzbl (%rax,%rdx,1),%eax
+  101866:	0f be c0             	movsbl %al,%eax
+  101869:	89 c7                	mov    %eax,%edi
+  10186b:	e8 00 f1 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101870:	83 45 e8 01          	addl   $0x1,-0x18(%rbp)
+  101874:	83 7d e8 05          	cmpl   $0x5,-0x18(%rbp)
+  101878:	7e dc                	jle    101856 <_Z7setRSDPP4RSDP+0xa7>
+  10187a:	bf 0a 00 00 00       	mov    $0xa,%edi
+  10187f:	e8 ec f0 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101884:	c6 45 db 0a          	movb   $0xa,-0x25(%rbp)
+  101888:	0f b6 05 60 3c 00 00 	movzbl 0x3c60(%rip),%eax        # 1054ef <rsdp+0xf>
+  10188f:	0f b6 c0             	movzbl %al,%eax
+  101892:	89 45 dc             	mov    %eax,-0x24(%rbp)
+  101895:	48 8d 55 db          	lea    -0x25(%rbp),%rdx
+  101899:	48 8d 45 dc          	lea    -0x24(%rbp),%rax
+  10189d:	48 89 c6             	mov    %rax,%rsi
+  1018a0:	48 8d 05 e6 0c 00 00 	lea    0xce6(%rip),%rax        # 10258d <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x2d>
+  1018a7:	48 89 c7             	mov    %rax,%rdi
+  1018aa:	e8 12 02 00 00       	call   101ac1 <_ZN6kernel6printfIA21_cJjcEEEvRKT_DpRKT0_>
+  1018af:	48 8d 05 ec 0c 00 00 	lea    0xcec(%rip),%rax        # 1025a2 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x42>
+  1018b6:	48 89 c7             	mov    %rax,%rdi
+  1018b9:	e8 8f f1 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1018be:	8b 05 2c 3c 00 00    	mov    0x3c2c(%rip),%eax        # 1054f0 <rsdp+0x10>
+  1018c4:	89 c0                	mov    %eax,%eax
+  1018c6:	48 89 c7             	mov    %rax,%rdi
+  1018c9:	e8 b1 f2 ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  1018ce:	bf 0a 00 00 00       	mov    $0xa,%edi
+  1018d3:	e8 98 f0 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  1018d8:	0f b6 05 10 3c 00 00 	movzbl 0x3c10(%rip),%eax        # 1054ef <rsdp+0xf>
+  1018df:	3c 01                	cmp    $0x1,%al
+  1018e1:	76 4f                	jbe    101932 <_Z7setRSDPP4RSDP+0x183>
+  1018e3:	48 8d 05 d1 0c 00 00 	lea    0xcd1(%rip),%rax        # 1025bb <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x5b>
+  1018ea:	48 89 c7             	mov    %rax,%rdi
+  1018ed:	e8 5b f1 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1018f2:	48 8b 05 ff 3b 00 00 	mov    0x3bff(%rip),%rax        # 1054f8 <rsdp+0x18>
+  1018f9:	48 89 c7             	mov    %rax,%rdi
+  1018fc:	e8 7e f2 ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  101901:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101906:	e8 65 f0 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  10190b:	c6 45 e3 0a          	movb   $0xa,-0x1d(%rbp)
+  10190f:	8b 05 df 3b 00 00    	mov    0x3bdf(%rip),%eax        # 1054f4 <rsdp+0x14>
+  101915:	89 45 e4             	mov    %eax,-0x1c(%rbp)
+  101918:	48 8d 55 e3          	lea    -0x1d(%rbp),%rdx
+  10191c:	48 8d 45 e4          	lea    -0x1c(%rbp),%rax
+  101920:	48 89 c6             	mov    %rax,%rsi
+  101923:	48 8d 05 aa 0c 00 00 	lea    0xcaa(%rip),%rax        # 1025d4 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x74>
+  10192a:	48 89 c7             	mov    %rax,%rdi
+  10192d:	e8 c9 01 00 00       	call   101afb <_ZN6kernel6printfIA19_cJjcEEEvRKT_DpRKT0_>
+  101932:	90                   	nop
+  101933:	48 8b 5d f8          	mov    -0x8(%rbp),%rbx
+  101937:	c9                   	leave
+  101938:	c3                   	ret
+
+0000000000101939 <_Z9rsdp_loadv>:
+  101939:	f3 0f 1e fa          	endbr64
+  10193d:	55                   	push   %rbp
+  10193e:	48 89 e5             	mov    %rsp,%rbp
+  101941:	48 81 ec 90 00 00 00 	sub    $0x90,%rsp
+  101948:	48 b8 52 53 44 20 50 	movabs $0x2052545020445352,%rax
+  10194f:	54 52 20 
+  101952:	48 89 45 9f          	mov    %rax,-0x61(%rbp)
+  101956:	c6 45 a7 00          	movb   $0x0,-0x59(%rbp)
+  10195a:	b8 0e 04 00 00       	mov    $0x40e,%eax
+  10195f:	0f b7 00             	movzwl (%rax),%eax
+  101962:	66 89 45 e6          	mov    %ax,-0x1a(%rbp)
+  101966:	0f b7 45 e6          	movzwl -0x1a(%rbp),%eax
+  10196a:	48 c1 e0 04          	shl    $0x4,%rax
+  10196e:	48 89 45 d8          	mov    %rax,-0x28(%rbp)
+  101972:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  101976:	48 05 00 04 00 00    	add    $0x400,%rax
+  10197c:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+  101980:	48 c7 45 c8 00 00 0e 	movq   $0xe0000,-0x38(%rbp)
+  101987:	00 
+  101988:	48 c7 45 c0 ff ff 0f 	movq   $0xfffff,-0x40(%rbp)
+  10198f:	00 
+  101990:	48 8b 45 d8          	mov    -0x28(%rbp),%rax
+  101994:	48 89 85 70 ff ff ff 	mov    %rax,-0x90(%rbp)
+  10199b:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+  10199f:	48 89 85 78 ff ff ff 	mov    %rax,-0x88(%rbp)
+  1019a6:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  1019aa:	48 89 45 80          	mov    %rax,-0x80(%rbp)
+  1019ae:	48 8b 45 c0          	mov    -0x40(%rbp),%rax
+  1019b2:	48 89 45 88          	mov    %rax,-0x78(%rbp)
+  1019b6:	48 8d 85 70 ff ff ff 	lea    -0x90(%rbp),%rax
+  1019bd:	48 89 45 b8          	mov    %rax,-0x48(%rbp)
+  1019c1:	48 8b 45 b8          	mov    -0x48(%rbp),%rax
+  1019c5:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  1019c9:	48 8b 45 b8          	mov    -0x48(%rbp),%rax
+  1019cd:	48 83 c0 20          	add    $0x20,%rax
+  1019d1:	48 89 45 b0          	mov    %rax,-0x50(%rbp)
+  1019d5:	e9 c8 00 00 00       	jmp    101aa2 <_Z9rsdp_loadv+0x169>
+  1019da:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  1019de:	48 89 45 a8          	mov    %rax,-0x58(%rbp)
+  1019e2:	48 8b 45 a8          	mov    -0x58(%rbp),%rax
+  1019e6:	48 8b 00             	mov    (%rax),%rax
+  1019e9:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  1019ed:	e9 99 00 00 00       	jmp    101a8b <_Z9rsdp_loadv+0x152>
+  1019f2:	c6 45 ef 01          	movb   $0x1,-0x11(%rbp)
+  1019f6:	c7 45 e8 00 00 00 00 	movl   $0x0,-0x18(%rbp)
+  1019fd:	eb 28                	jmp    101a27 <_Z9rsdp_loadv+0xee>
+  1019ff:	8b 45 e8             	mov    -0x18(%rbp),%eax
+  101a02:	48 63 d0             	movslq %eax,%rdx
+  101a05:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101a09:	48 01 d0             	add    %rdx,%rax
+  101a0c:	0f b6 10             	movzbl (%rax),%edx
+  101a0f:	8b 45 e8             	mov    -0x18(%rbp),%eax
+  101a12:	48 98                	cltq
+  101a14:	0f b6 44 05 9f       	movzbl -0x61(%rbp,%rax,1),%eax
+  101a19:	38 c2                	cmp    %al,%dl
+  101a1b:	74 06                	je     101a23 <_Z9rsdp_loadv+0xea>
+  101a1d:	c6 45 ef 00          	movb   $0x0,-0x11(%rbp)
+  101a21:	eb 0a                	jmp    101a2d <_Z9rsdp_loadv+0xf4>
+  101a23:	83 45 e8 01          	addl   $0x1,-0x18(%rbp)
+  101a27:	83 7d e8 07          	cmpl   $0x7,-0x18(%rbp)
+  101a2b:	7e d2                	jle    1019ff <_Z9rsdp_loadv+0xc6>
+  101a2d:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  101a31:	74 17                	je     101a4a <_Z9rsdp_loadv+0x111>
+  101a33:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101a37:	48 89 c7             	mov    %rax,%rdi
+  101a3a:	e8 2d fd ff ff       	call   10176c <_ZL12validateRSDPPKh>
+  101a3f:	84 c0                	test   %al,%al
+  101a41:	74 07                	je     101a4a <_Z9rsdp_loadv+0x111>
+  101a43:	b8 01 00 00 00       	mov    $0x1,%eax
+  101a48:	eb 05                	jmp    101a4f <_Z9rsdp_loadv+0x116>
+  101a4a:	b8 00 00 00 00       	mov    $0x0,%eax
+  101a4f:	84 c0                	test   %al,%al
+  101a51:	74 33                	je     101a86 <_Z9rsdp_loadv+0x14d>
+  101a53:	48 8d 05 8d 0b 00 00 	lea    0xb8d(%rip),%rax        # 1025e7 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x87>
+  101a5a:	48 89 c7             	mov    %rax,%rdi
+  101a5d:	e8 eb ef ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101a62:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101a66:	48 89 c7             	mov    %rax,%rdi
+  101a69:	e8 11 f1 ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  101a6e:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101a73:	e8 f8 ee ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101a78:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101a7c:	48 89 c7             	mov    %rax,%rdi
+  101a7f:	e8 2b fd ff ff       	call   1017af <_Z7setRSDPP4RSDP>
+  101a84:	eb 39                	jmp    101abf <_Z9rsdp_loadv+0x186>
+  101a86:	48 83 45 f0 10       	addq   $0x10,-0x10(%rbp)
+  101a8b:	48 8b 45 a8          	mov    -0x58(%rbp),%rax
+  101a8f:	48 8b 40 08          	mov    0x8(%rax),%rax
+  101a93:	48 39 45 f0          	cmp    %rax,-0x10(%rbp)
+  101a97:	0f 82 55 ff ff ff    	jb     1019f2 <_Z9rsdp_loadv+0xb9>
+  101a9d:	48 83 45 f8 10       	addq   $0x10,-0x8(%rbp)
+  101aa2:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101aa6:	48 3b 45 b0          	cmp    -0x50(%rbp),%rax
+  101aaa:	0f 85 2a ff ff ff    	jne    1019da <_Z9rsdp_loadv+0xa1>
+  101ab0:	48 8d 05 4a 0b 00 00 	lea    0xb4a(%rip),%rax        # 102601 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xa1>
+  101ab7:	48 89 c7             	mov    %rax,%rdi
+  101aba:	e8 8e ef ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101abf:	c9                   	leave
+  101ac0:	c3                   	ret
+
+0000000000101ac1 <_ZN6kernel6printfIA21_cJjcEEEvRKT_DpRKT0_>:
+  101ac1:	f3 0f 1e fa          	endbr64
+  101ac5:	55                   	push   %rbp
+  101ac6:	48 89 e5             	mov    %rsp,%rbp
+  101ac9:	48 83 ec 20          	sub    $0x20,%rsp
+  101acd:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101ad1:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101ad5:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101ad9:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101add:	48 89 c7             	mov    %rax,%rdi
+  101ae0:	e8 68 ef ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101ae5:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101ae9:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101aed:	48 89 d6             	mov    %rdx,%rsi
+  101af0:	48 89 c7             	mov    %rax,%rdi
+  101af3:	e8 2e fa ff ff       	call   101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>
+  101af8:	90                   	nop
+  101af9:	c9                   	leave
+  101afa:	c3                   	ret
+
+0000000000101afb <_ZN6kernel6printfIA19_cJjcEEEvRKT_DpRKT0_>:
+  101afb:	f3 0f 1e fa          	endbr64
+  101aff:	55                   	push   %rbp
+  101b00:	48 89 e5             	mov    %rsp,%rbp
+  101b03:	48 83 ec 20          	sub    $0x20,%rsp
+  101b07:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101b0b:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101b0f:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101b13:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101b17:	48 89 c7             	mov    %rax,%rdi
+  101b1a:	e8 2e ef ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101b1f:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101b23:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101b27:	48 89 d6             	mov    %rdx,%rsi
+  101b2a:	48 89 c7             	mov    %rax,%rdi
+  101b2d:	e8 f4 f9 ff ff       	call   101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>
+  101b32:	90                   	nop
+  101b33:	c9                   	leave
+  101b34:	c3                   	ret
+
+0000000000101b35 <_ZL14sdtHeader_loadm>:
+  101b35:	f3 0f 1e fa          	endbr64
+  101b39:	55                   	push   %rbp
+  101b3a:	48 89 e5             	mov    %rsp,%rbp
+  101b3d:	48 83 ec 70          	sub    $0x70,%rsp
+  101b41:	48 89 7d 98          	mov    %rdi,-0x68(%rbp)
+  101b45:	48 8b 45 98          	mov    -0x68(%rbp),%rax
+  101b49:	48 89 05 b8 39 00 00 	mov    %rax,0x39b8(%rip)        # 105508 <sdtHeader>
+  101b50:	0f b6 05 98 39 00 00 	movzbl 0x3998(%rip),%eax        # 1054ef <rsdp+0xf>
+  101b57:	3c 01                	cmp    $0x1,%al
+  101b59:	0f 97 c0             	seta   %al
+  101b5c:	88 45 ef             	mov    %al,-0x11(%rbp)
+  101b5f:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  101b63:	74 09                	je     101b6e <_ZL14sdtHeader_loadm+0x39>
+  101b65:	48 8d 05 b4 0a 00 00 	lea    0xab4(%rip),%rax        # 102620 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xc0>
+  101b6c:	eb 07                	jmp    101b75 <_ZL14sdtHeader_loadm+0x40>
+  101b6e:	48 8d 05 b0 0a 00 00 	lea    0xab0(%rip),%rax        # 102625 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xc5>
+  101b75:	48 89 45 e0          	mov    %rax,-0x20(%rbp)
+  101b79:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
+  101b80:	eb 3c                	jmp    101bbe <_ZL14sdtHeader_loadm+0x89>
+  101b82:	48 8b 15 7f 39 00 00 	mov    0x397f(%rip),%rdx        # 105508 <sdtHeader>
+  101b89:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  101b8c:	48 98                	cltq
+  101b8e:	0f b6 14 02          	movzbl (%rdx,%rax,1),%edx
+  101b92:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  101b95:	48 63 c8             	movslq %eax,%rcx
+  101b98:	48 8b 45 e0          	mov    -0x20(%rbp),%rax
+  101b9c:	48 01 c8             	add    %rcx,%rax
+  101b9f:	0f b6 00             	movzbl (%rax),%eax
+  101ba2:	38 c2                	cmp    %al,%dl
+  101ba4:	74 14                	je     101bba <_ZL14sdtHeader_loadm+0x85>
+  101ba6:	48 8d 05 83 0a 00 00 	lea    0xa83(%rip),%rax        # 102630 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xd0>
+  101bad:	48 89 c7             	mov    %rax,%rdi
+  101bb0:	e8 98 ee ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101bb5:	e9 84 01 00 00       	jmp    101d3e <_ZL14sdtHeader_loadm+0x209>
+  101bba:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+  101bbe:	83 7d fc 03          	cmpl   $0x3,-0x4(%rbp)
+  101bc2:	7e be                	jle    101b82 <_ZL14sdtHeader_loadm+0x4d>
+  101bc4:	48 8d 05 88 0a 00 00 	lea    0xa88(%rip),%rax        # 102653 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xf3>
+  101bcb:	48 89 c7             	mov    %rax,%rdi
+  101bce:	e8 7a ee ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101bd3:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
+  101bda:	eb 1e                	jmp    101bfa <_ZL14sdtHeader_loadm+0xc5>
+  101bdc:	48 8b 15 25 39 00 00 	mov    0x3925(%rip),%rdx        # 105508 <sdtHeader>
+  101be3:	8b 45 f8             	mov    -0x8(%rbp),%eax
+  101be6:	48 98                	cltq
+  101be8:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
+  101bec:	0f be c0             	movsbl %al,%eax
+  101bef:	89 c7                	mov    %eax,%edi
+  101bf1:	e8 7a ed ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101bf6:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
+  101bfa:	83 7d f8 03          	cmpl   $0x3,-0x8(%rbp)
+  101bfe:	7e dc                	jle    101bdc <_ZL14sdtHeader_loadm+0xa7>
+  101c00:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101c05:	e8 66 ed ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101c0a:	c6 45 b3 0a          	movb   $0xa,-0x4d(%rbp)
+  101c0e:	48 8b 05 f3 38 00 00 	mov    0x38f3(%rip),%rax        # 105508 <sdtHeader>
+  101c15:	8b 40 04             	mov    0x4(%rax),%eax
+  101c18:	89 45 b4             	mov    %eax,-0x4c(%rbp)
+  101c1b:	48 8d 55 b3          	lea    -0x4d(%rbp),%rdx
+  101c1f:	48 8d 45 b4          	lea    -0x4c(%rbp),%rax
+  101c23:	48 89 c6             	mov    %rax,%rsi
+  101c26:	48 8d 05 40 0a 00 00 	lea    0xa40(%rip),%rax        # 10266d <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x10d>
+  101c2d:	48 89 c7             	mov    %rax,%rdi
+  101c30:	e8 6b 01 00 00       	call   101da0 <_ZN6kernel6printfIA23_cJjcEEEvRKT_DpRKT0_>
+  101c35:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  101c39:	74 07                	je     101c42 <_ZL14sdtHeader_loadm+0x10d>
+  101c3b:	b8 08 00 00 00       	mov    $0x8,%eax
+  101c40:	eb 05                	jmp    101c47 <_ZL14sdtHeader_loadm+0x112>
+  101c42:	b8 04 00 00 00       	mov    $0x4,%eax
+  101c47:	89 45 dc             	mov    %eax,-0x24(%rbp)
+  101c4a:	48 8b 05 b7 38 00 00 	mov    0x38b7(%rip),%rax        # 105508 <sdtHeader>
+  101c51:	8b 40 04             	mov    0x4(%rax),%eax
+  101c54:	89 c0                	mov    %eax,%eax
+  101c56:	48 83 e8 24          	sub    $0x24,%rax
+  101c5a:	8b 4d dc             	mov    -0x24(%rbp),%ecx
+  101c5d:	ba 00 00 00 00       	mov    $0x0,%edx
+  101c62:	48 f7 f1             	div    %rcx
+  101c65:	89 45 ac             	mov    %eax,-0x54(%rbp)
+  101c68:	c6 45 bb 0a          	movb   $0xa,-0x45(%rbp)
+  101c6c:	48 8d 55 bb          	lea    -0x45(%rbp),%rdx
+  101c70:	48 8d 45 ac          	lea    -0x54(%rbp),%rax
+  101c74:	48 89 c6             	mov    %rax,%rsi
+  101c77:	48 8d 05 06 0a 00 00 	lea    0xa06(%rip),%rax        # 102684 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x124>
+  101c7e:	48 89 c7             	mov    %rax,%rdi
+  101c81:	e8 54 01 00 00       	call   101dda <_ZN6kernel6printfIA24_cJjcEEEvRKT_DpRKT0_>
+  101c86:	48 8b 45 98          	mov    -0x68(%rbp),%rax
+  101c8a:	48 83 c0 24          	add    $0x24,%rax
+  101c8e:	48 89 45 d0          	mov    %rax,-0x30(%rbp)
+  101c92:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%rbp)
+  101c99:	e9 94 00 00 00       	jmp    101d32 <_ZL14sdtHeader_loadm+0x1fd>
+  101c9e:	80 7d ef 00          	cmpb   $0x0,-0x11(%rbp)
+  101ca2:	74 14                	je     101cb8 <_ZL14sdtHeader_loadm+0x183>
+  101ca4:	8b 45 f4             	mov    -0xc(%rbp),%eax
+  101ca7:	c1 e0 03             	shl    $0x3,%eax
+  101caa:	89 c2                	mov    %eax,%edx
+  101cac:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+  101cb0:	48 01 d0             	add    %rdx,%rax
+  101cb3:	48 8b 00             	mov    (%rax),%rax
+  101cb6:	eb 13                	jmp    101ccb <_ZL14sdtHeader_loadm+0x196>
+  101cb8:	8b 45 f4             	mov    -0xc(%rbp),%eax
+  101cbb:	c1 e0 02             	shl    $0x2,%eax
+  101cbe:	89 c2                	mov    %eax,%edx
+  101cc0:	48 8b 45 d0          	mov    -0x30(%rbp),%rax
+  101cc4:	48 01 d0             	add    %rdx,%rax
+  101cc7:	8b 00                	mov    (%rax),%eax
+  101cc9:	89 c0                	mov    %eax,%eax
+  101ccb:	48 89 45 c8          	mov    %rax,-0x38(%rbp)
+  101ccf:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
+  101cd3:	48 89 45 c0          	mov    %rax,-0x40(%rbp)
+  101cd7:	8b 45 f4             	mov    -0xc(%rbp),%eax
+  101cda:	89 45 bc             	mov    %eax,-0x44(%rbp)
+  101cdd:	48 8d 45 bc          	lea    -0x44(%rbp),%rax
+  101ce1:	48 8d 15 b4 09 00 00 	lea    0x9b4(%rip),%rdx        # 10269c <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x13c>
+  101ce8:	48 89 c6             	mov    %rax,%rsi
+  101ceb:	48 8d 05 ad 09 00 00 	lea    0x9ad(%rip),%rax        # 10269f <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x13f>
+  101cf2:	48 89 c7             	mov    %rax,%rdi
+  101cf5:	e8 1a 01 00 00       	call   101e14 <_ZN6kernel6printfIA16_cJjA3_cEEEvRKT_DpRKT0_>
+  101cfa:	c7 45 f0 00 00 00 00 	movl   $0x0,-0x10(%rbp)
+  101d01:	eb 1b                	jmp    101d1e <_ZL14sdtHeader_loadm+0x1e9>
+  101d03:	48 8b 55 c0          	mov    -0x40(%rbp),%rdx
+  101d07:	8b 45 f0             	mov    -0x10(%rbp),%eax
+  101d0a:	48 98                	cltq
+  101d0c:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
+  101d10:	0f be c0             	movsbl %al,%eax
+  101d13:	89 c7                	mov    %eax,%edi
+  101d15:	e8 56 ec ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101d1a:	83 45 f0 01          	addl   $0x1,-0x10(%rbp)
+  101d1e:	83 7d f0 03          	cmpl   $0x3,-0x10(%rbp)
+  101d22:	7e df                	jle    101d03 <_ZL14sdtHeader_loadm+0x1ce>
+  101d24:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101d29:	e8 42 ec ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101d2e:	83 45 f4 01          	addl   $0x1,-0xc(%rbp)
+  101d32:	8b 45 ac             	mov    -0x54(%rbp),%eax
+  101d35:	39 45 f4             	cmp    %eax,-0xc(%rbp)
+  101d38:	0f 82 60 ff ff ff    	jb     101c9e <_ZL14sdtHeader_loadm+0x169>
+  101d3e:	c9                   	leave
+  101d3f:	c3                   	ret
+
+0000000000101d40 <_Z14sdtHeader_loadv>:
+  101d40:	f3 0f 1e fa          	endbr64
+  101d44:	55                   	push   %rbp
+  101d45:	48 89 e5             	mov    %rsp,%rbp
+  101d48:	48 83 ec 10          	sub    $0x10,%rsp
+  101d4c:	0f b6 05 9c 37 00 00 	movzbl 0x379c(%rip),%eax        # 1054ef <rsdp+0xf>
+  101d53:	3c 01                	cmp    $0x1,%al
+  101d55:	76 09                	jbe    101d60 <_Z14sdtHeader_loadv+0x20>
+  101d57:	48 8b 05 9a 37 00 00 	mov    0x379a(%rip),%rax        # 1054f8 <rsdp+0x18>
+  101d5e:	eb 08                	jmp    101d68 <_Z14sdtHeader_loadv+0x28>
+  101d60:	8b 05 8a 37 00 00    	mov    0x378a(%rip),%eax        # 1054f0 <rsdp+0x10>
+  101d66:	89 c0                	mov    %eax,%eax
+  101d68:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  101d6c:	48 8d 05 3c 09 00 00 	lea    0x93c(%rip),%rax        # 1026af <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x14f>
+  101d73:	48 89 c7             	mov    %rax,%rdi
+  101d76:	e8 d2 ec ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101d7b:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101d7f:	48 89 c7             	mov    %rax,%rdi
+  101d82:	e8 f8 ed ff ff       	call   100b7f <_ZN6kernel9printfHexEm>
+  101d87:	bf 0a 00 00 00       	mov    $0xa,%edi
+  101d8c:	e8 df eb ff ff       	call   100970 <_ZN6kernel6printfEc>
+  101d91:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101d95:	48 89 c7             	mov    %rax,%rdi
+  101d98:	e8 98 fd ff ff       	call   101b35 <_ZL14sdtHeader_loadm>
+  101d9d:	90                   	nop
+  101d9e:	c9                   	leave
+  101d9f:	c3                   	ret
+
+0000000000101da0 <_ZN6kernel6printfIA23_cJjcEEEvRKT_DpRKT0_>:
+  101da0:	f3 0f 1e fa          	endbr64
+  101da4:	55                   	push   %rbp
+  101da5:	48 89 e5             	mov    %rsp,%rbp
+  101da8:	48 83 ec 20          	sub    $0x20,%rsp
+  101dac:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101db0:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101db4:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101db8:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101dbc:	48 89 c7             	mov    %rax,%rdi
+  101dbf:	e8 89 ec ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101dc4:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101dc8:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101dcc:	48 89 d6             	mov    %rdx,%rsi
+  101dcf:	48 89 c7             	mov    %rax,%rdi
+  101dd2:	e8 4f f7 ff ff       	call   101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>
+  101dd7:	90                   	nop
+  101dd8:	c9                   	leave
+  101dd9:	c3                   	ret
+
+0000000000101dda <_ZN6kernel6printfIA24_cJjcEEEvRKT_DpRKT0_>:
+  101dda:	f3 0f 1e fa          	endbr64
+  101dde:	55                   	push   %rbp
+  101ddf:	48 89 e5             	mov    %rsp,%rbp
+  101de2:	48 83 ec 20          	sub    $0x20,%rsp
+  101de6:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101dea:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101dee:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101df2:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101df6:	48 89 c7             	mov    %rax,%rdi
+  101df9:	e8 4f ec ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101dfe:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101e02:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101e06:	48 89 d6             	mov    %rdx,%rsi
+  101e09:	48 89 c7             	mov    %rax,%rdi
+  101e0c:	e8 15 f7 ff ff       	call   101526 <_ZN6kernel6printfIjJcEEEvRKT_DpRKT0_>
+  101e11:	90                   	nop
+  101e12:	c9                   	leave
+  101e13:	c3                   	ret
+
+0000000000101e14 <_ZN6kernel6printfIA16_cJjA3_cEEEvRKT_DpRKT0_>:
+  101e14:	f3 0f 1e fa          	endbr64
+  101e18:	55                   	push   %rbp
+  101e19:	48 89 e5             	mov    %rsp,%rbp
+  101e1c:	48 83 ec 20          	sub    $0x20,%rsp
+  101e20:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101e24:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101e28:	48 89 55 e8          	mov    %rdx,-0x18(%rbp)
+  101e2c:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101e30:	48 89 c7             	mov    %rax,%rdi
+  101e33:	e8 15 ec ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101e38:	48 8b 55 e8          	mov    -0x18(%rbp),%rdx
+  101e3c:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101e40:	48 89 d6             	mov    %rdx,%rsi
+  101e43:	48 89 c7             	mov    %rax,%rdi
+  101e46:	e8 03 00 00 00       	call   101e4e <_ZN6kernel6printfIjJA3_cEEEvRKT_DpRKT0_>
+  101e4b:	90                   	nop
+  101e4c:	c9                   	leave
+  101e4d:	c3                   	ret
+
+0000000000101e4e <_ZN6kernel6printfIjJA3_cEEEvRKT_DpRKT0_>:
+  101e4e:	f3 0f 1e fa          	endbr64
+  101e52:	55                   	push   %rbp
+  101e53:	48 89 e5             	mov    %rsp,%rbp
+  101e56:	48 83 ec 10          	sub    $0x10,%rsp
+  101e5a:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  101e5e:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  101e62:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+  101e66:	8b 00                	mov    (%rax),%eax
+  101e68:	89 c7                	mov    %eax,%edi
+  101e6a:	e8 15 ec ff ff       	call   100a84 <_ZN6kernel6printfEj>
+  101e6f:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  101e73:	48 89 c7             	mov    %rax,%rdi
+  101e76:	e8 d2 eb ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  101e7b:	90                   	nop
+  101e7c:	c9                   	leave
+  101e7d:	c3                   	ret
+
+0000000000101e7e <_Z8gdt_loadv>:
+  101e7e:	f3 0f 1e fa          	endbr64
+  101e82:	55                   	push   %rbp
+  101e83:	48 89 e5             	mov    %rsp,%rbp
+  101e86:	48 83 ec 10          	sub    $0x10,%rsp
+  101e8a:	66 c7 45 f6 27 00    	movw   $0x27,-0xa(%rbp)
+  101e90:	48 8d 05 89 11 00 00 	lea    0x1189(%rip),%rax        # 103020 <gdt>
+  101e97:	48 89 45 f8          	mov    %rax,-0x8(%rbp)
+  101e9b:	0f 01 55 f6          	lgdt   -0xa(%rbp)
+  101e9f:	6a 08                	push   $0x8
+  101ea1:	48 8d 05 03 00 00 00 	lea    0x3(%rip),%rax        # 101eab <_Z8gdt_loadv+0x2d>
+  101ea8:	50                   	push   %rax
+  101ea9:	48 cb                	lretq
+  101eab:	66 b8 10 00          	mov    $0x10,%ax
+  101eaf:	8e d8                	mov    %eax,%ds
+  101eb1:	8e c0                	mov    %eax,%es
+  101eb3:	8e e0                	mov    %eax,%fs
+  101eb5:	8e e8                	mov    %eax,%gs
+  101eb7:	8e d0                	mov    %eax,%ss
+  101eb9:	90                   	nop
+  101eba:	c9                   	leave
+  101ebb:	c3                   	ret
+
+0000000000101ebc <_Z4outbth>:
+  101ebc:	f3 0f 1e fa          	endbr64
+  101ec0:	55                   	push   %rbp
+  101ec1:	48 89 e5             	mov    %rsp,%rbp
+  101ec4:	48 83 ec 08          	sub    $0x8,%rsp
+  101ec8:	89 fa                	mov    %edi,%edx
+  101eca:	89 f0                	mov    %esi,%eax
+  101ecc:	66 89 55 fc          	mov    %dx,-0x4(%rbp)
+  101ed0:	88 45 f8             	mov    %al,-0x8(%rbp)
+  101ed3:	0f b6 45 f8          	movzbl -0x8(%rbp),%eax
+  101ed7:	0f b7 55 fc          	movzwl -0x4(%rbp),%edx
+  101edb:	ee                   	out    %al,(%dx)
+  101edc:	90                   	nop
+  101edd:	c9                   	leave
+  101ede:	c3                   	ret
+
+0000000000101edf <_Z9pic_remapv>:
+  101edf:	f3 0f 1e fa          	endbr64
+  101ee3:	55                   	push   %rbp
+  101ee4:	48 89 e5             	mov    %rsp,%rbp
+  101ee7:	48 83 ec 10          	sub    $0x10,%rsp
+  101eeb:	bf 21 00 00 00       	mov    $0x21,%edi
+  101ef0:	e8 ba e2 ff ff       	call   1001af <_Z3inbt>
+  101ef5:	88 45 ff             	mov    %al,-0x1(%rbp)
+  101ef8:	bf a1 00 00 00       	mov    $0xa1,%edi
+  101efd:	e8 ad e2 ff ff       	call   1001af <_Z3inbt>
+  101f02:	88 45 fe             	mov    %al,-0x2(%rbp)
+  101f05:	be 11 00 00 00       	mov    $0x11,%esi
+  101f0a:	bf 20 00 00 00       	mov    $0x20,%edi
+  101f0f:	e8 a8 ff ff ff       	call   101ebc <_Z4outbth>
+  101f14:	be 11 00 00 00       	mov    $0x11,%esi
+  101f19:	bf a0 00 00 00       	mov    $0xa0,%edi
+  101f1e:	e8 99 ff ff ff       	call   101ebc <_Z4outbth>
+  101f23:	be 20 00 00 00       	mov    $0x20,%esi
+  101f28:	bf 21 00 00 00       	mov    $0x21,%edi
+  101f2d:	e8 8a ff ff ff       	call   101ebc <_Z4outbth>
+  101f32:	be 28 00 00 00       	mov    $0x28,%esi
+  101f37:	bf a1 00 00 00       	mov    $0xa1,%edi
+  101f3c:	e8 7b ff ff ff       	call   101ebc <_Z4outbth>
+  101f41:	be 04 00 00 00       	mov    $0x4,%esi
+  101f46:	bf 21 00 00 00       	mov    $0x21,%edi
+  101f4b:	e8 6c ff ff ff       	call   101ebc <_Z4outbth>
+  101f50:	be 02 00 00 00       	mov    $0x2,%esi
+  101f55:	bf a1 00 00 00       	mov    $0xa1,%edi
+  101f5a:	e8 5d ff ff ff       	call   101ebc <_Z4outbth>
+  101f5f:	be 01 00 00 00       	mov    $0x1,%esi
+  101f64:	bf 21 00 00 00       	mov    $0x21,%edi
+  101f69:	e8 4e ff ff ff       	call   101ebc <_Z4outbth>
+  101f6e:	be 01 00 00 00       	mov    $0x1,%esi
+  101f73:	bf a1 00 00 00       	mov    $0xa1,%edi
+  101f78:	e8 3f ff ff ff       	call   101ebc <_Z4outbth>
+  101f7d:	0f b6 45 ff          	movzbl -0x1(%rbp),%eax
+  101f81:	89 c6                	mov    %eax,%esi
+  101f83:	bf 21 00 00 00       	mov    $0x21,%edi
+  101f88:	e8 2f ff ff ff       	call   101ebc <_Z4outbth>
+  101f8d:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  101f91:	89 c6                	mov    %eax,%esi
+  101f93:	bf a1 00 00 00       	mov    $0xa1,%edi
+  101f98:	e8 1f ff ff ff       	call   101ebc <_Z4outbth>
+  101f9d:	90                   	nop
+  101f9e:	c9                   	leave
+  101f9f:	c3                   	ret
+
+0000000000101fa0 <_Z7pic_eoih>:
+  101fa0:	f3 0f 1e fa          	endbr64
+  101fa4:	55                   	push   %rbp
+  101fa5:	48 89 e5             	mov    %rsp,%rbp
+  101fa8:	48 83 ec 10          	sub    $0x10,%rsp
+  101fac:	89 f8                	mov    %edi,%eax
+  101fae:	88 45 fc             	mov    %al,-0x4(%rbp)
+  101fb1:	80 7d fc 07          	cmpb   $0x7,-0x4(%rbp)
+  101fb5:	76 0f                	jbe    101fc6 <_Z7pic_eoih+0x26>
+  101fb7:	be 20 00 00 00       	mov    $0x20,%esi
+  101fbc:	bf a0 00 00 00       	mov    $0xa0,%edi
+  101fc1:	e8 f6 fe ff ff       	call   101ebc <_Z4outbth>
+  101fc6:	be 20 00 00 00       	mov    $0x20,%esi
+  101fcb:	bf 20 00 00 00       	mov    $0x20,%edi
+  101fd0:	e8 e7 fe ff ff       	call   101ebc <_Z4outbth>
+  101fd5:	90                   	nop
+  101fd6:	c9                   	leave
+  101fd7:	c3                   	ret
+
+0000000000101fd8 <_Z8pit_initj>:
+  101fd8:	f3 0f 1e fa          	endbr64
+  101fdc:	55                   	push   %rbp
+  101fdd:	48 89 e5             	mov    %rsp,%rbp
+  101fe0:	48 83 ec 20          	sub    $0x20,%rsp
+  101fe4:	89 7d ec             	mov    %edi,-0x14(%rbp)
+  101fe7:	b8 de 34 12 00       	mov    $0x1234de,%eax
+  101fec:	ba 00 00 00 00       	mov    $0x0,%edx
+  101ff1:	f7 75 ec             	divl   -0x14(%rbp)
+  101ff4:	89 45 fc             	mov    %eax,-0x4(%rbp)
+  101ff7:	be 36 00 00 00       	mov    $0x36,%esi
+  101ffc:	bf 43 00 00 00       	mov    $0x43,%edi
+  102001:	e8 b6 fe ff ff       	call   101ebc <_Z4outbth>
+  102006:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  102009:	0f b6 c0             	movzbl %al,%eax
+  10200c:	89 c6                	mov    %eax,%esi
+  10200e:	bf 40 00 00 00       	mov    $0x40,%edi
+  102013:	e8 a4 fe ff ff       	call   101ebc <_Z4outbth>
+  102018:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  10201b:	c1 e8 08             	shr    $0x8,%eax
+  10201e:	0f b6 c0             	movzbl %al,%eax
+  102021:	89 c6                	mov    %eax,%esi
+  102023:	bf 40 00 00 00       	mov    $0x40,%edi
+  102028:	e8 8f fe ff ff       	call   101ebc <_Z4outbth>
+  10202d:	90                   	nop
+  10202e:	c9                   	leave
+  10202f:	c3                   	ret
+
+0000000000102030 <_ZN6kernel16setTickCallbacksEv>:
+  102030:	f3 0f 1e fa          	endbr64
+  102034:	55                   	push   %rbp
+  102035:	48 89 e5             	mov    %rsp,%rbp
+  102038:	90                   	nop
+  102039:	5d                   	pop    %rbp
+  10203a:	c3                   	ret
+  10203b:	90                   	nop
+
+000000000010203c <_ZN6Kernel4InitEv>:
+  10203c:	f3 0f 1e fa          	endbr64
+  102040:	55                   	push   %rbp
+  102041:	48 89 e5             	mov    %rsp,%rbp
+  102044:	48 83 ec 20          	sub    $0x20,%rsp
+  102048:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+  10204c:	e8 5f e8 ff ff       	call   1008b0 <_ZN6kernel12clearConsoleEv>
+  102051:	48 8d 05 7c 06 00 00 	lea    0x67c(%rip),%rax        # 1026d4 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x4>
+  102058:	48 89 c7             	mov    %rax,%rdi
+  10205b:	e8 ed e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  102060:	48 8d 05 85 06 00 00 	lea    0x685(%rip),%rax        # 1026ec <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x1c>
+  102067:	48 89 c7             	mov    %rax,%rdi
+  10206a:	e8 de e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  10206f:	e8 0a fe ff ff       	call   101e7e <_Z8gdt_loadv>
+  102074:	48 8d 05 87 06 00 00 	lea    0x687(%rip),%rax        # 102702 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x32>
+  10207b:	48 89 c7             	mov    %rax,%rdi
+  10207e:	e8 ca e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  102083:	e8 c0 f0 ff ff       	call   101148 <_Z8idt_initv>
+  102088:	48 8d 05 89 06 00 00 	lea    0x689(%rip),%rax        # 102718 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x48>
+  10208f:	48 89 c7             	mov    %rax,%rdi
+  102092:	e8 b6 e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  102097:	e8 9d f8 ff ff       	call   101939 <_Z9rsdp_loadv>
+  10209c:	48 8d 05 8c 06 00 00 	lea    0x68c(%rip),%rax        # 10272f <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x5f>
+  1020a3:	48 89 c7             	mov    %rax,%rdi
+  1020a6:	e8 a2 e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1020ab:	e8 90 fc ff ff       	call   101d40 <_Z14sdtHeader_loadv>
+  1020b0:	c6 45 ff 02          	movb   $0x2,-0x1(%rbp)
+  1020b4:	48 8d 55 ff          	lea    -0x1(%rbp),%rdx
+  1020b8:	48 8d 45 fe          	lea    -0x2(%rbp),%rax
+  1020bc:	48 89 d6             	mov    %rdx,%rsi
+  1020bf:	48 89 c7             	mov    %rax,%rdi
+  1020c2:	e8 57 e8 ff ff       	call   10091e <_ZN6kernel11ScopedColorC1ERKNS_5ColorE>
+  1020c7:	48 8d 05 82 06 00 00 	lea    0x682(%rip),%rax        # 102750 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0x80>
+  1020ce:	48 89 c7             	mov    %rax,%rdi
+  1020d1:	e8 77 e9 ff ff       	call   100a4d <_ZN6kernel6printfEPKc>
+  1020d6:	48 c7 c0 a4 03 10 00 	mov    $0x1003a4,%rax
+  1020dd:	48 89 c6             	mov    %rax,%rsi
+  1020e0:	48 c7 c0 4c 0d 10 00 	mov    $0x100d4c,%rax
+  1020e7:	48 89 c7             	mov    %rax,%rdi
+  1020ea:	e8 85 00 00 00       	call   102174 <_ZN6kernel16setTickCallbacksIFvvEJS1_EEEvRKT_DpRKT0_>
+  1020ef:	48 8d 45 fe          	lea    -0x2(%rbp),%rax
+  1020f3:	48 89 c7             	mov    %rax,%rdi
+  1020f6:	e8 55 e8 ff ff       	call   100950 <_ZN6kernel11ScopedColorD1Ev>
+  1020fb:	c9                   	leave
+  1020fc:	c3                   	ret
+  1020fd:	90                   	nop
+
+00000000001020fe <_ZN6Kernel3RunEv>:
+  1020fe:	f3 0f 1e fa          	endbr64
+  102102:	55                   	push   %rbp
+  102103:	48 89 e5             	mov    %rsp,%rbp
+  102106:	48 83 ec 20          	sub    $0x20,%rsp
+  10210a:	48 89 7d e8          	mov    %rdi,-0x18(%rbp)
+  10210e:	48 8b 45 e8          	mov    -0x18(%rbp),%rax
+  102112:	48 89 c7             	mov    %rax,%rdi
+  102115:	e8 22 ff ff ff       	call   10203c <_ZN6Kernel4InitEv>
+  10211a:	e8 76 e2 ff ff       	call   100395 <_ZN6kernel8keyboard7getCharEv>
+  10211f:	88 45 ff             	mov    %al,-0x1(%rbp)
+  102122:	80 7d ff 1b          	cmpb   $0x1b,-0x1(%rbp)
+  102126:	75 3f                	jne    102167 <_ZN6Kernel3RunEv+0x69>
+  102128:	48 8d 45 fe          	lea    -0x2(%rbp),%rax
+  10212c:	48 89 c7             	mov    %rax,%rdi
+  10212f:	e8 aa e1 ff ff       	call   1002de <_ZN6kernel8keyboard10readEscapeERh>
+  102134:	84 c0                	test   %al,%al
+  102136:	74 e2                	je     10211a <_ZN6Kernel3RunEv+0x1c>
+  102138:	0f b6 45 fe          	movzbl -0x2(%rbp),%eax
+  10213c:	0f b6 c0             	movzbl %al,%eax
+  10213f:	3d 82 00 00 00       	cmp    $0x82,%eax
+  102144:	74 09                	je     10214f <_ZN6Kernel3RunEv+0x51>
+  102146:	3d 83 00 00 00       	cmp    $0x83,%eax
+  10214b:	74 0e                	je     10215b <_ZN6Kernel3RunEv+0x5d>
+  10214d:	eb 23                	jmp    102172 <_ZN6Kernel3RunEv+0x74>
+  10214f:	bf 00 00 00 00       	mov    $0x0,%edi
+  102154:	e8 13 eb ff ff       	call   100c6c <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE>
+  102159:	eb 17                	jmp    102172 <_ZN6Kernel3RunEv+0x74>
+  10215b:	bf 01 00 00 00       	mov    $0x1,%edi
+  102160:	e8 07 eb ff ff       	call   100c6c <_ZN6kernel16moveVisualCursorENS_17MovementDirectionE>
+  102165:	eb 0b                	jmp    102172 <_ZN6Kernel3RunEv+0x74>
+  102167:	0f be 45 ff          	movsbl -0x1(%rbp),%eax
+  10216b:	89 c7                	mov    %eax,%edi
+  10216d:	e8 fe e7 ff ff       	call   100970 <_ZN6kernel6printfEc>
+  102172:	eb a6                	jmp    10211a <_ZN6Kernel3RunEv+0x1c>
+
+0000000000102174 <_ZN6kernel16setTickCallbacksIFvvEJS1_EEEvRKT_DpRKT0_>:
+  102174:	f3 0f 1e fa          	endbr64
+  102178:	55                   	push   %rbp
+  102179:	48 89 e5             	mov    %rsp,%rbp
+  10217c:	48 83 ec 10          	sub    $0x10,%rsp
+  102180:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  102184:	48 89 75 f0          	mov    %rsi,-0x10(%rbp)
+  102188:	8b 05 12 31 00 00    	mov    0x3112(%rip),%eax        # 1052a0 <_ZN6kernel11callBackNumE>
+  10218e:	83 f8 3e             	cmp    $0x3e,%eax
+  102191:	76 1e                	jbe    1021b1 <_ZN6kernel16setTickCallbacksIFvvEJS1_EEEvRKT_DpRKT0_+0x3d>
+  102193:	ba 20 00 00 00       	mov    $0x20,%edx
+  102198:	48 8d 05 d9 05 00 00 	lea    0x5d9(%rip),%rax        # 102778 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xa8>
+  10219f:	48 89 c6             	mov    %rax,%rsi
+  1021a2:	48 8d 05 07 06 00 00 	lea    0x607(%rip),%rax        # 1027b0 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xe0>
+  1021a9:	48 89 c7             	mov    %rax,%rdi
+  1021ac:	e8 c5 f3 ff ff       	call   101576 <_ZN6kernel5panicEPKcS1_i>
+  1021b1:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+  1021b5:	8b 05 e5 30 00 00    	mov    0x30e5(%rip),%eax        # 1052a0 <_ZN6kernel11callBackNumE>
+  1021bb:	8d 48 01             	lea    0x1(%rax),%ecx
+  1021be:	89 0d dc 30 00 00    	mov    %ecx,0x30dc(%rip)        # 1052a0 <_ZN6kernel11callBackNumE>
+  1021c4:	89 c0                	mov    %eax,%eax
+  1021c6:	48 8d 0c c5 00 00 00 	lea    0x0(,%rax,8),%rcx
+  1021cd:	00 
+  1021ce:	48 8d 05 eb 30 00 00 	lea    0x30eb(%rip),%rax        # 1052c0 <_ZN6kernel9callbacksE>
+  1021d5:	48 89 14 01          	mov    %rdx,(%rcx,%rax,1)
+  1021d9:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  1021dd:	48 89 c7             	mov    %rax,%rdi
+  1021e0:	e8 03 00 00 00       	call   1021e8 <_ZN6kernel16setTickCallbacksIFvvEJEEEvRKT_DpRKT0_>
+  1021e5:	90                   	nop
+  1021e6:	c9                   	leave
+  1021e7:	c3                   	ret
+
+00000000001021e8 <_ZN6kernel16setTickCallbacksIFvvEJEEEvRKT_DpRKT0_>:
+  1021e8:	f3 0f 1e fa          	endbr64
+  1021ec:	55                   	push   %rbp
+  1021ed:	48 89 e5             	mov    %rsp,%rbp
+  1021f0:	48 83 ec 10          	sub    $0x10,%rsp
+  1021f4:	48 89 7d f8          	mov    %rdi,-0x8(%rbp)
+  1021f8:	8b 05 a2 30 00 00    	mov    0x30a2(%rip),%eax        # 1052a0 <_ZN6kernel11callBackNumE>
+  1021fe:	83 f8 3e             	cmp    $0x3e,%eax
+  102201:	76 1e                	jbe    102221 <_ZN6kernel16setTickCallbacksIFvvEJEEEvRKT_DpRKT0_+0x39>
+  102203:	ba 20 00 00 00       	mov    $0x20,%edx
+  102208:	48 8d 05 69 05 00 00 	lea    0x569(%rip),%rax        # 102778 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xa8>
+  10220f:	48 89 c6             	mov    %rax,%rsi
+  102212:	48 8d 05 97 05 00 00 	lea    0x597(%rip),%rax        # 1027b0 <_ZN6kernelL22MAX_TICK_CALLBACKS_NUME+0xe0>
+  102219:	48 89 c7             	mov    %rax,%rdi
+  10221c:	e8 55 f3 ff ff       	call   101576 <_ZN6kernel5panicEPKcS1_i>
+  102221:	48 8b 55 f8          	mov    -0x8(%rbp),%rdx
+  102225:	8b 05 75 30 00 00    	mov    0x3075(%rip),%eax        # 1052a0 <_ZN6kernel11callBackNumE>
+  10222b:	8d 48 01             	lea    0x1(%rax),%ecx
+  10222e:	89 0d 6c 30 00 00    	mov    %ecx,0x306c(%rip)        # 1052a0 <_ZN6kernel11callBackNumE>
+  102234:	89 c0                	mov    %eax,%eax
+  102236:	48 8d 0c c5 00 00 00 	lea    0x0(,%rax,8),%rcx
+  10223d:	00 
+  10223e:	48 8d 05 7b 30 00 00 	lea    0x307b(%rip),%rax        # 1052c0 <_ZN6kernel9callbacksE>
+  102245:	48 89 14 01          	mov    %rdx,(%rcx,%rax,1)
+  102249:	e8 e2 fd ff ff       	call   102030 <_ZN6kernel16setTickCallbacksEv>
+  10224e:	90                   	nop
+  10224f:	c9                   	leave
+  102250:	c3                   	ret

@@ -30,12 +30,17 @@ KERNEL_MAIN_SECTORS=$((("$KERNEL_MAIN_SIZE" +511) / 512))
 
 KERNEL_MAIN_LBA=$((STAGE2_SECTORS + 1))
 
+MEMORY_MAP_ADDRESS="0x7000"
+MEMORY_MAP_ENTRY_COUNT_ADDRESS="0x6FF8"
+
 # --- Pass 2 / Final Pass ---
 rm -rf build
 mkdir -p build
 
 cat > include/asm/boot-config.nasm << EOF 
 STAGE2_SECTORS equ ${STAGE2_SECTORS} 
+MEMORY_MAP_ADDRESS equ ${MEMORY_MAP_ADDRESS} 
+MEMORY_MAP_ENTRY_COUNT_ADDRESS equ ${MEMORY_MAP_ENTRY_COUNT_ADDRESS}
 EOF
 
 cat > include/kernel/kernel-config.hpp << EOF
@@ -46,6 +51,9 @@ cat > include/kernel/kernel-config.hpp << EOF
 constexpr unsigned int KERNEL_MAIN_LBA = ${KERNEL_MAIN_LBA};
 constexpr unsigned int KERNEL_MAIN_SECTORS = ${KERNEL_MAIN_SECTORS};
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
+
+constexpr unsigned int MEMORY_MAP_ADDRESS = ${MEMORY_MAP_ADDRESS};
+constexpr unsigned int MEMORY_MAP_ENTRY_COUNT_ADDRESS = ${MEMORY_MAP_ENTRY_COUNT_ADDRESS};
 EOF
 
 # building bootloader

@@ -42,4 +42,6 @@ SECTIONS {
         . += 0x10000;
         stack_top = .;
     } :data
+
+    _kernel_end = .;
 }

@@ -3,6 +3,15 @@
 #include <stdint.h>
 
 namespace kernel {
+    struct VGA_Character {
+        char character;
+        char colorAttribute;
+
+        operator bool() const {
+            return character && colorAttribute;
+        }
+    };
+    
     enum class Color : unsigned char {
         BLACK_ON_WHITE = 0xF0,
         WHITE_ON_BLACK = 0x0F,
@@ -14,6 +23,7 @@ namespace kernel {
         MAGENTA_ON_BLACK = 0x0D,
         FULL_BLACK = 0x00
     };
+    char getColorAttribute(Color colorAttribute);
 
     void clearConsole();
 
@@ -31,6 +41,7 @@ namespace kernel {
     inline void printf() {}
     void printf(char c);
     void printf(const char* str);
+    void printf(uint64_t n);
     void printf(uint32_t n);
     void printf(uint16_t n);
     void printf(int n);

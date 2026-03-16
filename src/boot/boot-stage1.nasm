@@ -1,4 +1,4 @@
-%include "asm/boot-config.nasm"
+%include 'asm/boot-config.nasm'
 
 org 0x7C00
 [bits 16]
@@ -55,6 +55,40 @@ _start:
     
     jc disk_error ; error -> carry flag set
 
+    ; loading memory map address
+Load_MemoryMap:
+    xor ebx, ebx          ; ebx=0 means "first call"
+    mov edi, MEMORY_MAP_ADDRESS       ; destination buffer
+
+    mov word [MEMORY_MAP_ENTRY_COUNT_ADDRESS], 0
+    
+.loop:
+    mov eax, 0xE820
+    mov edx, 0x534D4150
+    mov ecx, 24
+    int 0x15
+    jc  .done          ; carry flag set = end of list or error
+    inc word [MEMORY_MAP_ENTRY_COUNT_ADDRESS]
+    add edi, 24        ; advance buffer pointer
+    test ebx, ebx      ; ebx=0 means no more entries
+    jnz .loop
+
+.done:
+
+EnableFloatingPoint:
+    mov eax, cr0
+    and eax, ~(1 << 2)   ; clear EM (emulation) bit
+    or  eax, (1 << 1)    ; set MP (monitor coprocessor)
+    mov cr0, eax
+    
+    mov eax, cr4
+    or  eax, (1 << 9)    ; set OSFXSR  (enable SSE)
+    or  eax, (1 << 10)   ; set OSXMMEXCPT (enable SSE exceptions)
+    mov cr4, eax
+    
+    fninit               ; initialize FPU state
+
+SwitchToPM:
     ; switching to protected mode (32-bit)
     cli ; disable 16-bit real mode interrupts
     call enable_a20 
@@ -103,6 +137,10 @@ protected_mode_entry:
     mov ss, ax
 
     mov esp, 0x90000 ; safe stack
+
+    
+
+    
 
     ; far jump to flush prefetch and load CS
     ; Jump to stage-2 at physical address 0x8000
@@ -159,7 +197,6 @@ gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
     dd gdt_start
-
 
 data:
     greetingMsg db "Welcome to Lexvi's bootloader", 0 ; 0-terminated string
