@@ -37,9 +37,11 @@ SECTIONS {
         _init_array_end = .;
     } :data
 
+    KERNEL_STACK_SIZE = 0x10000;   /* 64KB — change here only */
+
     .stack (NOLOAD) : ALIGN(4096) {
         stack_bottom = .;
-        . += 0x10000;
+        . += KERNEL_STACK_SIZE;
         stack_top = .;
     } :data
 

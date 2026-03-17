@@ -44,9 +44,11 @@ MEMORY_MAP_ENTRY_COUNT_ADDRESS equ ${MEMORY_MAP_ENTRY_COUNT_ADDRESS}
 EOF
 
 cat > include/kernel/kernel-config.hpp << EOF
+// This is an auto-generated header file from the build.sh script
+
 #pragma once
 
-// This is an auto-generated header file from the build.sh script
+#include "stdint.h"
 
 constexpr unsigned int KERNEL_MAIN_LBA = ${KERNEL_MAIN_LBA};
 constexpr unsigned int KERNEL_MAIN_SECTORS = ${KERNEL_MAIN_SECTORS};
@@ -54,6 +56,16 @@ constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
 constexpr unsigned int MEMORY_MAP_ADDRESS = ${MEMORY_MAP_ADDRESS};
 constexpr unsigned int MEMORY_MAP_ENTRY_COUNT_ADDRESS = ${MEMORY_MAP_ENTRY_COUNT_ADDRESS};
+
+extern "C" {
+    extern char stack_top[];
+    extern char stack_bottom[];
+    extern char _kernel_end[];
+}
+
+inline uint64_t GetKernelStackSize() {
+    return reinterpret_cast<uint64_t>(stack_top) - reinterpret_cast<uint64_t>(stack_bottom);
+}
 EOF
 
 # building bootloader

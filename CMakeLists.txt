@@ -18,6 +18,7 @@ add_executable(kernel-main
     src/kernel/syscall/syscall.cpp
     src/kernel/console/console.cpp
     src/kernel/interrupt/idt.cpp
+    src/kernel/utils/memory.cpp
     src/kernel/kernel-main.cpp
     src/kernel/error/error.cpp
     src/kernel/memory/pmm.cpp
