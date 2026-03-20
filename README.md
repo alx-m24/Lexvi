@@ -5,17 +5,21 @@
 ## About
 
 Lexvi is an OS built from scratch, primarily written in **Assembly** and **C++**. It is a bare-metal project, no OS abstraction layers, no frameworks, simply raw hardware interaction.
-
 The project is **open source**. Contributions, forks, and experiments are welcome.
+
+![Early Test on old Dell Inspiron 15](Demo.jpg)
+*Early Test on old Dell Inspiron 15*
+
+---
 
 ```mermaid
 pie title Languages
-    "Assembly (bootloader)" : 16.4
-    "C++ (kernel)" : 65.8
-    "Shell (build & utility scripts)" : 4.4
-    "CMake (C++ build scripts)" : 2.1
+    "Assembly (bootloader)" : 15.3
+    "C++ (kernel)" : 67.4
+    "Shell (build & utility scripts)" : 5.5
+    "CMake (C++ build scripts)" : 1.8
     "Linker Script (manual memory placements)" : 1.0
-    "C (third-party header files)" : 10.3
+    "C (third-party header files)" : 9.0
 ```
 
 ---
