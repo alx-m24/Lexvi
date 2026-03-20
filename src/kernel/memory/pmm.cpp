@@ -39,18 +39,21 @@ namespace kernel {
         m_window->printf("pml4="); m_window->printfHex(reinterpret_cast<uint64_t>(pml4)); m_window->printf("\n");
         m_window->printf("pdpt="); m_window->printfHex(reinterpret_cast<uint64_t>(pdpt)); m_window->printf("\n");
         m_window->printf("pd_s="); m_window->printfHex(reinterpret_cast<uint64_t>(pd_s)); m_window->printf("\n");
-    
+
         m_window->printf("Step 3: zeroing pml4\n");
+        // Zero PML4 (512 entries × 8 bytes = 4KB)
         memset(pml4, 0, PAGE_SIZE);
-
+        
         m_window->printf("Step 4: zeroing pdpt\n");
+        // Zero PDPT (512 entries × 8 bytes = 4KB)
         memset(pdpt, 0, PAGE_SIZE);
-
+        
         m_window->printf("Step 5: zeroing pd_s\n");
+        // Zero each PD (pdNum PDs, each 512 entries × 8 bytes = 4KB)
         for (uint64_t i = 0; i < pdNum; ++i) {
             memset(pd_s + i * 512, 0, PAGE_SIZE);
         }
-    
+        
         m_window->printf("Step 6: wiring pml4\n");
         pml4[0] = reinterpret_cast<uint64_t>(pdpt) | 0x3;
 
