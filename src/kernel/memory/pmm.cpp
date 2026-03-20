@@ -42,16 +42,16 @@ namespace kernel {
 
         m_window->printf("Step 3: zeroing pml4\n");
         // Zero PML4 (512 entries × 8 bytes = 4KB)
-        memset(pml4, 0, PAGE_SIZE);
+        memset(pml4, 0, 4096);
         
         m_window->printf("Step 4: zeroing pdpt\n");
         // Zero PDPT (512 entries × 8 bytes = 4KB)
-        memset(pdpt, 0, PAGE_SIZE);
+        memset(pdpt, 0, 4096);
         
         m_window->printf("Step 5: zeroing pd_s\n");
         // Zero each PD (pdNum PDs, each 512 entries × 8 bytes = 4KB)
         for (uint64_t i = 0; i < pdNum; ++i) {
-            memset(pd_s + i * 512, 0, PAGE_SIZE);
+            memset(pd_s + i * 512, 0, 4096);
         }
         
         m_window->printf("Step 6: wiring pml4\n");
