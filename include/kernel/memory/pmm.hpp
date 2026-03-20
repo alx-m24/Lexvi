@@ -25,10 +25,11 @@ namespace kernel {
     class PMM {
         private:
             MemoryWindow* m_window = nullptr;
+            bool m_allMemoryMapped = false;
 
         private:
-            static constexpr uint32_t PAGE_SIZE = 0x200000; // 2MB
-            static constexpr uint64_t pdEntriesNum = 512;
+            static constexpr uint32_t PAGE_SIZE = 4096; // 4KB
+            static constexpr uint64_t TABLE_ENTRIES_NUM = 512;
 
             const uint64_t KERNEL_END_ADDRESS = reinterpret_cast<uint64_t>(_kernel_end);
             const uint32_t MEMORY_MAP_ENTRY_COUNT = *reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
@@ -37,10 +38,12 @@ namespace kernel {
             uint64_t m_totalPages = 0;
 
             uint64_t* pml4 = reinterpret_cast<uint64_t*>(KERNEL_END_ADDRESS);
-            uint64_t* pdpt = pml4 + 512;    // 4KB after PML4   // covers 512 GB
-            uint64_t* pd_s = 0;     // 4KB after previous and so on... // covers 1 GB each
+            uint64_t* pdpt = pml4 + 512;    // 4KB after PML4                       // covers 512 GB total
+            uint64_t* pd_s = 0;             // 4KB after previous and so on...      // covers 1 GB each
+            uint64_t* pt_s = 0;                                                     // covers 4kb each
 
             uint64_t pdNum = 1;
+            uint64_t ptNum = 1;
 
             uint64_t PageTables_End_Address = 0;
 
@@ -54,6 +57,7 @@ namespace kernel {
             void Init(MemoryWindow* window);
 
         private:
+            void MapAllMemory_2MB();
             void ResetPageTable();
             void ResetBitMap();
 

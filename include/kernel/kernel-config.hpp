@@ -5,7 +5,7 @@
 #include "stdint.h"
 
 constexpr unsigned int KERNEL_MAIN_LBA = 9;
-constexpr unsigned int KERNEL_MAIN_SECTORS = 79;
+constexpr unsigned int KERNEL_MAIN_SECTORS = 83;
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
 constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = 0x10000;
