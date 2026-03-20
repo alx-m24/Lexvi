@@ -7,10 +7,19 @@ extern stack_top
 
 extern _init_array_start
 extern _init_array_end
+extern _bss_start
+extern _bss_end
 
 kernel_main:
     mov rsp, stack_top
     xor rbp, rbp
+
+    ; zero BSS
+    mov rdi, _bss_start
+    mov rcx, _bss_end
+    sub rcx, rdi
+    xor al, al
+    rep stosb
 
     ; call global constructors
     mov rbx, _init_array_start

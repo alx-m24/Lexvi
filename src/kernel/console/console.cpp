@@ -93,7 +93,7 @@ namespace kernel {
     }
 
     void printf(const char* str) {
-        if (logWindow != nullptr) { logWindow->printf(str); return; }
+        // if (logWindow != nullptr) { logWindow->printf(str); return; }
         for (; *str != '\0'; ++str) printf(*str);
     }
    

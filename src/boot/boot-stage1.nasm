@@ -10,13 +10,14 @@ org 0x7C00
 
 ; INT instruction -> INTERRUPT
 _start:
-    mov [boot_drive], dl
-
     xor ax, ax
     mov ds, ax
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00    ; stack grows down from bootloader start
+
+    ; saving boot drive
+    mov [boot_drive_addr], dl
 
     ; Setting cursor mode;
     ;   - AH -> bios function
@@ -50,15 +51,28 @@ _start:
     mov ch, 0 ; cylinder 0
     mov cl, 2 ; sector number
     mov dh, 0 ; head 0
-    mov dl, [boot_drive]
+    mov dl, [boot_drive_addr]
     int 13h
     
     jc disk_error ; error -> carry flag set
 
+    ; loading kernel into temporary address
+    mov ax, TEMP_KERNEL_MAIN_LOAD_ADDR / 16
+    mov es, ax  ; ES = 0x1000
+    xor bx, bx  ; BX = 0x0000 -> :BX = 0x1000:0x00000 = phys 0x10000
+    
+    mov si, data.dap
+    mov ah, 0x42
+    mov dl, [boot_drive_addr]
+    int 13h
+    jc disk_error
+
     ; loading memory map address
 Load_MemoryMap:
-    xor ebx, ebx          ; ebx=0 means "first call"
-    mov edi, MEMORY_MAP_ADDRESS       ; destination buffer
+    xor ebx, ebx
+    xor ax, ax
+    mov es, ax                    ; ES = 0 so ES:DI = 0x0000:0x7000 = phys 0x7000
+    mov edi, MEMORY_MAP_ADDRESS
 
     mov word [MEMORY_MAP_ENTRY_COUNT_ADDRESS], 0
     
@@ -138,10 +152,6 @@ protected_mode_entry:
 
     mov esp, 0x90000 ; safe stack
 
-    
-
-    
-
     ; far jump to flush prefetch and load CS
     ; Jump to stage-2 at physical address 0x8000
     jmp 0x8000
@@ -199,17 +209,31 @@ gdt_descriptor:
     dd gdt_start
 
 data:
+.dap:
+    db 0x10        ; size of DAP
+    db 0           ; reserved
+    dw KERNEL_MAIN_SECTORS
+    dw 0x0000      ; buffer offset
+    dw 0x1000      ; buffer segment -> 0x1000:0x0000 = 0x10000
+    dq KERNEL_MAIN_LBA
+    boot_drive_addr equ 0x500
     greetingMsg db "Welcome to Lexvi's bootloader", 0 ; 0-terminated string
-    diskErrorMsg db "Failed to read sector 2", 0 ; 0-terminated string
+    diskErrorMsg db "   Failed to read sector 2", 0 ; 0-terminated string
 
-    boot_drive db 0
 
     ; using times command:
     ;   - times N <instruction>
     ;   - times repeats the instruction N times
     ;   - $ gives current address
     ;   - $$ address of start of the section
-    times 510 - ($ - $$) db 0 ; writes 0 from here to the 510th byte
-    ; 2 bytes of signature (for BIOS to recognize this as bootloader)
-    db 0x55
-    db 0xAA
+    times 446 - ($ - $$) db 0
+
+    db 0x80, 0x00, 0x02, 0x00  ; bootable, CHS start
+    db 0x0B                     ; FAT32 type
+    db 0xFF, 0xFF, 0xFF         ; CHS end
+    dd 0x00000001               ; LBA start
+    dd 0x00001000               ; LBA size
+    
+    times 48 db 0               ; entries 2-4 empty
+    
+    dw 0xAA55

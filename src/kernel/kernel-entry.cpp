@@ -1,6 +1,11 @@
 // Finally Some C++
 
+#include <stdint.h>
 #include "kernel/kernel-config.hpp"
+
+#define HANG() while (true)
+
+// ── VGA ──────────────────────────────────────────────────────────────────────
 
 struct VGA_Character {
     char character;
@@ -15,121 +20,152 @@ int cursorRow = 0;
 constexpr unsigned int MAX_COLUMN = 80;
 constexpr unsigned int MAX_ROWS = 25;
 
+static void AdvanceCursor() {
+    ++cursorCol;
+    if (cursorRow >= MAX_ROWS) { cursorRow = MAX_ROWS - 1; }
+    if (cursorCol >= MAX_COLUMN) { cursorCol = 0; ++cursorRow; }
+}
+
 constexpr unsigned int VGA_INDEX(const unsigned int col, const unsigned int row) {
     return col + row * MAX_COLUMN;
 }
 
+void kernel_printf(char c) {
+    if (c == '\0') return;
+    if (c == '\t') {
+        int nextTab = (cursorCol + 4) & ~3;
+        while (cursorCol < nextTab) kernel_printf(' ');
+        return;
+    }
+    if (c == '\n') {
+        VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = { };
+        ++cursorRow;
+        if (cursorRow >= MAX_ROWS) cursorRow = MAX_ROWS - 1;
+        cursorCol = 0;
+        return;
+    }
+    if (c == '\r') {
+        cursorCol = 0;
+        return;
+    }
+    VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = { .character = c, .colorAttribute = 0x0F };
+    AdvanceCursor();
+}
+
 void kernel_printf(const char* str) {
-    while (*str != '\0') {
-        if (cursorRow >= MAX_ROWS) { cursorRow = MAX_ROWS - 1; }
-        if (cursorCol >= MAX_COLUMN) { cursorCol = 0; ++cursorRow; }
+    for (; *str != '\0'; ++str) kernel_printf(*str);
+}
 
-        if (*str == '\n') {
-            ++cursorRow;
-            cursorCol = 0;
-            ++str;
-            continue;
-        }
+void kernel_printf(uint32_t n) {
+    if (n == 0) { kernel_printf('0'); return; }
+    char buffer[10];
+    int i = 0;
+    while (n > 0) { buffer[i++] = (n % 10) + '0'; n = n / 10; }
+    while (i > 0) { kernel_printf(buffer[--i]); }
+}
 
-        VGA_MEMORY[VGA_INDEX(cursorCol, cursorRow)] = { .character = *str, .colorAttribute = 0x0F };
+void kernel_printf(uint64_t n) {
+    if (n == 0) { kernel_printf('0'); return; }
+    char buffer[20];
+    int i = 0;
+    while (n > 0) { buffer[i++] = (n % 10) + '0'; n = n / 10; }
+    while (i > 0) { kernel_printf(buffer[--i]); }
+}
 
-        ++cursorCol; ++str;
+void kernel_printf(double d) {
+    if (d != d) { kernel_printf("NaN"); return; }
+    if (d < -1e308) { kernel_printf("-Inf"); return; }
+    if (d > 1e308)  { kernel_printf("Inf");  return; }
+    if (d > 1e19) { kernel_printf("(too large)"); return; }
+    if (d < 0) { kernel_printf('-'); d = -d; }
+    kernel_printf(static_cast<uint64_t>(d));
+    kernel_printf('.');
+    d -= static_cast<uint64_t>(d);
+    for (int i = 0; i < 6; ++i) {
+        d *= 10;
+        kernel_printf(static_cast<char>('0' + static_cast<uint64_t>(d) % 10));
+    }
+}
+
+void kernel_printf(uint16_t n) { kernel_printf(static_cast<uint32_t>(n)); }
+void kernel_printf(int n) {
+    if (n < 0) { kernel_printf('-'); n = -n; }
+    kernel_printf(static_cast<unsigned int>(n));
+}
+
+void kernel_printfHex(uint64_t n) {
+    kernel_printf('0'); kernel_printf('x');
+    for (int i = 60; i >= 0; i -= 4) {
+        uint64_t digit = (n >> i) & 0xF;
+        kernel_printf(static_cast<char>(digit < 10 ? '0' + digit : 'A' + digit - 10));
+    }
+}
+
+void kernel_printfHex(uint32_t n) {
+    kernel_printf('0'); kernel_printf('x');
+    for (int i = 28; i >= 0; i -= 4) {
+        uint32_t digit = (n >> i) & 0xF;
+        kernel_printf(static_cast<char>(digit < 10 ? '0' + digit : 'A' + digit - 10));
     }
 }
 
 void kernel_clearConsole() {
-    for (int i = 0; i < MAX_COLUMN * MAX_ROWS; ++i) {
+    for (int i = 0; i < MAX_COLUMN * MAX_ROWS; ++i)
         VGA_MEMORY[i] = { .character = '\0', .colorAttribute = 0x0 };
-    }
 }
 
-inline unsigned char inb(unsigned short port) {
-    unsigned char result;
-    asm volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
+template<typename First, typename... Others>
+void kernel_printf(const First& first, const Others&... others) {
+    kernel_printf(first);
+    kernel_printf(others...);
 }
 
-inline void outb(unsigned short port, unsigned char value) {
-    asm volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-}
-
-inline unsigned short inw(unsigned short port) {
-    unsigned short result;
-    asm volatile ("inw %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
-}
-
-void kernel_Delay400ns() {
-    inb(0x1F7);
-    inb(0x1F7);
-    inb(0x1F7);
-    inb(0x1F7);
-}
-
-bool kernel_isDriveBusy(unsigned char status) {
-    return (status & 0b10000000);
-}
-
-bool kernel_isDriveReadyForTransfer(unsigned char status) {
-    return status & 0b00001000;
-}
-
-void kernel_loadKernelMain() {
-    outb(0x1F6, 0xE0);  // select master drive, LBA mode
-    outb(0x3F6, 0x04);   // assert SRST bit in device control register
-    outb(0x3F6, 0x00);   // clear SRST
-    kernel_Delay400ns();
-
-    kernel_printf("Waiting for drive...\n");
-    while (kernel_isDriveBusy(inb(0x1F7)));
-    kernel_printf("Drive ready\n");
-
-    if (kernel_isDriveReadyForTransfer(inb(0x1F7))) kernel_printf("Ready to transfer\n");
-
-    outb(0x1F2, static_cast<unsigned char>(KERNEL_MAIN_SECTORS));
-    outb(0x1F3, static_cast<unsigned char>(KERNEL_MAIN_LBA));         // LBA bits 0-7
-    outb(0x1F4, static_cast<unsigned char>(KERNEL_MAIN_LBA >> 8));    // LBA bits 8-15
-    outb(0x1F5, static_cast<unsigned char>(KERNEL_MAIN_LBA >> 16));   // LBA bits 16-23
-    outb(0x1F6, 0xE0 | static_cast<unsigned char>(KERNEL_MAIN_LBA >> 24)); // LBA bits 24-27
-    outb(0x1F7, 0x20); // send read command
-
-    kernel_Delay400ns();
-
-    // wait for BSY to clear and DRQ to set
-    while (kernel_isDriveBusy(inb(0x1F7)));
-    if (!kernel_isDriveReadyForTransfer(inb(0x1F7))) {
-        kernel_printf("Error: drive not ready for transfer\n");
-        return;
-    }
-
-    kernel_printf("Loading kernel sectors into memory\n");
-
-    // read sectors into memory
-    unsigned short* dest = reinterpret_cast<unsigned short*>(KERNEL_MAIN_LOAD_ADDR);
-    for (int sector = 0; sector < KERNEL_MAIN_SECTORS; ++sector) {
-        // wait for DRQ per sector
-        while (!kernel_isDriveReadyForTransfer(inb(0x1F7)));
-        // read 256 words (512 bytes) per sector
-        for (int word = 0; word < 256; ++word) {
-            *dest++ = inw(0x1F0);
-        }
+void copyBytes(void* src, void* dst, uint64_t byteNum) {
+    uint8_t* s = reinterpret_cast<uint8_t*>(src);
+    uint8_t* d = reinterpret_cast<uint8_t*>(dst);
+    for (uint64_t i = 0; i < byteNum; ++i) {
+        d[i] = s[i];
     }
 }
 
 extern "C" void kernel_entry() {
-    kernel_clearConsole(); 
-    kernel_printf("Successfully loaded Kernel\n");
+    kernel_clearConsole();
+    kernel_printf("Kernel entry reached\n");
 
-    kernel_loadKernelMain();
+    uint8_t* check = reinterpret_cast<uint8_t*>(TEMP_KERNEL_MAIN_LOAD_ADDR);
+    kernel_printf("[VERIFY] First bytes: ");
+    kernel_printfHex((uint32_t)check[0]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[1]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[2]);
+    kernel_printf("\n");
+    
+    kernel_printf("Copying kernel to final address: ");
+    kernel_printfHex((uint32_t)KERNEL_MAIN_LOAD_ADDR);
 
-    kernel_printf("Jumping to kernelMain\n");
+    uint64_t kernelSizeBytes = KERNEL_MAIN_SECTORS * 512;
+    copyBytes(reinterpret_cast<void*>(TEMP_KERNEL_MAIN_LOAD_ADDR), reinterpret_cast<void*>(KERNEL_MAIN_LOAD_ADDR), kernelSizeBytes);
 
-    // Jumping to main kernel
+    kernel_printf("\nAfter copy to: ", "0x00100000", "\n[VERIFY] First bytes: ");
+    check = reinterpret_cast<uint8_t*>(KERNEL_MAIN_LOAD_ADDR);
+    kernel_printf("[VERIFY] First bytes: ");
+    kernel_printfHex((uint32_t)check[0]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[1]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[2]);
+    kernel_printf("\n");
+
+    kernel_printf("Jumping to kernelMain at ");
+    kernel_printfHex((uint32_t)KERNEL_MAIN_LOAD_ADDR);
+    kernel_printf("\n");
+
     typedef void (*KernelMain)();
     KernelMain kernelMain = reinterpret_cast<KernelMain>(KERNEL_MAIN_LOAD_ADDR);
     kernelMain();
 
-    kernel_printf("Still in kernel entry?!\n");
-
-    while (true);
+    // Should never reach here
+    kernel_printf("Returned from kernelMain — halting\n");
+    HANG();
 }

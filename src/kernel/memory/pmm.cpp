@@ -64,6 +64,7 @@ namespace kernel {
                 pd_s[i * 512 + j] = ((i * 0x40000000ULL) + (j * 0x200000ULL)) | 0x83;
     
         m_window->printf("Step 9: loading CR3\n");
+
         asm volatile("mov %0, %%cr3" :: "r"(pml4) : "memory");
 
         m_window->printf("Step 10: done\n");

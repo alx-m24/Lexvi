@@ -16,16 +16,7 @@
 
 #include "kernel/time/time.hpp"
 
-kernel::Window mainWindow {};
-kernel::Window inputWindow {};
-
-kernel::Window LeftSplit {};
-kernel::Window logWindow {};
-kernel::MemoryWindow memoryWindow {};
-
-static void blinkInputWindowCursorTick() {
-    inputWindow.BlinkCursor();
-}
+kernel::Window Kernel::inputWindow {};
 
 void Kernel::Init() {
     {   // console stuff
@@ -67,7 +58,7 @@ void Kernel::Init() {
 
     kernel::printf("    - Setting up IDT\n");
     idt_init();
-    kernel::setTickCallbacks(blinkInputWindowCursorTick, kernel::KeyBoardTick);
+    kernel::setTickCallbacks(Tick, kernel::KeyBoardTick);
 
     kernel::printf("    - Setting up RSDP\n");
     rsdp_load();

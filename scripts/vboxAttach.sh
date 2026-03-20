@@ -7,7 +7,7 @@ DISK_IMG=$(wslpath -w $(realpath lexvi.img))
 FIXED_UUID="8e3db815-1520-4bcd-acc7-cba68a767269"
 
 MACHINE_NAME="Lexvi"
-HDD_NAME="IDE"
+HDD_NAME="AHCI"
 
 VBoxManage.exe closemedium disk "$FIXED_UUID" --delete 2>/dev/null || true
 VBoxManage.exe convertfromraw "$DISK_IMG" "$DISK_PATH" --format VDI --uuid "$FIXED_UUID"

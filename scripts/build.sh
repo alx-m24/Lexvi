@@ -9,7 +9,7 @@ mkdir -p build
 
 # building bootloader
 nasm -f bin src/boot/boot-stage1.nasm -o build/boot-stage1.bin -I include/
-nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o
+nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o -I include/
 
 # building kernel files
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
@@ -30,17 +30,43 @@ KERNEL_MAIN_SECTORS=$((("$KERNEL_MAIN_SIZE" +511) / 512))
 
 KERNEL_MAIN_LBA=$((STAGE2_SECTORS + 1))
 
+KERNEL_MAIN_LOAD_ADDR="0x100000"
+
+STAGE1_STACK_BOTTOM="0x80000"
+STAGE1_STACK_TOP="0x90000"
+
+TEMP_KERNEL_MAIN_LOAD_ADDR="0x10000"
+
 MEMORY_MAP_ADDRESS="0x7000"
 MEMORY_MAP_ENTRY_COUNT_ADDRESS="0x6FF8"
+
+MAX_TEMP_SIZE=$(( ${STAGE1_STACK_TOP} - ${TEMP_KERNEL_MAIN_LOAD_ADDR} ))
+if [ "$KERNEL_MAIN_SIZE" -gt "$MAX_TEMP_SIZE" ]; then
+    echo "ERROR: Kernel is ${KERNEL_MAIN_SIZE} bytes, max temp buffer is ${MAX_TEMP_SIZE} bytes"
+    exit 1
+fi
+if [ "$KERNEL_MAIN_SECTORS" -gt 127 ]; then
+    echo "ERROR: Kernel exceeds 127 sectors (INT 13h AL limit)"
+    exit 1
+fi
 
 # --- Pass 2 / Final Pass ---
 rm -rf build
 mkdir -p build
 
 cat > include/asm/boot-config.nasm << EOF 
+; This is an auto-generated header file from the build.sh script
+
 STAGE2_SECTORS equ ${STAGE2_SECTORS} 
 MEMORY_MAP_ADDRESS equ ${MEMORY_MAP_ADDRESS} 
+
 MEMORY_MAP_ENTRY_COUNT_ADDRESS equ ${MEMORY_MAP_ENTRY_COUNT_ADDRESS}
+
+KERNEL_MAIN_LBA equ ${KERNEL_MAIN_LBA}
+KERNEL_MAIN_SECTORS equ ${KERNEL_MAIN_SECTORS}
+KERNEL_MAIN_LOAD_ADDR equ ${KERNEL_MAIN_LOAD_ADDR}
+
+TEMP_KERNEL_MAIN_LOAD_ADDR equ ${TEMP_KERNEL_MAIN_LOAD_ADDR}
 EOF
 
 cat > include/kernel/kernel-config.hpp << EOF
@@ -52,7 +78,9 @@ cat > include/kernel/kernel-config.hpp << EOF
 
 constexpr unsigned int KERNEL_MAIN_LBA = ${KERNEL_MAIN_LBA};
 constexpr unsigned int KERNEL_MAIN_SECTORS = ${KERNEL_MAIN_SECTORS};
-constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
+constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = ${KERNEL_MAIN_LOAD_ADDR};
+
+constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = ${TEMP_KERNEL_MAIN_LOAD_ADDR};
 
 constexpr unsigned int MEMORY_MAP_ADDRESS = ${MEMORY_MAP_ADDRESS};
 constexpr unsigned int MEMORY_MAP_ENTRY_COUNT_ADDRESS = ${MEMORY_MAP_ENTRY_COUNT_ADDRESS};
@@ -70,7 +98,7 @@ EOF
 
 # building bootloader
 nasm -f bin src/boot/boot-stage1.nasm -o build/boot-stage1.bin -I include/
-nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o
+nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o -I include/
 
 # building kernel files
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include

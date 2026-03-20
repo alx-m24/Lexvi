@@ -26,9 +26,11 @@ SECTIONS {
     } :data
 
     .bss : {
+        _bss_start = .;
         *(.bss)
         *(.bss.*)
         *(COMMON)
+        _bss_end = .;
     } :data
 
     .init_array : {
