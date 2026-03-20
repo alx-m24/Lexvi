@@ -27,7 +27,7 @@ namespace kernel {
             MemoryWindow* m_window = nullptr;
 
         private:
-            static constexpr uint32_t PAGE_SIZE = 4096; // 4kb
+            static constexpr uint32_t PAGE_SIZE = 0x200000; // 2MB
             static constexpr uint64_t pdEntriesNum = 512;
 
             const uint64_t KERNEL_END_ADDRESS = reinterpret_cast<uint64_t>(_kernel_end);
