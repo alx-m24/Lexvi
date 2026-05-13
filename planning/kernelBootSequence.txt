@@ -1,0 +1,69 @@
+ ================================================================================
+                            KERNEL BOOT PLAN
+================================================================================
+
+STAGE 1 BOOTLOADER (identity mapped, low address)
+──────────────────────────────────────────────────
+  - Load kernel ELF to a temporary low physical address
+  - Read & store E820 memory map from BIOS at fixed address
+
+STAGE 2 BOOTLOADER (identity mapped, low address)
+──────────────────────────────────────────────────
+  --- NASM Code ---
+    - Switch CPU to 64-bit long mode
+  --- As of here: C++ is used ---
+    - Copy kernel to final physical address (0x100000)
+    - Carve a fixed physical region just above 0x100000 + kernel_size for page tables
+    - Build boot page tables in that carved region:
+        · Read E820 memory map from fixed address
+        · Identity map low memory (stage 2 keeps running)
+        · Map kernel physical  →  0xFFFFFFFF80000000  (slot 511)
+        · Map all physical RAM →  0xFFFF800000000000  (HHDM, slot 256)
+    - Switch CR3
+    - Jump to kernel entry at 0xFFFFFFFF80000000
+
+
+KERNEL MAIN (higher half, clean environment)
+─────────────────────────────────────────────
+  - PMM initialises from E820 (accessible via HHDM)
+      · Place bitmap pages at kernel_end + reserved page table size
+      · Marks everything below kernel end as used (covers stage 2 region)
+      · Marks the carved page table region as used via HHDM pointer
+  - VMM initialises, takes ownership of existing page tables via HHDM pointer
+  - GDT, IDT, and everything else loads normally
+  - Kernel proceeds
+
+
+VIRTUAL ADDRESS SPACE LAYOUT
+──────────────────────────────
+  0x0000000000000000  ┬─ User space (slots 0-255, 128 TiB)
+  0x00007FFFFFFFFFFF  ┘
+        < non-canonical hole >
+  0xFFFF800000000000  ┬─ HHDM: all physical RAM (slot 256)
+                      ┘   ends at 0xFFFF801000000000 on a 64 GiB system
+                             (flexible, driven by E820 at runtime)
+        ... free slots 257-510 ...
+  0xFFFFFFFF80000000  ┬─ Kernel image + heap + stack (slot 511)
+  0xFFFFFFFFFFFFFFFF  ┘
+
+  Each slot = 512 GiB
+  Free slots reserved for future use (e.g. framebuffer mapping)
+
+
+NOTES
+──────
+  - Identity map is left in place after CR3 switch, simply never referenced again
+  - PMM marks everything below kernel end as used by default, no explicit teardown needed
+  - Page tables are accessed post-switch via HHDM_BASE + phys_addr
+  - No state transfer needed between stage 2 and kernel: E820 and page tables are at known physical addresses, accessible through HHDM immediately
+  - PMM and VMM class definitions are shared between stage 2 and kernel via the
+    same headers and source files. A macro handles the only difference:
+      #ifdef BOOTLOADER
+          #define TO_VIRT(addr) (addr)                 // physical, no offset
+      #else
+          #define TO_VIRT(addr) (HHDM_BASE + (addr))   // via HHDM
+      #endif
+    All physical address dereferences inside PMM/VMM use TO_VIRT(), making the
+    classes identical in both contexts with zero code duplication.
+
+================================================================================

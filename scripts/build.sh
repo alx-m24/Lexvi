@@ -12,10 +12,13 @@ nasm -f bin src/boot/boot-stage1.nasm -o build/boot-stage1.bin -I include/
 nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o -I include/
 
 # building kernel files
-g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/pmm.cpp -o build/pmm.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/vmm.cpp -o build/vmm.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/utils/memory.cpp -o build/memory.o -I include
 
 # linking stage 2
-ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o -o build/boot-stage2.bin --oformat binary
+ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o -o build/boot-stage2.bin --oformat binary
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
@@ -80,6 +83,8 @@ constexpr unsigned int KERNEL_MAIN_LBA = ${KERNEL_MAIN_LBA};
 constexpr unsigned int KERNEL_MAIN_SECTORS = ${KERNEL_MAIN_SECTORS};
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = ${KERNEL_MAIN_LOAD_ADDR};
 
+constexpr unsigned long long KERNEL_MAIN_SIZE = ${KERNEL_MAIN_SIZE};
+
 constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = ${TEMP_KERNEL_MAIN_LOAD_ADDR};
 
 constexpr unsigned int MEMORY_MAP_ADDRESS = ${MEMORY_MAP_ADDRESS};
@@ -101,10 +106,14 @@ nasm -f bin src/boot/boot-stage1.nasm -o build/boot-stage1.bin -I include/
 nasm -f elf64 src/boot/boot-stage2.nasm -o build/boot-stage2.o -I include/
 
 # building kernel files
-g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/kernel-entry.cpp -o build/kernel-entry.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/pmm.cpp -o build/pmm.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/vmm.cpp -o build/vmm.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/utils/memory.cpp -o build/memory.o -I include
 
 # linking stage 2
-ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o -o build/boot-stage2.bin --oformat binary
+ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o -o build/boot-stage2.bin --oformat binary
+
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
@@ -127,3 +136,4 @@ dd if=boot-stage2.bin of=lexvi.img bs=512 seek=1 conv=notrunc
 
 #4. Write kernel starting from sector 8
 dd if=cmake/kernel-main.bin of=lexvi.img bs=512 seek=${KERNEL_MAIN_LBA} conv=notrunc
+

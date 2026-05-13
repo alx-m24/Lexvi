@@ -1,10 +1,7 @@
 #pragma once
 
-#include <type_traits>
-
 namespace kernel {
     template<typename T>
-    requires (std::is_integral_v<T> || std::is_floating_point_v<T>)
     T max(T a, T b) {
         if (a > b) return a;
         return b;

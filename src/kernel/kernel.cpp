@@ -1,6 +1,6 @@
 #include "kernel/kernel.hpp"
 
-#include "kernel/memory/pmm.hpp"
+#include "kernel/memory/internals/pmm.hpp"
 #include "kernel/memory/memory-window.hpp"
 
 #include "kernel/keyboard/keyboard.hpp"
@@ -50,8 +50,7 @@ void Kernel::Init() {
     kernel::printf("Initializing kernel...\n");
     
     kernel::printf("    - Setting up pmm\n");
-    kernel::PMM pmm;
-    pmm.Init(&memoryWindow);
+    // m_vmm.Init(&memoryWindow);
 
     kernel::printf("    - Setting up GDT\n");
     gdt_load();
@@ -71,6 +70,9 @@ void Kernel::Init() {
 
 void Kernel::Run() {
     this->Init();
+
+    kernel::PMM pmm;
+    pmm.Init();
 
     while (true) {
         char c = kernel::keyboard::getChar();

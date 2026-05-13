@@ -93,26 +93,8 @@ namespace kernel {
     }
 
     void printf(const char* str) {
-        // if (logWindow != nullptr) { logWindow->printf(str); return; }
+        if (logWindow != nullptr) { logWindow->printf(str); return; }
         for (; *str != '\0'; ++str) printf(*str);
-    }
-   
-    void printf(uint32_t n) {
-        if (logWindow != nullptr) { logWindow->printf(n); return; }
-        if (n == 0) { printf('0'); return; }
-        char buffer[10];
-        int i = 0;
-        while (n > 0) { buffer[i++] = (n % 10) + '0'; n = n / 10; }
-        while (i > 0) { printf(buffer[--i]); }
-    }
-    
-    void printf(uint64_t n) {
-        if (logWindow != nullptr) { logWindow->printf(n); return; }
-        if (n == 0) { printf('0'); return; }
-        char buffer[20];
-        int i = 0;
-        while (n > 0) { buffer[i++] = (n % 10) + '0'; n = n / 10; }
-        while (i > 0) { printf(buffer[--i]); }
     }
 
     void printf(double d) {
@@ -139,17 +121,6 @@ namespace kernel {
         }
     }
 
-    void printf(uint16_t n) {
-        if (logWindow != nullptr) { logWindow->printf(n); return; }
-        printf(static_cast<uint32_t>(n));
-    }
-    
-    void printf(int n) {
-        if (logWindow != nullptr) { logWindow->printf(n); return; }
-        if (n < 0) { printf('-'); n = -n; }
-        printf(static_cast<unsigned int>(n));
-    }
-
     void printfHex(uint64_t n) {
         if (logWindow != nullptr) { logWindow->printfHex(n); return; }
         char buffer[16];
@@ -160,6 +131,35 @@ namespace kernel {
         printf('0');
         printf('x');
         for(int i = 0; i < 16; ++i) printf(buffer[i]);
+    }
+
+    void printSigned(int64_t n) {
+        if (n < 0) {
+            printf('-');
+            printUnsigned(static_cast<uint64_t>(-(n + 1)) + 1);
+        }
+        else {
+            printUnsigned(static_cast<uint64_t>(n));
+        }
+    }
+
+    void printUnsigned(uint64_t n) {
+        if (n == 0) {
+            printf('0');
+            return;
+        }
+
+        char num[20] = {};
+        int index = 0;
+
+        while (n != 0) {
+            num[index++] = '0' + (n % 10);
+            n /= 10;
+        }
+
+        for (int i = index - 1; i >= 0; --i) {
+            printf(num[i]);
+        }
     }
 
     void backSpace() {

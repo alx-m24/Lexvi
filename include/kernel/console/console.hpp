@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <type_traits>
 
 namespace kernel {
     struct VGA_Character {
@@ -41,17 +42,27 @@ namespace kernel {
     inline void printf() {}
     void printf(char c);
     void printf(const char* str);
-    void printf(uint64_t n);
-    void printf(uint32_t n);
-    void printf(uint16_t n);
     void printf(double d);
-    void printf(int n);
     void printfHex(uint64_t n);
 
-    template<typename T, typename... Other>
-    void printf(const T& first, const Other&... other) {
-        printf(first);
-        printf(other...);
+    void printSigned(int64_t n);
+    void printUnsigned(uint64_t n);
+
+    template<typename T>
+    requires (std::is_integral_v<T> && !std::is_same_v<T, char> && !std::is_pointer_v<T>)
+    void printf(T n) {
+        if constexpr (std::is_signed_v<T>) {
+            printSigned(static_cast<int64_t>(n));
+        }
+        else {
+            printUnsigned(static_cast<uint64_t>(n));
+        }
+    }
+
+    template<typename First, typename... Others>
+    void printf(const First& f, const Others&... others) {
+        printf(f);
+        printf(others...);
     }
 
     void backSpace();

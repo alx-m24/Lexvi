@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 #include "kernel/kernel-config.hpp"
+#include "kernel/utils/math.hpp"
+#include "kernel/memory/internals/pmm.hpp"
+#include "kernel/memory/internals/memory-map.hpp"
+#include "kernel/memory/memory-unit.hpp"
 
 #define HANG() while (true)
 
@@ -128,6 +132,8 @@ void copyBytes(void* src, void* dst, uint64_t byteNum) {
     }
 }
 
+using namespace kernel;
+
 extern "C" void kernel_entry() {
     kernel_clearConsole();
     kernel_printf("Kernel entry reached\n");
@@ -156,6 +162,11 @@ extern "C" void kernel_entry() {
     kernel_printf(" ");
     kernel_printfHex((uint32_t)check[2]);
     kernel_printf("\n");
+
+    PMM pmm{};
+    pmm.Init();
+
+    HANG();
 
     kernel_printf("Jumping to kernelMain at ");
     kernel_printfHex((uint32_t)KERNEL_MAIN_LOAD_ADDR);

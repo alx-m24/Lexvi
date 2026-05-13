@@ -277,7 +277,32 @@ Realm64:
     xor ax, ax
     mov fs, ax
     mov gs, ax
-    
+
+    ; update rsp to a safe 64-bit value
+    mov rsp, 0x90000
+
+    ; zero BSS
+    extern _bss_start
+    extern _bss_end
+    mov rdi, _bss_start
+    mov rcx, _bss_end
+    sub rcx, rdi
+    xor al, al
+    rep stosb
+
+    ; call global constructors
+    extern _init_array_start
+    extern _init_array_end
+    mov rbx, _init_array_start
+.ctor_loop:
+    cmp rbx, _init_array_end
+    jge .ctor_done
+    mov rax, [rbx]
+    call rax
+    add rbx, 8
+    jmp .ctor_loop
+.ctor_done:
+
     mov r8b, 0
     mov r9b, 5
     mov bl, 0x0F
