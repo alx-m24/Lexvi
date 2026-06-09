@@ -1,6 +1,8 @@
 #include "kernel/memory/internals/pmm.hpp"
 
+#include "kernel/kernel-config.hpp"
 #include "kernel/utils/math.hpp"
+#include "kernel/memory/memory-defs.hpp"
 #include "kernel/utils/memory.hpp"
 #include "kernel/memory/memory-unit.hpp"
 #include "kernel/memory/internals/memory-map.hpp"
@@ -28,20 +30,21 @@ void kernel_printf(const First& first, const Others&... others) {
 #define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
 #endif
 
-namespace kernel {
-    void PMM::Init() {
+namespace kernel { void PMM::Init() {
         SAFE_PRINT("[PMM] Initializing\n");
         getTotalPageNum();
         SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
-
+    
 #ifndef BOOTLOADER
-        InitBitMap(Bytes(KERNEL_END_ADDRESS));
+        uint64_t bitmapPhys = *reinterpret_cast<uint64_t*>(TO_VIRT(PMM_BITMAP_PHYS_ADDRESS));
+        m_bitMap = reinterpret_cast<uint8_t*>(TO_VIRT(bitmapPhys));
+        SAFE_PRINT("[PMM] m_bitMap: ", reinterpret_cast<uint64_t>(m_bitMap), "\n");
 #else
         InitBitMap(Bytes(0x100000 + KERNEL_MAIN_SECTORS * 512));
-#endif
-
-
+        *reinterpret_cast<uint64_t*>(PMM_BITMAP_PHYS_ADDRESS) = reinterpret_cast<uint64_t>(m_bitMap);
+        
         CleanBitMap();
+#endif
 
         SAFE_PRINT("[PMM] Successfully initialized\n");
     }
@@ -67,22 +70,22 @@ namespace kernel {
         SAFE_PRINT("[PMM] aligned: ", m_totalMemory.align_up(PAGE_SIZE).count(), "\n");
 
         m_totalPageNum = m_totalMemory.align_up(PAGE_SIZE) / PAGE_SIZE;
+        m_bitMapSize = (m_totalPageNum + 7) / 8;
     }
 
     void PMM::InitBitMap(Bytes reservedEnd) {
-        m_bitMapSize = (m_totalPageNum + 7) / 8;
-
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
             const E820Entry entry = E820Entries[i];
             if (entry.type != EntryType::Usable) continue;
-
+    
             uint64_t regionEnd = entry.base + entry.length;
             uint64_t candidate = max(entry.base, reservedEnd.count());
-            if (candidate >= regionEnd) continue;     // clamp pushed candidate past this region entirely
+            if (candidate >= regionEnd) continue;
             
             uint64_t available = regionEnd - candidate;
             if (available >= m_bitMapSize) {
-                m_bitMap = reinterpret_cast<uint8_t*>(candidate);
+                SAFE_PRINT("[PMM] Bitmap candidate phys: ", candidate, " in region type: ", (uint32_t)entry.type, "\n");
+                m_bitMap = reinterpret_cast<uint8_t*>(candidate);  // raw physical
                 break;
             }
         }
@@ -94,7 +97,9 @@ namespace kernel {
     }
 
     void PMM::ZeroBitMap() {
-        SAFE_PRINT("[PMM] m_bitMap: ", reinterpret_cast<uint64_t>(m_bitMap), "\n");
+        SAFE_PRINT("[PMM] m_bitMapSize: ", m_bitMapSize, "\n");
+        SAFE_PRINT("[PMM] m_totalPageNum: ", m_totalPageNum, "\n");
+
         memset(m_bitMap, 0xFF, m_bitMapSize); // set all entries as used
 
         // free pages
@@ -105,24 +110,27 @@ namespace kernel {
 
             MarkRangeFree(Bytes(entry.base), Bytes(entry.length));
         }
+
+        SAFE_PRINT("[PMM] Successfully Zeroed bitmap\n");
     }
 
     void PMM::MarkUsedPages() {
-        MarkRangeUsed(0_B, 0x100000_B);  // first 1MB - same in both contexts
-
+        MarkRangeUsed(0_B, 0x100000_B);
+    
 #ifndef BOOTLOADER
-        // kernel-main: mark from 1MB to kernel_end (includes kernel image + stack)
-        MarkRangeUsed(0x100000_B, Bytes(reinterpret_cast<uint64_t>(_kernel_end)));
+        uint64_t kernelEndPhys = KERN_TO_PHYS(reinterpret_cast<uint64_t>(_kernel_end));
+        MarkRangeUsed(0x100000_B, Bytes(kernelEndPhys));
+    
+        uint64_t bitMapPhys = TO_PHYS(reinterpret_cast<uint64_t>(m_bitMap));
+        MarkRangeUsed(Bytes(bitMapPhys), Bytes(bitMapPhys + m_bitMapSize));
 #else
-        // stage 2: mark temp load area and final kernel destination conservatively
-        MarkRangeUsed(Bytes(TEMP_KERNEL_MAIN_LOAD_ADDR), 
+        MarkRangeUsed(Bytes(TEMP_KERNEL_MAIN_LOAD_ADDR),
                       Bytes(TEMP_KERNEL_MAIN_LOAD_ADDR + KERNEL_MAIN_SECTORS * 512));
         MarkRangeUsed(0x100000_B, Bytes(0x100000 + KERNEL_MAIN_SECTORS * 512));
+    
+        MarkRangeUsed(Bytes(reinterpret_cast<uint64_t>(m_bitMap)),
+                      Bytes(reinterpret_cast<uint64_t>(m_bitMap) + m_bitMapSize));
 #endif
-
-        // bitmap itself - same in both contexts
-        MarkRangeUsed(Bytes(reinterpret_cast<uint64_t>(m_bitMap)), 
-        Bytes(reinterpret_cast<uint64_t>(m_bitMap) + m_bitMapSize));
     }
 
 
@@ -157,29 +165,23 @@ namespace kernel {
     }
 
 
-    Bytes PMM::Alloc(Bytes bytes) {
-        const uint64_t pagesNeeded = (bytes + Bytes(ALLOCATION_HEADER_SIZE)).align_up(PAGE_SIZE) / PAGE_SIZE;
+    void* PMM::Alloc(uint64_t pages) {
         for (uint64_t i = 0; i < m_totalPageNum; ++i) {
             bool found = true;
-            for (uint64_t j = 0; j < pagesNeeded && found; ++j) {
+            for (uint64_t j = 0; j < pages && found; ++j) {
                 found = !TestBit(i + j); // TestBit() return TRUE if used -> FOUND should be true when EMPTY
             }
 
             if (found) {
                 const Bytes startPageAddress = PAGE_SIZE.bytes() * i;
-                MarkRangeUsed(startPageAddress, startPageAddress + (PAGE_SIZE.bytes() * pagesNeeded));
-                AllocationHeader* headerPtr = reinterpret_cast<AllocationHeader*>(startPageAddress.count());
-                headerPtr->pages = pagesNeeded;
-                return startPageAddress + Bytes(ALLOCATION_HEADER_SIZE);
+                MarkRangeUsed(startPageAddress, startPageAddress + (PAGE_SIZE.bytes() * pages));
+                return reinterpret_cast<void*>(TO_VIRT(startPageAddress.count()));
             }
         }
-        return Bytes(0);
+        return nullptr;
     }
 
-    void PMM::Free(Bytes address) {
-        AllocationHeader* header = reinterpret_cast<AllocationHeader*>(address.count()) - 1;
-        const Bytes startAddress = Bytes(reinterpret_cast<uint64_t>(header));
-        
-        MarkRangeFree(startAddress, PAGE_SIZE.bytes() * header->pages);
+    void PMM::Free(void* address) {
+        MarkRangeFree(Bytes(TO_PHYS(reinterpret_cast<uint64_t>(address))), PAGE_SIZE.bytes());
     }
 }

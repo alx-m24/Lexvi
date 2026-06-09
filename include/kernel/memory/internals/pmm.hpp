@@ -4,15 +4,8 @@
 #include <cstdint>
 
 namespace kernel {
-    struct AllocationHeader {
-        uint64_t pages = 1;
-    };
-    static constexpr uint64_t ALLOCATION_HEADER_SIZE = sizeof(AllocationHeader);
-
-    // Class that handles physical pages, allocations and free's
     class PMM {
-        private:
-            static constexpr KiB PAGE_SIZE = 4_KiB;
+        public:
 
         private:
             Bytes m_totalMemory{};
@@ -27,8 +20,8 @@ namespace kernel {
         public:
             void Init();
 
-            Bytes Alloc(Bytes bytes = PAGE_SIZE.bytes());
-            void Free(Bytes address);
+            void* Alloc(uint64_t pages);
+            void Free(void* address);
 
         private:
             void getTotalPageNum();
@@ -57,6 +50,7 @@ namespace kernel {
             };
             void SetBit(uint64_t page);
             void ClearBit(uint64_t page);
+        public:
             bool TestBit(uint64_t page) const;
     };
 }

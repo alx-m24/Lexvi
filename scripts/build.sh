@@ -16,9 +16,10 @@ g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-except
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/pmm.cpp -o build/pmm.o -I include
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/vmm.cpp -o build/vmm.o -I include
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/utils/memory.cpp -o build/memory.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/memory-manager.cpp -o build/memory-manager.o -I include
 
 # linking stage 2
-ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o -o build/boot-stage2.bin --oformat binary
+ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o build/memory-manager.o -o build/boot-stage2.bin --oformat binary
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null
@@ -42,6 +43,8 @@ TEMP_KERNEL_MAIN_LOAD_ADDR="0x10000"
 
 MEMORY_MAP_ADDRESS="0x7000"
 MEMORY_MAP_ENTRY_COUNT_ADDRESS="0x6FF8"
+
+PMM_BITMAP_PHYS_ADDRESS="0x6FF0"
 
 MAX_TEMP_SIZE=$(( ${STAGE1_STACK_TOP} - ${TEMP_KERNEL_MAIN_LOAD_ADDR} ))
 if [ "$KERNEL_MAIN_SIZE" -gt "$MAX_TEMP_SIZE" ]; then
@@ -90,6 +93,8 @@ constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = ${TEMP_KERNEL_MAIN_LOA
 constexpr unsigned int MEMORY_MAP_ADDRESS = ${MEMORY_MAP_ADDRESS};
 constexpr unsigned int MEMORY_MAP_ENTRY_COUNT_ADDRESS = ${MEMORY_MAP_ENTRY_COUNT_ADDRESS};
 
+constexpr unsigned int PMM_BITMAP_PHYS_ADDRESS = ${PMM_BITMAP_PHYS_ADDRESS};
+
 extern "C" {
     extern char stack_top[];
     extern char stack_bottom[];
@@ -110,10 +115,10 @@ g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-except
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/pmm.cpp -o build/pmm.o -I include
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/vmm.cpp -o build/vmm.o -I include
 g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/utils/memory.cpp -o build/memory.o -I include
+g++ -m64 -ffreestanding -fno-stack-protector -nostdlib -mno-red-zone -fno-exceptions -fno-rtti -std=c++23 -DBOOTLOADER -c src/kernel/memory/memory-manager.cpp -o build/memory-manager.o -I include
 
 # linking stage 2
-ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o -o build/boot-stage2.bin --oformat binary
-
+ld -m elf_x86_64 -T link/kernelEntry.ld build/boot-stage2.o build/kernel-entry.o build/pmm.o build/vmm.o build/memory.o build/memory-manager.o -o build/boot-stage2.bin --oformat binary
 
 # building kernel
 cmake -S . -B build/cmake -G "Unix Makefiles" 2>/dev/null

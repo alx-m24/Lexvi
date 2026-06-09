@@ -13,6 +13,7 @@ set(CMAKE_CXX_LINK_EXECUTABLE
     "ld -m elf_x86_64 -T ${CMAKE_SOURCE_DIR}/link/kernelMain.ld <OBJECTS> -o <TARGET>")
 
 add_executable(kernel-main
+    src/kernel/memory/memory-manager.cpp
     src/kernel/console/tui/window.cpp
     src/kernel/keyboard/keyboard.cpp
     src/kernel/syscall/syscall.cpp
@@ -22,6 +23,7 @@ add_executable(kernel-main
     src/kernel/kernel-main.cpp
     src/kernel/error/error.cpp
     src/kernel/memory/pmm.cpp
+    src/kernel/memory/vmm.cpp
     src/kernel/time/time.cpp
     src/kernel/acpi/rsdp.cpp
     src/kernel/acpi/sdt.cpp

@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "kernel/kernel-config.hpp"
+#include "kernel/memory/memory-defs.hpp"
 
 namespace kernel {
     enum class EntryType : uint32_t {
@@ -24,14 +25,19 @@ namespace kernel {
         return reinterpret_cast<uint64_t>(_kernel_end);
     }
 
+    inline uint64_t GetPMMBitMapPhysicalAddress() {
+        return PMM_BITMAP_PHYS_ADDRESS;
+    }
+
     inline uint32_t GetMemoryMapEntryCount() {
-        return *reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
+        return *reinterpret_cast<uint32_t*>(TO_VIRT(MEMORY_MAP_ENTRY_COUNT_ADDRESS));
     }
     inline const E820Entry* GetE820Entries() {
-        return reinterpret_cast<const E820Entry*>(MEMORY_MAP_ADDRESS);
+        return reinterpret_cast<const E820Entry*>(TO_VIRT(MEMORY_MAP_ADDRESS));
     }
 };
 
 #define MEMORY_MAP_ENTRY_COUNT kernel::GetMemoryMapEntryCount()
 #define E820Entries kernel::GetE820Entries()
 #define KERNEL_END_ADDRESS kernel::GetKernelEndAddress()
+#define PMM_BITMAP_PHYS_ADDRESS kernel::GetPMMBitMapPhysicalAddress()

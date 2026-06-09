@@ -1,6 +1,10 @@
 #include "kernel/kernel.hpp"
 
+#include "kernel/kernel-config.hpp"
+#include "kernel/memory/memory-defs.hpp"
+#include "kernel/memory/internals/memory-map.hpp"
 #include "kernel/memory/internals/pmm.hpp"
+#include "kernel/memory/internals/vmm.hpp"
 #include "kernel/memory/memory-window.hpp"
 
 #include "kernel/keyboard/keyboard.hpp"
@@ -62,18 +66,18 @@ void Kernel::Init() {
     kernel::printf("    - Setting up RSDP\n");
     rsdp_load();
 
+    memoryManager.Init();
+    memoryManager.TestMemory();
+    
     {
         kernel::ScopedColor color(kernel::Color::GREEN_ON_BLACK);
         kernel::printf("Successfully initialized kernel!\n");
     }
-}
+
+ }
 
 void Kernel::Run() {
     this->Init();
-
-    kernel::PMM pmm;
-    pmm.Init();
-
     while (true) {
         char c = kernel::keyboard::getChar();
         if (c == '\x1B') {

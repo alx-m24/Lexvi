@@ -4,16 +4,18 @@
 
 #include "stdint.h"
 
-constexpr unsigned int KERNEL_MAIN_LBA = 23;
-constexpr unsigned int KERNEL_MAIN_SECTORS = 82;
+constexpr unsigned int KERNEL_MAIN_LBA = 33;
+constexpr unsigned int KERNEL_MAIN_SECTORS = 79;
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
-constexpr unsigned long long KERNEL_MAIN_SIZE = 41560;
+constexpr unsigned long long KERNEL_MAIN_SIZE = 40016;
 
 constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = 0x10000;
 
 constexpr unsigned int MEMORY_MAP_ADDRESS = 0x7000;
 constexpr unsigned int MEMORY_MAP_ENTRY_COUNT_ADDRESS = 0x6FF8;
+
+constexpr unsigned int PMM_BITMAP_PHYS_ADDRESS = 0x6FF0;
 
 extern "C" {
     extern char stack_top[];

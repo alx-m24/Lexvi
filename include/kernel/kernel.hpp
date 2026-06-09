@@ -2,6 +2,7 @@
 
 #include "kernel/console/tui/window.hpp"
 #include "kernel/memory/memory-window.hpp"
+#include "kernel/memory/memory-manager.hpp"
 
 class Kernel {
     public:
@@ -11,6 +12,8 @@ class Kernel {
         kernel::Window LeftSplit {};
         kernel::Window logWindow {};
         kernel::MemoryWindow memoryWindow {};
+
+        kernel::MemoryManager memoryManager{};
 
     public:
         Kernel() = default;

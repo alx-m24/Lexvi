@@ -1,6 +1,6 @@
 #include "kernel/gdt/gdt.hpp"
 
-gdt_entry_t gdt[] = {
+volatile gdt_entry_t gdt[] = {
     // Null
     [0] = { 0 },
 
@@ -14,23 +14,23 @@ gdt_entry_t gdt[] = {
         .base_hi  = 0
     },
 
-    // Kernel Data — Ring 0, 32-bit size flag
+    // Kernel Data — Ring 0
     [2] = {
         .limit_lo = 0xFFFF,
         .base_lo  = 0,
         .base_mid = 0,
         .access   = GDT_PRESENT | GDT_NOT_SYS | GDT_RW | GDT_RING0,
-        .flags    = GDT_GRAN_4K | 0xF,
+        .flags    = 0x0F,   // no GDT_GRAN_4K, no size bits
         .base_hi  = 0
     },
-
+    
     // User Data — Ring 3
     [3] = {
         .limit_lo = 0xFFFF,
         .base_lo  = 0,
         .base_mid = 0,
         .access   = GDT_PRESENT | GDT_NOT_SYS | GDT_RW | GDT_RING3,
-        .flags    = GDT_GRAN_4K | 0xF,
+        .flags    = 0x0F,   // same
         .base_hi  = 0
     },
 

@@ -40,6 +40,6 @@ struct gdtr_t {
 #define GDT_SEL_UDATA 0x18
 #define GDT_SEL_UCODE 0x20
 
-extern gdt_entry_t gdt[];
+extern volatile gdt_entry_t gdt[];
 
 void gdt_load(void);

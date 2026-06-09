@@ -3,10 +3,13 @@
 #include <stdint.h>
 #include "kernel/kernel-config.hpp"
 #include "kernel/utils/math.hpp"
+#include "kernel/utils/memory.hpp"
 #include "kernel/memory/internals/pmm.hpp"
+#include "kernel/memory/internals/vmm.hpp"
 #include "kernel/memory/internals/memory-map.hpp"
+#include "kernel/memory/memory-defs.hpp"
 #include "kernel/memory/memory-unit.hpp"
-
+#include "kernel/memory/memory-manager.hpp"
 #define HANG() while (true)
 
 // ── VGA ──────────────────────────────────────────────────────────────────────
@@ -134,9 +137,45 @@ void copyBytes(void* src, void* dst, uint64_t byteNum) {
 
 using namespace kernel;
 
+void MapAllMemory_2MB() {
+    uint64_t highestAddress = 0;
+    for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
+        const E820Entry entry = E820Entries[i];
+        if (entry.type != EntryType::Usable) continue;
+        uint64_t end = entry.base + entry.length;
+        if (end > highestAddress) highestAddress = end;
+    }
+    
+    uint64_t pdNum = (highestAddress + 0x3FFFFFFF) / 0x40000000;
+    
+    // Temp tables in already-mapped low memory
+    uint64_t* temp_pml4 = reinterpret_cast<uint64_t*>(0x50000);
+    uint64_t* temp_pdpt = reinterpret_cast<uint64_t*>(0x51000);
+    // PDs start at 0x52000, one 4KB page each
+    
+    constexpr uint64_t TABLE_ENTRIES_NUM = 512;
+    memset(temp_pml4, 0, TABLE_ENTRIES_NUM * 8);
+    memset(temp_pdpt, 0, TABLE_ENTRIES_NUM * 8);
+    temp_pml4[0] = reinterpret_cast<uint64_t>(temp_pdpt) | 0x3;
+    
+    for (uint64_t i = 0; i < pdNum; i++) {
+        uint64_t* temp_pd = reinterpret_cast<uint64_t*>(0x52000 + i * 0x1000);
+        memset(temp_pd, 0, TABLE_ENTRIES_NUM * 8);
+        temp_pdpt[i] = reinterpret_cast<uint64_t>(temp_pd) | 0x3;
+        for (uint64_t j = 0; j < 512; j++)
+            temp_pd[j] = ((i * 0x40000000ULL) + (j * 0x200000ULL)) | 0x83;
+    }
+    
+    asm volatile("mov %0, %%cr3" :: "r"(temp_pml4) : "memory");
+
+}
+
 extern "C" void kernel_entry() {
     kernel_clearConsole();
     kernel_printf("Kernel entry reached\n");
+
+    kernel_printf("Temporarily mapping whole memory");
+    MapAllMemory_2MB();
 
     uint8_t* check = reinterpret_cast<uint8_t*>(TEMP_KERNEL_MAIN_LOAD_ADDR);
     kernel_printf("[VERIFY] First bytes: ");
@@ -163,17 +202,21 @@ extern "C" void kernel_entry() {
     kernel_printfHex((uint32_t)check[2]);
     kernel_printf("\n");
 
-    PMM pmm{};
-    pmm.Init();
+    MemoryManager memoryManager{};
+    memoryManager.Init();
 
-    HANG();
-
-    kernel_printf("Jumping to kernelMain at ");
-    kernel_printfHex((uint32_t)KERNEL_MAIN_LOAD_ADDR);
+    kernel_printf("[VERIFY] First bytes after cr3 switch: ");
+    check = reinterpret_cast<uint8_t*>(KERNEL_VIRT_BASE);
+    kernel_printf("[VERIFY] First bytes: ");
+    kernel_printfHex((uint32_t)check[0]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[1]);
+    kernel_printf(" ");
+    kernel_printfHex((uint32_t)check[2]);
     kernel_printf("\n");
 
     typedef void (*KernelMain)();
-    KernelMain kernelMain = reinterpret_cast<KernelMain>(KERNEL_MAIN_LOAD_ADDR);
+    KernelMain kernelMain = reinterpret_cast<KernelMain>(KERNEL_VIRT_BASE);
     kernelMain();
 
     // Should never reach here
