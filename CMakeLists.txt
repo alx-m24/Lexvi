@@ -26,6 +26,7 @@ add_executable(kernel-main
     src/kernel/memory/vmm.cpp
     src/kernel/time/time.cpp
     src/kernel/acpi/rsdp.cpp
+    src/kernel/acpi/hpet.cpp
     src/kernel/acpi/sdt.cpp
     src/kernel/gdt/gdt.cpp
     src/kernel/pic/pic.cpp

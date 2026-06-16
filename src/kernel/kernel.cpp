@@ -12,6 +12,7 @@
 #include "kernel/console/console.hpp"
 #include "kernel/interrupt/idt.hpp"
 #include "kernel/acpi/rsdp.hpp"
+#include "kernel/acpi/hpet.hpp"
 #include "kernel/acpi/sdt.hpp"
 #include "kernel/gdt/gdt.hpp"
 
@@ -53,9 +54,6 @@ void Kernel::Init() {
 
     kernel::printf("Initializing kernel...\n");
     
-    kernel::printf("    - Setting up pmm\n");
-    // m_vmm.Init(&memoryWindow);
-
     kernel::printf("    - Setting up GDT\n");
     gdt_load();
 
@@ -68,7 +66,19 @@ void Kernel::Init() {
 
     memoryManager.Init();
     memoryManager.TestMemory();
-    
+
+    logWindow.clear();
+
+    kernel::printf("    - Setting up SDT\n");
+    sdtHeader_load();
+
+    kernel::printf("    - Setting up HPET\n");
+    hpet_load();
+    memoryManager.m_vmm.mapMMIO(MMIO_TO_VIRT(hpet_base), hpet_base, KiB(4_KiB).bytes());
+
+    kernel::printf("    - Setting up Chrono\n");
+    kernel::chrono::init();
+        
     {
         kernel::ScopedColor color(kernel::Color::GREEN_ON_BLACK);
         kernel::printf("Successfully initialized kernel!\n");
@@ -78,6 +88,7 @@ void Kernel::Init() {
 
 void Kernel::Run() {
     this->Init();
+
     while (true) {
         char c = kernel::keyboard::getChar();
         if (c == '\x1B') {
@@ -91,5 +102,8 @@ void Kernel::Run() {
         } else {
             inputWindow.printf(c);
         }
+
+
+        memoryWindow.printf("Time: ", kernel::chrono::now().to<kernel::chrono::Unit::Milliseconds>().value, "ms\n");
     }
 }

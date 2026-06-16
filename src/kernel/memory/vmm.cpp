@@ -99,7 +99,7 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
         }
 
         SAFE_PRINT("[VMM] Successfully identity mapped lower 1MB\n");
-        
+
         loadCR3();
 
         SAFE_PRINT("[VMM] Successfully initialized VMM\n");
@@ -137,6 +137,15 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
         PageTable* pt   = getOrAlloc(pd,      idx(virt, 21));
 
         pt->entries[idx(virt, 12)].set(phys, flags);
+    }
+
+    void VMM::mapMMIO(uint64_t virtBase, uint64_t physBase, Bytes size) {
+        uint64_t pages = alignUp(size.count(), PAGE_SIZE.bytes().count()) / PAGE_SIZE.bytes().count();
+        for (uint64_t i = 0; i < pages; i++) {
+            map(virtBase + i * PAGE_SIZE.bytes().count(),
+                physBase + i * PAGE_SIZE.bytes().count(),
+                { .writable = true, .cacheDisable = true }); // cache disable important for MMIO
+        }
     }
 
     void VMM::unmap(uint64_t virt) {

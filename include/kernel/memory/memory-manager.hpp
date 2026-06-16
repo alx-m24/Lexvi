@@ -5,7 +5,7 @@
 
 namespace kernel {
     class MemoryManager {
-        private:
+        public:
             PMM m_pmm{};
             VMM m_vmm{};
 

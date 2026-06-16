@@ -19,5 +19,6 @@ struct HPETTable {
     uint16_t  minimum_tick;
     uint8_t   page_protection;
 } __attribute__((packed));
+extern uint64_t hpet_base;
 
 void hpet_load();

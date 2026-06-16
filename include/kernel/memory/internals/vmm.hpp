@@ -7,15 +7,16 @@ namespace kernel {
         bool writable{};
         bool user{};
         bool noExecute{};
-
+        bool cacheDisable{};  // PCD — bit 4
         uint64_t operator()() const {
-            uint64_t flags = (1 << 0);                        // Present bit, always set
-            if (writable)  flags |= (1 << 1);                 // R/W
-            if (user)      flags |= (1 << 2);                 // U/S
-            if (noExecute) flags |= (1ULL << 63);             // NX — needs ULL, bit 63
+            uint64_t flags = (1 << 0);
+            if (writable)     flags |= (1 << 1);
+            if (user)         flags |= (1 << 2);
+            if (cacheDisable) flags |= (1 << 4);
+            if (noExecute)    flags |= (1ULL << 63);
             return flags;
         }
-    };
+    };    
 
     class PageTable;
 
@@ -72,8 +73,10 @@ namespace kernel {
 
         public:
             void map(uint64_t virt, uint64_t phys, PageFlags flags);
+            void mapMMIO(uint64_t virtBase, uint64_t physBase, Bytes size);
             void unmap(uint64_t virt);
             void loadCR3();
             uint64_t getPML4Phys() const { return m_pml4Phys; }
+
     };
 }
