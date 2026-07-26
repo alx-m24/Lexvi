@@ -41,6 +41,10 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
     bool PageTableEntry::isPresent() const { 
         return m_raw & 1;
     }
+
+    bool PageTableEntry::isHugePage() const {
+        return m_raw & (1ULL << 7);
+    }
     
     void PageTableEntry::set(uint64_t physAddr, PageFlags flags) {
         m_raw = (physAddr & 0x000FFFFFFFFFF000ULL) | flags();
@@ -84,11 +88,18 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
             const E820Entry entry = E820Entries[i];
 
-            uint64_t base = alignDown(entry.base, PAGE_SIZE.bytes().count());
-            uint64_t end  = alignUp(entry.base + entry.length, PAGE_SIZE.bytes().count());
+            uint64_t base = alignDown(entry.base, MiB(2).bytes().count());
+            uint64_t end  = alignUp(entry.base + entry.length, MiB(2).bytes().count());
 
-            for (uint64_t phys = base; phys < end; phys += PAGE_SIZE.bytes().count()) {
-                map(HHDM_BASE + phys, phys, { .writable = true });
+            for (uint64_t phys = base; phys < end; phys += MiB(2).bytes().count()) {
+                map(
+                    HHDM_BASE + phys,
+                    phys,
+                    { 
+                        .writable = true,
+                        .hugePage = true,
+                        .cacheDisable = entry.type == EntryType::Usable ? false : true
+                    });
             }
         }
 
@@ -134,9 +145,14 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
 
         PageTable* pdpt = getOrAlloc(m_pml4,  idx(virt, 39));
         PageTable* pd   = getOrAlloc(pdpt,    idx(virt, 30));
-        PageTable* pt   = getOrAlloc(pd,      idx(virt, 21));
 
-        pt->entries[idx(virt, 12)].set(phys, flags);
+        if (flags.hugePage) {
+            pd->entries[idx(virt, 21)].set(phys, flags);
+        }
+        else {
+            PageTable* pt   = getOrAlloc(pd,      idx(virt, 21));
+            pt->entries[idx(virt, 12)].set(phys, flags);
+        }
     }
 
     void VMM::mapMMIO(uint64_t virtBase, uint64_t physBase, Bytes size) {
@@ -161,12 +177,30 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
     
         PageTableEntry& pde = pdpte.getNextPageTable()->entries[idx(virt, 21)];
         if (!pde.isPresent()) return;
-    
-        PageTableEntry& pte = pde.getNextPageTable()->entries[idx(virt, 12)];
-        pte.clear();
-    
+
+        if (pde.isHugePage()) {
+            pde.clear();
+        }
+        else {
+            PageTableEntry& pte = pde.getNextPageTable()->entries[idx(virt, 12)];
+            pte.clear();
+        }
         // TLB shootdown needed here on SMP; for now, single-core invlpg suffices
         asm volatile("invlpg (%0)" : : "r"(virt) : "memory");
+    }
+
+    void* VMM::Alloc(uint64_t virt, uint64_t pageCount, PageFlags flags) {
+        void* phys = m_pmm->Alloc(pageCount);
+        if (phys == nullptr) return nullptr;
+
+        uint64_t physBase = TO_PHYS(phys);
+        
+        for (uint64_t i = 0; i < pageCount; ++i) {
+            map(virt + i * PAGE_SIZE.bytes().count(),
+                physBase + i * PAGE_SIZE.bytes().count(),
+                flags);
+        }
+        return reinterpret_cast<void*>(virt);
     }
 
     void VMM::loadCR3() {

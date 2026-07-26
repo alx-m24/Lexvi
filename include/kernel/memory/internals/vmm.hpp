@@ -7,12 +7,14 @@ namespace kernel {
         bool writable{};
         bool user{};
         bool noExecute{};
+        bool hugePage{};
         bool cacheDisable{};  // PCD — bit 4
         uint64_t operator()() const {
             uint64_t flags = (1 << 0);
             if (writable)     flags |= (1 << 1);
             if (user)         flags |= (1 << 2);
             if (cacheDisable) flags |= (1 << 4);
+            if (hugePage)     flags |= (1 << 7); // PS bit
             if (noExecute)    flags |= (1ULL << 63);
             return flags;
         }
@@ -42,7 +44,9 @@ namespace kernel {
 
         public:
             PageTable* getNextPageTable() const;
+
             bool isPresent() const;
+            bool isHugePage() const;
 
             void set(uint64_t physAddr, PageFlags flags);
             void clear();
@@ -74,6 +78,7 @@ namespace kernel {
         public:
             void map(uint64_t virt, uint64_t phys, PageFlags flags);
             void mapMMIO(uint64_t virtBase, uint64_t physBase, Bytes size);
+            void* Alloc(uint64_t virt, uint64_t pageCount, PageFlags flags);
             void unmap(uint64_t virt);
             void loadCR3();
             uint64_t getPML4Phys() const { return m_pml4Phys; }

@@ -4,11 +4,11 @@
 
 #include "stdint.h"
 
-constexpr unsigned int KERNEL_MAIN_LBA = 33;
-constexpr unsigned int KERNEL_MAIN_SECTORS = 84;
+constexpr unsigned int KERNEL_MAIN_LBA = 35;
+constexpr unsigned int KERNEL_MAIN_SECTORS = 85;
 constexpr unsigned long long KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
-constexpr unsigned long long KERNEL_MAIN_SIZE = 42704;
+constexpr unsigned long long KERNEL_MAIN_SIZE = 43440;
 
 constexpr unsigned long long TEMP_KERNEL_MAIN_LOAD_ADDR = 0x10000;
 
