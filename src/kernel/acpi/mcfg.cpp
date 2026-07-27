@@ -4,6 +4,7 @@
 #include "kernel/utils/tables.hpp"
 
 uint64_t mcfg_base = 0;
+uint64_t mcfg_count = 0;
 
 void mcfg_load() {
     MCFGTable* mcfgTable = kernel::findTable<MCFGTable>("MCFG");
