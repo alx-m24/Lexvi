@@ -1,36 +1,51 @@
- ================================================================================
-                            KERNEL BOOT PLAN
+================================================================================
+                            KERNEL BOOT PLAN (UEFI)
 ================================================================================
 
-STAGE 1 BOOTLOADER (identity mapped, low address)
-──────────────────────────────────────────────────
-  - Load kernel ELF to a temporary low physical address
-  - Read & store E820 memory map from BIOS at fixed address
-
-STAGE 2 BOOTLOADER (identity mapped, low address)
-──────────────────────────────────────────────────
-  --- NASM Code ---
-    - Switch CPU to 64-bit long mode
-  --- As of here: C++ is used ---
-    - Copy kernel to final physical address (0x100000)
-    - Carve a fixed physical region just above 0x100000 + kernel_size for page tables
-    - Build boot page tables in that carved region:
-        · Read E820 memory map from fixed address
-        · Identity map low memory (stage 2 keeps running)
+UEFI BOOTLOADER (BOOTX64.EFI, gnu-efi, EFI_APPLICATION)
+──────────────────────────────────────────────────────
+  --- Runs under UEFI Boot Services, firmware already in long mode/paging ---
+    - Entry via efi_main(ImageHandle, SystemTable)
+    - Locate and open kernel image from ESP (EFI_SIMPLE_FILE_SYSTEM_PROTOCOL)
+    - AllocatePages() + read kernel to a physical address of our choosing
+    - Walk SystemTable->ConfigurationTable[] for ACPI 2.0/1.0 GUID -> RSDP address
+    - Query Graphics Output Protocol (GOP) -> framebuffer base, pitch,
+      resolution, pixel format
+    - Build our own boot page tables (own PML4, not UEFI's):
+        · Identity map low memory (only as long as boot services still running)
         · Map kernel physical  →  0xFFFFFFFF80000000  (slot 511)
         · Map all physical RAM →  0xFFFF800000000000  (HHDM, slot 256)
-    - Switch CR3
-    - Jump to kernel entry at 0xFFFFFFFF80000000
+        · Map GOP framebuffer  →  reserved slot (see layout below)
+    - Populate a KernelBootInfo struct:
+        · UEFI memory map pointer, entry count, descriptor stride
+          (EFI_MEMORY_DESCRIPTOR is variable-stride — not a fixed E820Entry array)
+        · RSDP physical address
+        · Framebuffer base/pitch/resolution/pixel format
+        · Kernel physical/virtual base, size
+    - GetMemoryMap() (must be the last Boot Services call before exit,
+      map key must match at ExitBootServices time)
+    - ExitBootServices(ImageHandle, mapKey)
+    - Switch CR3 to our own PML4
+    - Jump to kernel entry at 0xFFFFFFFF80000000,
+      passing a pointer to KernelBootInfo
 
 
 KERNEL MAIN (higher half, clean environment)
 ─────────────────────────────────────────────
-  - PMM initialises from E820 (accessible via HHDM)
-      · Place bitmap pages at kernel_end + reserved page table size
-      · Marks everything below kernel end as used (covers stage 2 region)
-      · Marks the carved page table region as used via HHDM pointer
+  - Kernel entry stub (stack setup, BSS zero, run global ctors) unchanged
+    in spirit from today, now receives KernelBootInfo* as an argument
+  - PMM initialises from the UEFI memory map (accessible via HHDM)
+      · Iterate EFI_MEMORY_DESCRIPTOR entries by stride (not sizeof(E820Entry))
+      · Place bitmap pages at kernel_end (or another UEFI-allocated region)
+      · Marks everything below kernel end as used
+      · Marks bootloader-allocated regions (kernel image copy, boot page
+        tables, memory map buffer) as used via HHDM pointer
   - VMM initialises, takes ownership of existing page tables via HHDM pointer
   - GDT, IDT, and everything else loads normally
+  - RSDT/XSDT lookup uses RSDP address from KernelBootInfo directly —
+    no BIOS EBDA/legacy-area scan needed
+  - Framebuffer console (GOP-backed) replaces VGA text-mode 0xB8000 console
+    where hardware has no legacy VGA text mode
   - Kernel proceeds
 
 
@@ -41,29 +56,41 @@ VIRTUAL ADDRESS SPACE LAYOUT
         < non-canonical hole >
   0xFFFF800000000000  ┬─ HHDM: all physical RAM (slot 256)
                       ┘   ends at 0xFFFF801000000000 on a 64 GiB system
-                             (flexible, driven by E820 at runtime)
-        ... free slots 257-510 ...
+                             (flexible, driven by UEFI memory map at runtime)
+  0xFFFF810000000000  ┬─ MMIO / framebuffer mapping (slot 257, MMIO_BASE)
+                      ┘
+        ... free slots 258-510 ...
   0xFFFFFFFF80000000  ┬─ Kernel image + heap + stack (slot 511)
   0xFFFFFFFFFFFFFFFF  ┘
 
   Each slot = 512 GiB
-  Free slots reserved for future use (e.g. framebuffer mapping)
+  Free slots reserved for future use
 
 
 NOTES
 ──────
-  - Identity map is left in place after CR3 switch, simply never referenced again
-  - PMM marks everything below kernel end as used by default, no explicit teardown needed
+  - No fixed-physical-address handoff (no MEMORY_MAP_ADDRESS/
+    PMM_BITMAP_PHYS_ADDRESS-style baked constants): all boot-time data is
+    reached via the KernelBootInfo pointer passed into kernel entry, since
+    UEFI allocations land wherever AllocatePages() decides, not at
+    compile-time-known addresses
+  - UEFI's own identity/runtime mappings are irrelevant post-CR3-switch;
+    only our own page tables matter from that point on
+  - PMM marks everything below kernel end as used by default, no explicit
+    teardown needed
   - Page tables are accessed post-switch via HHDM_BASE + phys_addr
-  - No state transfer needed between stage 2 and kernel: E820 and page tables are at known physical addresses, accessible through HHDM immediately
-  - PMM and VMM class definitions are shared between stage 2 and kernel via the
-    same headers and source files. A macro handles the only difference:
+  - PMM and VMM class definitions remain shared between the UEFI bootloader
+    stage and the kernel via the same headers and source files. The same
+    macro handles the only difference:
       #ifdef BOOTLOADER
           #define TO_VIRT(addr) (addr)                 // physical, no offset
       #else
           #define TO_VIRT(addr) (HHDM_BASE + (addr))   // via HHDM
       #endif
     All physical address dereferences inside PMM/VMM use TO_VIRT(), making the
-    classes identical in both contexts with zero code duplication.
-
+    classes identical in both contexts with zero code duplication
+  - EFI_MEMORY_DESCRIPTOR replaces E820Entry as the on-disk/in-memory
+    memory-map record type; EFI_MEMORY_TYPE replaces EntryType — these are
+    not layout-compatible with the old BIOS structures and callers iterating
+    the map must use the UEFI-reported descriptor size/stride, not sizeof()
 ================================================================================

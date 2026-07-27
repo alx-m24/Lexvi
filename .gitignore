@@ -1,6 +1,8 @@
 # build output
 build/
 qemu.log
+debug.log
+CMakeFiles/
 
 # python venv
 venv/

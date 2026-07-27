@@ -1,18 +1,14 @@
 cmake_minimum_required(VERSION 3.20)
-project(KernelMain CXX ASM_NASM)
+project(kernel CXX ASM_NASM)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# NASM output format
-set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
-set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -f elf64 -o <OBJECT> <SOURCE>")
-
 set(CMAKE_CXX_LINK_EXECUTABLE
-    "ld -m elf_x86_64 -T ${CMAKE_SOURCE_DIR}/link/kernelMain.ld <OBJECTS> -o <TARGET>")
+    "ld -m elf_x86_64 -T ${CMAKE_SOURCE_DIR}/link/kernel.ld <OBJECTS> -o <TARGET>")
 
-add_executable(kernel-main
+add_executable(kernel
     src/kernel/memory/memory-manager.cpp
     src/kernel/console/tui/window.cpp
     src/kernel/keyboard/keyboard.cpp
@@ -36,7 +32,7 @@ add_executable(kernel-main
     src/kernel/kernelMain-entry.nasm
 )
 
-target_compile_options(kernel-main PRIVATE
+target_compile_options(kernel PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-m64>
     $<$<COMPILE_LANGUAGE:CXX>:-ffreestanding>
     $<$<COMPILE_LANGUAGE:CXX>:-fno-stack-protector>
@@ -47,22 +43,22 @@ target_compile_options(kernel-main PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-ffunction-sections>
 )
 
-target_include_directories(kernel-main PRIVATE
+target_include_directories(kernel PRIVATE
     include
     build/include
 )
 
-set_target_properties(kernel-main PROPERTIES
-    OUTPUT_NAME "kernel-main"
+set_target_properties(kernel PROPERTIES
+    OUTPUT_NAME "kernel"
     SUFFIX ".elf"
 )
 
 # Post-build: convert ELF to flat binary
-add_custom_command(TARGET kernel-main POST_BUILD
+add_custom_command(TARGET kernel POST_BUILD
     COMMAND objcopy -O binary
-        $<TARGET_FILE:kernel-main>
-        $<TARGET_FILE_DIR:kernel-main>/kernel-main.bin
-    COMMAND nm $<TARGET_FILE:kernel-main> | sort >
-        $<TARGET_FILE_DIR:kernel-main>/kernel-main.map
+        $<TARGET_FILE:kernel>
+        $<TARGET_FILE_DIR:kernel>/kernel.bin
+    COMMAND nm $<TARGET_FILE:kernel> | sort >
+        $<TARGET_FILE_DIR:kernel>/kernel.map
     COMMENT "Converting ELF to flat binary"
 )
