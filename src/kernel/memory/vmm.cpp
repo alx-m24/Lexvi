@@ -9,26 +9,16 @@
 #ifndef BOOTLOADER
 #include "kernel/console/console.hpp"
 #define SAFE_PRINT(...) kernel::printf(__VA_ARGS__)
-#define SAFE_PRINT_HEX(x) kernel::printfHex(x)
 #else
-void kernel_printf(char c);
-void kernel_printf(const char* str);
-void kernel_printf(uint32_t n);
-void kernel_printf(uint64_t n);
-void kernel_printf(double d);
-void kernel_printf(uint16_t n);
-void kernel_printf(int n);
-void kernel_printfHex(uint64_t n);
-void kernel_printfHex(uint32_t n);
-void kernel_clearConsole();
-template<typename First, typename... Others>
-void kernel_printf(const First& first, const Others&... others) {
-    kernel_printf(first);
-    kernel_printf(others...);
+#include <efi/efi.h>
+#include <efi/efilib.h>
+
+inline void kernel_printf(const char* msg) {
+    Print((const CHAR16*)msg);
 }
 
-#define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
-#define SAFE_PRINT_HEX(x) kernel_printfHex(x)
+// #define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
+#define SAFE_PRINT(...) do { } while (false)
 #endif
 
 extern char _kernel_end[];
@@ -62,7 +52,31 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
         memset(entries, 0, sizeof(entries));
     }
 
-    void VMM::Init(PMM& pmm) {
+#ifndef BOOTLOADER
+    void VMM::Init(PageTable* existingPML4, PMM& pmm) {
+        SAFE_PRINT("[VMM] Initializing VMM\n");
+        SAFE_PRINT("[VMM] Using exsiting page tables\n");
+
+        m_pmm = &pmm;
+        m_pml4 = existingPML4;
+        m_pml4Phys = TO_PHYS(existingPML4);
+
+        for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
+            const E820Entry entry = E820Entries[i];
+
+            uint64_t base = alignDown(entry.base, MiB(2).bytes().count());
+            uint64_t end  = alignUp(entry.base + entry.length, MiB(2).bytes().count());
+
+            for (uint64_t phys = base; phys < end; phys += MiB(2).bytes().count()) {
+                if (entry.type != EntryType::Usable) continue;
+                unmap(phys);
+            }
+        }
+
+        SAFE_PRINT("[VMM] Successfully initialized VMM\n");
+    }
+#else
+    void VMM::Init(PMM& pmm, Bytes ImageBase, Bytes ImageSize) {
         SAFE_PRINT("[VMM] Initializing VMM\n");
         SAFE_PRINT("[VMM] Creating new page tables\n");
 
@@ -100,6 +114,15 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
                         .hugePage = true,
                         .cacheDisable = entry.type == EntryType::Usable ? false : true
                     });
+                if (phys <= 0x100000) continue; // prevents double mapping of lower 1MB using 2 different page sizes
+                if (entry.type == EntryType::Usable) map(
+                    phys,
+                    phys,
+                    { 
+                        .writable = true,
+                        .hugePage = true,
+                        .cacheDisable = entry.type == EntryType::Usable ? false : true
+                    });
             }
         }
 
@@ -109,23 +132,20 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
             map(phys, phys, { .writable = true });
         }
 
-        SAFE_PRINT("[VMM] Successfully identity mapped lower 1MB\n");
+        uint64_t imageBase = alignDown(ImageBase.count(), PAGE_SIZE.bytes().count());
+        uint64_t imageEnd = alignUp(ImageBase.count() + ImageSize.count(), PAGE_SIZE.bytes().count());
+        for (uint64_t phys = imageBase; phys < imageEnd; phys += PAGE_SIZE.bytes().count()) {
+            map(phys, phys, { .writable = true });
+        }
+
+        SAFE_PRINT("[VMM] Successfully identity mapped lower 1MB and ImageBase\n");
 
         loadCR3();
 
         SAFE_PRINT("[VMM] Successfully initialized VMM\n");
     }
+#endif
     
-    void VMM::Init(PageTable* existingPML4, PMM& pmm) {
-        SAFE_PRINT("[VMM] Initializing VMM\n");
-        SAFE_PRINT("[VMM] Using exsiting page tables\n");
-
-        m_pmm = &pmm;
-        m_pml4 = existingPML4;
-        m_pml4Phys = TO_PHYS(existingPML4);
-
-        SAFE_PRINT("[VMM] Successfully initialized VMM\n");
-    }
 
     void VMM::map(uint64_t virt, uint64_t phys, PageFlags flags) {
         auto idx = [](uint64_t v, int shift) -> uint64_t {

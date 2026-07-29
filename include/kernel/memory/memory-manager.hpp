@@ -12,9 +12,11 @@ namespace kernel {
         public:
             MemoryManager() = default;
 
+#ifndef BOOTLOADER
             void Init();
-
-        public:
             void TestMemory();
+#else
+            void Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize);
+#endif
     };
 }

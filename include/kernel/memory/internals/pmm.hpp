@@ -14,11 +14,17 @@ namespace kernel {
             uint8_t* m_bitMap = nullptr;
             uint64_t m_bitMapSize{};
 
+            Bytes m_kernelSize{};
+
         public:
             PMM() = default;
 
         public:
+#ifndef BOOTLOADER
             void Init();
+#else
+            void Init(Bytes kernelSize);
+#endif
 
             void* Alloc(uint64_t pages);
             void Free(void* address);

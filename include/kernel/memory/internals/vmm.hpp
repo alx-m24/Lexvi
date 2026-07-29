@@ -72,8 +72,11 @@ namespace kernel {
         public:
             VMM() = default;
 
-            void Init(PMM& pmm);
+#ifndef BOOTLOADER
             void Init(PageTable* existingPML4, PMM& pmm);
+#else
+            void Init(PMM& pmm, Bytes ImageBase, Bytes ImageSize);
+#endif
 
         public:
             void map(uint64_t virt, uint64_t phys, PageFlags flags);

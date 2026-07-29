@@ -2,8 +2,8 @@
 
 #include "kernel/kernel-config.hpp"
 #include "kernel/utils/math.hpp"
-#include "kernel/memory/memory-defs.hpp"
 #include "kernel/utils/memory.hpp"
+#include "kernel/memory/memory-defs.hpp"
 #include "kernel/memory/memory-unit.hpp"
 #include "kernel/memory/internals/memory-map.hpp"
 
@@ -11,43 +11,60 @@
 #include "kernel/console/console.hpp"
 #define SAFE_PRINT(...) kernel::printf(__VA_ARGS__)
 #else
-void kernel_printf(char c);
-void kernel_printf(const char* str);
-void kernel_printf(uint32_t n);
-void kernel_printf(uint64_t n);
-void kernel_printf(double d);
-void kernel_printf(uint16_t n);
-void kernel_printf(int n);
-void kernel_printfHex(uint64_t n);
-void kernel_printfHex(uint32_t n);
-void kernel_clearConsole();
+#include <efi/efi.h>
+#include <efi/efilib.h>
+
+inline void kernel_printf(const uint32_t& num) {
+    Print((const CHAR16*)u"%d", num);
+}
+
+inline void kernel_printf(const char* msg) {
+    Print((const CHAR16*)msg);
+}
+
+inline void kernel_printf() {}
+
 template<typename First, typename... Others>
-void kernel_printf(const First& first, const Others&... others) {
+inline void kernel_printf(const First& first, const Others&... others) {
     kernel_printf(first);
     kernel_printf(others...);
 }
 
-#define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
+// #define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
+#define SAFE_PRINT(...) do { } while (false)
 #endif
 
-namespace kernel { void PMM::Init() {
+namespace kernel { 
+
+#ifndef BOOTLOADER
+    void PMM::Init() {
         SAFE_PRINT("[PMM] Initializing\n");
         getTotalPageNum();
         SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
     
-#ifndef BOOTLOADER
         uint64_t bitmapPhys = *reinterpret_cast<uint64_t*>(TO_VIRT(PMM_BITMAP_PHYS_ADDRESS));
         m_bitMap = reinterpret_cast<uint8_t*>(TO_VIRT(bitmapPhys));
         SAFE_PRINT("[PMM] m_bitMap: ", reinterpret_cast<uint64_t>(m_bitMap), "\n");
-#else
-        InitBitMap(Bytes(0x100000 + KERNEL_MAIN_SECTORS * 512));
-        *reinterpret_cast<uint64_t*>(PMM_BITMAP_PHYS_ADDRESS) = reinterpret_cast<uint64_t>(m_bitMap);
-        
+
         CleanBitMap();
-#endif
 
         SAFE_PRINT("[PMM] Successfully initialized\n");
     }
+#else
+    void PMM::Init(Bytes kernelSize) {
+        SAFE_PRINT("[PMM] Initializing\n");
+        getTotalPageNum();
+        SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
+
+        m_kernelSize = kernelSize;
+        InitBitMap(kernelSize);
+        *reinterpret_cast<uint64_t*>(PMM_BITMAP_PHYS_ADDRESS) = reinterpret_cast<uint64_t>(m_bitMap);
+        
+        CleanBitMap();
+
+        SAFE_PRINT("[PMM] Successfully initialized\n");
+    }
+#endif
 
     void PMM::getTotalPageNum() {
         uint32_t* raw = reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
@@ -124,9 +141,9 @@ namespace kernel { void PMM::Init() {
         uint64_t bitMapPhys = TO_PHYS(reinterpret_cast<uint64_t>(m_bitMap));
         MarkRangeUsed(Bytes(bitMapPhys), Bytes(bitMapPhys + m_bitMapSize));
 #else
-        MarkRangeUsed(Bytes(TEMP_KERNEL_MAIN_LOAD_ADDR),
-                      Bytes(TEMP_KERNEL_MAIN_LOAD_ADDR + KERNEL_MAIN_SECTORS * 512));
-        MarkRangeUsed(0x100000_B, Bytes(0x100000 + KERNEL_MAIN_SECTORS * 512));
+        MarkRangeUsed(Bytes(0),
+                      m_kernelSize);
+        MarkRangeUsed(0x100000_B, m_kernelSize);
     
         MarkRangeUsed(Bytes(reinterpret_cast<uint64_t>(m_bitMap)),
                       Bytes(reinterpret_cast<uint64_t>(m_bitMap) + m_bitMapSize));

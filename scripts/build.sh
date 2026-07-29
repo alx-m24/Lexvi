@@ -10,12 +10,39 @@ print_color yellow "Building bootloader..."
 GNUEFI_INC=/usr/include/efi
 GNUEFI_LIB=/usr/lib
 
+# main.cpp: UEFI-facing code, unchanged flags
 gcc -I$GNUEFI_INC -I$GNUEFI_INC/x86_64 \
-    -fpic -ffreestanding -fno-stack-protector -fno-stack-check \
+    -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fno-exceptions -fno-rtti \
     -fshort-wchar -mno-red-zone -maccumulate-outgoing-args \
+    -DBOOTLOADER \
     -c src/boot-uefi/main.cpp -o build/uefi-main.o \
     -I include \
     -std=c++23
+
+gcc -I$GNUEFI_INC -I$GNUEFI_INC/x86_64 \
+    -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fno-exceptions -fno-rtti \
+    -fshort-wchar -mno-red-zone -maccumulate-outgoing-args \
+    -DBOOTLOADER \
+    -c src/kernel/memory/pmm.cpp -o build/uefi-pmm.o \
+    -I include \
+    -std=c++23
+
+gcc -I$GNUEFI_INC -I$GNUEFI_INC/x86_64 \
+    -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fno-exceptions -fno-rtti \
+    -fshort-wchar -mno-red-zone -maccumulate-outgoing-args \
+    -DBOOTLOADER \
+    -c src/kernel/memory/vmm.cpp -o build/uefi-vmm.o \
+    -I include \
+    -std=c++23
+
+gcc -I$GNUEFI_INC -I$GNUEFI_INC/x86_64 \
+    -fpic -ffreestanding -fno-stack-protector -fno-stack-check -fno-exceptions -fno-rtti \
+    -fshort-wchar -mno-red-zone -maccumulate-outgoing-args \
+    -DBOOTLOADER \
+    -c src/kernel/memory/memory-manager.cpp -o build/uefi-memory-manager.o \
+    -I include \
+    -std=c++23
+
 
 print_color green "Successfully built bootloader..."
 print_color yellow "Linking bootloader..."
@@ -24,6 +51,9 @@ ld -shared -Bsymbolic -L$GNUEFI_LIB \
     -T $GNUEFI_LIB/elf_x86_64_efi.lds \
     $GNUEFI_LIB/crt0-efi-x86_64.o \
     build/uefi-main.o \
+    build/uefi-pmm.o \
+    build/uefi-vmm.o \
+    build/uefi-memory-manager.o \
     -o build/BOOTX64.so \
     -lefi -lgnuefi
 
@@ -49,10 +79,10 @@ ln -s cmake/compile_commands.json build/compile_commands.json
 
 print_color green "Successfully built kernel..."
 
-print_color yellow "Copying kernel for FAT..."
+print_color yellow "Copying kernel to FAT..."
 
 cp build/cmake/kernel.bin build/esp/
 
-print_color yellow "Successfully copied kernel for FAT..."
+print_color green "Successfully copied kernel to FAT..."
 
 print_color green "Successfully built Lexvi OS"
