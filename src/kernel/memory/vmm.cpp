@@ -7,8 +7,8 @@
 #include "kernel/utils/memory.hpp"
 
 #ifndef BOOTLOADER
-#include "kernel/console/console.hpp"
-#define SAFE_PRINT(...) kernel::printf(__VA_ARGS__)
+#include "kernel/debug/serial.hpp"
+#define SAFE_PRINT(...) kernel::serial::put(__VA_ARGS__)
 #else
 #include <efi/efi.h>
 #include <efi/efilib.h>
@@ -21,9 +21,8 @@ inline void kernel_printf(const char* msg) {
 #define SAFE_PRINT(...) do { } while (false)
 #endif
 
-extern char _kernel_end[];
-
-namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
+namespace kernel { 
+    PageTable* PageTableEntry::getNextPageTable() const {
         uint64_t phys = extractBits(m_raw, 12, 51) << 12;
         return reinterpret_cast<PageTable*>(TO_VIRT(phys));
     }
@@ -76,7 +75,7 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
         SAFE_PRINT("[VMM] Successfully initialized VMM\n");
     }
 #else
-    void VMM::Init(PMM& pmm, Bytes ImageBase, Bytes ImageSize) {
+    void VMM::Init(PMM& pmm, Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
         SAFE_PRINT("[VMM] Initializing VMM\n");
         SAFE_PRINT("[VMM] Creating new page tables\n");
 
@@ -89,11 +88,9 @@ namespace kernel { PageTable* PageTableEntry::getNextPageTable() const {
 
         // Kernel image (slot 511)
         uint64_t kernelPhys = KERNEL_MAIN_LOAD_ADDR;  // 0x100000
-                                                      //
-        uint64_t kernelEnd  = reinterpret_cast<uint64_t>(_kernel_end);
-        uint64_t kernelSize = alignUp(kernelEnd - KERNEL_VIRT_BASE, PAGE_SIZE.bytes().count());
+        uint64_t kernel_Size = alignUp(kernelSize.count(), PAGE_SIZE.bytes().count());
 
-        for (uint64_t off = 0; off < kernelSize; off += PAGE_SIZE.bytes().count()) {
+        for (uint64_t off = 0; off < kernel_Size; off += PAGE_SIZE.bytes().count()) {
             map(KERNEL_VIRT_BASE + off, kernelPhys + off, { .writable = true });
         }
 

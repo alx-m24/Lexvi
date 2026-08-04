@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include "kernel/acpi/rsdp.hpp"
 #include "kernel/acpi/sdt.hpp"
 #include "kernel/error/error.hpp"

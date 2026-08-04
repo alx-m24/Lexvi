@@ -13,7 +13,13 @@ PHDRS {
 SECTIONS {
     . = KERNEL_VIRT_BASE;
 
-    .text : AT(KERNEL_PHYS_BASE) {
+    .header : AT(KERNEL_PHYS_BASE) {
+         LONG(0x4C455856) /* Magic */
+         LONG(1) /* Version */
+         QUAD(stack_top - KERNEL_VIRT_BASE)   /* total reserved size, alignment-inclusive */
+     } :text
+
+    .text : {
         KEEP(*(.text.kernel_main))
         *(.text)
         *(.text.*)
@@ -29,13 +35,13 @@ SECTIONS {
         *(.data.*)
     } :data
 
-    .init_array : {              /* ← BEFORE .bss */
+    .init_array : {
         _init_array_start = .;
         KEEP(*(.init_array*))
         _init_array_end = .;
     } :data
 
-    .bss : {                     /* ← AFTER .init_array */
+    .bss : {
         _bss_start = .;
         *(.bss)
         *(.bss.*)
@@ -51,5 +57,4 @@ SECTIONS {
         . += KERNEL_STACK_SIZE;
         stack_top = .;
     } :data
-
 }

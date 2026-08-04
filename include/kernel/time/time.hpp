@@ -1,16 +1,13 @@
 #pragma once
 
-#include <functional>
 #include <type_traits>
 #include <cstdint>
-#include "kernel/acpi/hpet.hpp"
-#include "kernel/memory/memory-defs.hpp"
 
 #include "kernel/error/error.hpp"
 
 namespace kernel {
-    constexpr uint32_t CLOCK_FREQ = 1000; // hertz
-    constexpr uint32_t MAX_TICK_CALLBACKS_NUM = 64;
+    inline constexpr uint32_t CLOCK_FREQ = 1000; // hertz
+    inline constexpr uint32_t MAX_TICK_CALLBACKS_NUM = 64;
     
     using TickCallback_T = void (*)();
     extern TickCallback_T callbacks[MAX_TICK_CALLBACKS_NUM];

@@ -1,7 +1,11 @@
 #include "kernel/time/time.hpp"
-#include "kernel/acpi/hpet.hpp"
 
 #include <stdint.h>
+#include <cstdint>
+
+#include "kernel/debug/serial.hpp"
+#include "kernel/acpi/hpet.hpp"
+#include "kernel/memory/memory-defs.hpp"
 
 namespace kernel {
     namespace {
@@ -31,6 +35,7 @@ namespace kernel {
     void chrono::init() {
         hpet_regs = reinterpret_cast<volatile uint64_t*>(MMIO_TO_VIRT(hpet_base));
         period_fs = hpet_regs[0] >> 32;
+        kernel::serial::put("Here\n");
         hpet_regs[2] = hpet_regs[2] | 1;
     }
 }

@@ -15,4 +15,6 @@ qemu-system-x86_64.exe \
     -m 8G \
     -no-reboot \
     -d int,cpu_reset \
-    2>qemu.log
+    -chardev vc,id=char0,logfile=log/serial.log \
+    -serial chardev:char0 \
+    2>log/qemu.log

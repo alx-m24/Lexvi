@@ -1,13 +1,21 @@
 extern "C" {
 #include <efi/efi.h>
 #include <efi/efilib.h>
-#include "kernel/kernel-config.hpp"
 }
+
+#include "kernel/kernel-config.hpp"
+#include "kernel/debug/serial.hpp"
+
+// just for auto-complete of some editors
+#ifndef BOOTLOADER
+#define BOOTLOADER
+#endif
+
 #include "kernel/memory/memory-unit.hpp"
 #include "kernel/memory/memory-manager.hpp"
 #include "kernel/memory/internals/memory-map.hpp"
 
-EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, UINTN* OutKernelSize, UINTN* outImageBase, UINTN* outImageSize) {
+EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable, UINTN* outImageBase, UINTN* outImageSize) {
     EFI_STATUS status;
 
     Print((const CHAR16*)u"ImageHandle=%lx BS=%lx HandleProtocolFn=%lx\n",
@@ -94,7 +102,6 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
     }
 
     UINTN kernel_size = file_info->FileSize;
-    *OutKernelSize = kernel_size;
     SystemTable->BootServices->FreePool(file_info);
 
     Print((const CHAR16*)u"Successfully read kernel size\n");
@@ -223,8 +230,8 @@ EFI_STATUS TranslateUefiToKernelE820(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* S
             translated_entry_count++;
         }
 
-        auto* final_count_ptr = reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
-        *final_count_ptr = translated_entry_count;
+        uint32_t* entryCount_ptr = reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
+        *entryCount_ptr = translated_entry_count;
 
         // 3. Attempt ExitBootServices immediately with the map_key we just fetched —
         // no Print/AllocatePool/other BS calls between GetMemoryMap and this.
@@ -254,21 +261,66 @@ EFI_STATUS TranslateUefiToKernelE820(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* S
     return EFI_INVALID_PARAMETER;
 }
 
+#define EFI_ACPI_20_TABLE_GUID \
+    { 0x8868e871, 0xe4f1, 0x11d3, { 0xbc, 0x22, 0x00, 0x80, 0xc7, 0x3c, 0x88, 0x81 } }
+
+#define EFI_ACPI_10_TABLE_GUID \
+    { 0xeb9d2d30, 0x2d88, 0x11d3, { 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d } }
+
+void* get_uefi_rsdp(EFI_SYSTEM_TABLE *SystemTable) {
+    EFI_GUID acpi20_guid = EFI_ACPI_20_TABLE_GUID;
+    EFI_GUID acpi10_guid = EFI_ACPI_10_TABLE_GUID;
+
+    void *rsdp = NULL;
+
+    for (UINTN i = 0; i < SystemTable->NumberOfTableEntries; i++) {
+        EFI_CONFIGURATION_TABLE *table = &SystemTable->ConfigurationTable[i];
+
+        // 1. Prefer ACPI 2.0+ RSDP
+        if (CompareGuid(&table->VendorGuid, &acpi20_guid) == 0) {
+            return table->VendorTable; // Physical pointer to RSDP 2.0
+        }
+
+        // 2. Fallback to ACPI 1.0 RSDP
+        if (CompareGuid(&table->VendorGuid, &acpi10_guid) == 0) {
+            rsdp = table->VendorTable;
+        }
+    }
+
+    return rsdp; // Returns ACPI 1.0 table if 2.0 wasn't found
+}
+
 extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
+    kernel::serial::init();
+
     InitializeLib(ImageHandle, SystemTable);
     Print((const CHAR16*)u"Hello from Lexvi UEFI bootloader\n");
 
+    Print((const CHAR16*)u"Getting RSDP\n");
+    uint64_t rsdp_address = reinterpret_cast<uint64_t>(get_uefi_rsdp(SystemTable));
+    *reinterpret_cast<uint64_t*>(RSDP_ADDRESS_PHYS_ADDRESS) = rsdp_address;
+
     Print((const CHAR16*)u"Loading kernel to memory...\n");
-    UINTN kernel_size = 0;
     UINTN ImageBase = 0;
     UINTN ImageSize = 0;
-    EFI_STATUS status = LoadKernelBinary(ImageHandle, SystemTable, &kernel_size, &ImageBase, &ImageSize);
+    EFI_STATUS status = LoadKernelBinary(ImageHandle, SystemTable, &ImageBase, &ImageSize);
     if (EFI_ERROR(status)) {
         Print((const CHAR16*)u"CRITICAL ERROR: Failed to stream kernel.bin into RAM (%r)\n", status);
         return status;
     }
 
-    auto kernel_entry = reinterpret_cast<void (*)()>(KERNEL_VIRT_BASE);
+    // Read the authoritative image/stack size straight out of the loaded
+    // kernel image instead of trusting the flat-binary FileSize, which can
+    // silently diverge from the linker's own layout (alignment, .bss/objcopy
+    // truncation behavior).
+    auto* header = reinterpret_cast<kernel::KernelHeader*>(KERNEL_MAIN_LOAD_ADDR);
+    if (header->magic != kernel::KERNEL_HEADER_MAGIC) {
+        Print((const CHAR16*)u"CRITICAL ERROR: kernel header magic mismatch (got 0x%lx)\n",
+              (UINTN)header->magic);
+        return EFI_LOAD_ERROR;
+    }
+
+    auto kernel_entry = reinterpret_cast<void (*)()>(KERNEL_VIRT_BASE + sizeof(kernel::KernelHeader));
 
     Print((const CHAR16*)u"Successfully loaded kernel to memory\n");
 
@@ -284,8 +336,15 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
     // NOTE: no Print/AllocatePool/etc. here: ExitBootServices has already succeeded
     // by the time we reach this line, so Boot Services no longer exist.
 
+    kernel::serial::put("ImageBase: ");
+    kernel::serial::putHex(ImageBase);
+    kernel::serial::put("\n");
+    kernel::serial::put("ImageSize: ");
+    kernel::serial::putHex(ImageSize);
+    kernel::serial::put("\n");
+
     kernel::MemoryManager memoryManager{};
-    memoryManager.Init(Bytes(kernel_size), Bytes(ImageBase), Bytes(ImageSize));
+    memoryManager.Init(Bytes(header->kernelSize), Bytes(ImageBase), Bytes(ImageSize));
 
     kernel_entry();
 

@@ -8,8 +8,8 @@
 #include "kernel/memory/internals/memory-map.hpp"
 
 #ifndef BOOTLOADER
-#include "kernel/console/console.hpp"
-#define SAFE_PRINT(...) kernel::printf(__VA_ARGS__)
+#include "kernel/debug/serial.hpp"
+#define SAFE_PRINT(...) kernel::serial::put(__VA_ARGS__);
 #else
 #include <efi/efi.h>
 #include <efi/efilib.h>
@@ -46,19 +46,28 @@ namespace kernel {
         m_bitMap = reinterpret_cast<uint8_t*>(TO_VIRT(bitmapPhys));
         SAFE_PRINT("[PMM] m_bitMap: ", reinterpret_cast<uint64_t>(m_bitMap), "\n");
 
+        SAFE_PRINT("[PMM] Cleaning Bitmap\n");
+
         CleanBitMap();
 
         SAFE_PRINT("[PMM] Successfully initialized\n");
     }
 #else
-    void PMM::Init(Bytes kernelSize) {
+    void PMM::Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
         SAFE_PRINT("[PMM] Initializing\n");
         getTotalPageNum();
         SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
 
         m_kernelSize = kernelSize;
-        InitBitMap(kernelSize);
+        m_ImageBase = ImageBase;
+        m_ImageSize = ImageSize;
+
+        Bytes kernelPhys = Bytes(KERNEL_MAIN_LOAD_ADDR);  // 0x100000
+        
+        InitBitMap(kernelPhys + kernelSize);
         *reinterpret_cast<uint64_t*>(PMM_BITMAP_PHYS_ADDRESS) = reinterpret_cast<uint64_t>(m_bitMap);
+
+        SAFE_PRINT("[PMM] Cleaning Bitmap\n");
         
         CleanBitMap();
 
@@ -68,6 +77,7 @@ namespace kernel {
 
     void PMM::getTotalPageNum() {
         uint32_t* raw = reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
+
         SAFE_PRINT("[PMM] Raw read in PMM: ", *raw, "\n");
         SAFE_PRINT("[PMM] MEMORY_MAP_ENTRY_COUNT in PMM: ", MEMORY_MAP_ENTRY_COUNT, "\n");
 
@@ -123,6 +133,14 @@ namespace kernel {
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
             const E820Entry entry = E820Entries[i];
 
+#ifndef BOOTLOADER
+            SAFE_PRINT("[PMM][ZeroBitMap] EntryBase: ");
+            kernel::serial::putHex(entry.base);
+            SAFE_PRINT(" EntrySize: ");
+            kernel::serial::putHex(entry.length);
+            SAFE_PRINT(" EntryType: ", entry.type == EntryType::Usable ? "Usable" : "Other", '\n');
+#endif
+
             if (entry.type != EntryType::Usable) continue;
 
             MarkRangeFree(Bytes(entry.base), Bytes(entry.length));
@@ -142,8 +160,9 @@ namespace kernel {
         MarkRangeUsed(Bytes(bitMapPhys), Bytes(bitMapPhys + m_bitMapSize));
 #else
         MarkRangeUsed(Bytes(0),
-                      m_kernelSize);
-        MarkRangeUsed(0x100000_B, m_kernelSize);
+                      Bytes(KERNEL_MAIN_LOAD_ADDR) + m_kernelSize);
+
+        MarkRangeUsed(m_ImageBase, m_ImageBase + m_ImageSize);
     
         MarkRangeUsed(Bytes(reinterpret_cast<uint64_t>(m_bitMap)),
                       Bytes(reinterpret_cast<uint64_t>(m_bitMap) + m_bitMapSize));

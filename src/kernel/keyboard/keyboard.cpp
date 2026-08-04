@@ -106,61 +106,66 @@ namespace kernel {
     }
 
     void HandleKeyBoardIRQ() {
-        unsigned char status = inb(0x64);
-        if (!(status & 0b00000001)) return;
-        if (status & 0b00100000) return;
-
-        unsigned char scanCode = inb(0x60);
-
-        constexpr unsigned char PRESS_MAX    = 0x7F;
-        constexpr unsigned char RELEASE_MIN  = 0x80;
-
-        if (scanCode == 0xE0) {
-            extended = true;  // just set the flag, return
-            return;
-        }
-        
-        if (extended) {
-            extended = false;
+        // Process ALL available bytes currently sitting in the PS/2 buffer
+        while (inb(0x64) & 0x01) {
+            unsigned char status = inb(0x64);
+            unsigned char scanCode = inb(0x60); // Single read drains port 0x60
+            
+            // Skip mouse data if bit 5 (AUX) is set (byte is already drained above)
+            if (status & 0x20) {
+                continue;
+            }
+    
+            constexpr unsigned char PRESS_MAX   = 0x7F;
+            constexpr unsigned char RELEASE_MIN = 0x80;
+    
+            if (scanCode == 0xE0) {
+                extended = true;
+                continue;
+            }
+            
+            if (extended) {
+                extended = false;
+                if (scanCode < PRESS_MAX) {
+                    switch (scanCode) {
+                        case 0x48: keys_held[keyboard::KEY_UP]    = true; enqueue('\x1B'); enqueue('['); enqueue('A'); break;
+                        case 0x50: keys_held[keyboard::KEY_DOWN]  = true; enqueue('\x1B'); enqueue('['); enqueue('B'); break;
+                        case 0x4D: keys_held[keyboard::KEY_RIGHT] = true; enqueue('\x1B'); enqueue('['); enqueue('C'); break;
+                        case 0x4B: keys_held[keyboard::KEY_LEFT]  = true; enqueue('\x1B'); enqueue('['); enqueue('D'); break;
+                    }
+                } else if (scanCode >= RELEASE_MIN) {
+                    switch (scanCode & 0x7F) {
+                        case 0x48: keys_held[keyboard::KEY_UP]    = false; break;
+                        case 0x50: keys_held[keyboard::KEY_DOWN]  = false; break;
+                        case 0x4D: keys_held[keyboard::KEY_RIGHT] = false; break;
+                        case 0x4B: keys_held[keyboard::KEY_LEFT]  = false; break;
+                    }
+                }
+                continue;
+            }
+    
             if (scanCode < PRESS_MAX) {
-                switch (scanCode) {
-                    case 0x48: keys_held[keyboard::KEY_UP]    = true; enqueue('\x1B'); enqueue('['); enqueue('A'); return;
-                    case 0x50: keys_held[keyboard::KEY_DOWN]  = true; enqueue('\x1B'); enqueue('['); enqueue('B'); return;
-                    case 0x4D: keys_held[keyboard::KEY_RIGHT] = true; enqueue('\x1B'); enqueue('['); enqueue('C'); return;
-                    case 0x4B: keys_held[keyboard::KEY_LEFT]  = true; enqueue('\x1B'); enqueue('['); enqueue('D'); return;
+                // Modifier tracking
+                if (scanCode == 0x2A || scanCode == 0x36) { shift_held = true;  continue; }
+                if (scanCode == 0x3A)                     { caps_lock = !caps_lock; continue; }
+    
+                uint64_t now = getCurrentTick();
+                
+                // Check if key isn't marked as held OR if repeat delay has elapsed safely
+                if (!keys_held[scanCode] || (now >= last_press_time[scanCode] && now - last_press_time[scanCode] > REPEAT_DELAY)) {
+                    keys_held[scanCode] = true;
+                    next_repeat_time[scanCode] = now + REPEAT_DELAY * (CLOCK_FREQ / 1000u);
+                    char c = resolveChar(scanCode);
+                    if (c) enqueue(c);
                 }
+                last_press_time[scanCode] = now;
+    
+            } else if (scanCode >= RELEASE_MIN) {
+                unsigned char pressCode = scanCode & 0x7F;
+                if (pressCode == 0x2A || pressCode == 0x36) { shift_held = false; continue; }
+                keys_held[pressCode] = false;
+                last_press_time[pressCode] = 0;
             }
-            if (scanCode >= RELEASE_MIN) {
-                switch (scanCode & 0x7F) {
-                    case 0x48: keys_held[keyboard::KEY_UP]    = false; return;
-                    case 0x50: keys_held[keyboard::KEY_DOWN]  = false; return;
-                    case 0x4D: keys_held[keyboard::KEY_RIGHT] = false; return;
-                    case 0x4B: keys_held[keyboard::KEY_LEFT]  = false; return;
-                }
-            }
-            return;
-        }
-
-        if (scanCode < PRESS_MAX) {
-            // modifier tracking
-            if (scanCode == 0x2A || scanCode == 0x36) { shift_held = true;  return; }
-            if (scanCode == 0x3A)                     { caps_lock = !caps_lock; return; }
-
-            uint64_t now = getCurrentTick();
-            if (now - last_press_time[scanCode] > REPEAT_DELAY) {
-                // genuine new press
-                keys_held[scanCode] = true;
-                next_repeat_time[scanCode] = now + REPEAT_DELAY * (CLOCK_FREQ / 1000u);
-                char c = resolveChar(scanCode);
-                if (c) enqueue(c);
-            }
-            last_press_time[scanCode] = now;
-
-        } else if (scanCode >= RELEASE_MIN) {
-            unsigned char pressCode = scanCode & 0x7F;
-            if (pressCode == 0x2A || pressCode == 0x36) { shift_held = false; return; }
-            keys_held[pressCode] = false;
-            last_press_time[pressCode] = 0;
         }
     }
 }

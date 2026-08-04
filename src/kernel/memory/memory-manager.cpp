@@ -22,8 +22,7 @@ void MemoryManager::TestMemory() {
 
 #else
     void MemoryManager::Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
-        m_pmm.Init(kernelSize);
-        m_vmm.Init(m_pmm, ImageBase, ImageSize);
+        m_pmm.Init(kernelSize, ImageBase, ImageSize);
+        m_vmm.Init(m_pmm, kernelSize, ImageBase, ImageSize);
     }
 #endif
-

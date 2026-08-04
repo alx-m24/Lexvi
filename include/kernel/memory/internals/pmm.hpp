@@ -16,6 +16,11 @@ namespace kernel {
 
             Bytes m_kernelSize{};
 
+#ifdef BOOTLOADER
+            Bytes m_ImageBase{};
+            Bytes m_ImageSize{};
+#endif
+
         public:
             PMM() = default;
 
@@ -23,7 +28,7 @@ namespace kernel {
 #ifndef BOOTLOADER
             void Init();
 #else
-            void Init(Bytes kernelSize);
+            void Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize);
 #endif
 
             void* Alloc(uint64_t pages);

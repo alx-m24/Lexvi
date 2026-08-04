@@ -1,13 +1,14 @@
 #include "kernel/interrupt/idt.hpp"
+#include "kernel/interrupt/pic.hpp"
 #include "kernel/interrupt/interruptFrame.hpp"
 
 #include "kernel/keyboard/keyboard.hpp"
 #include "kernel/syscall/syscall.hpp"
+#include "kernel/debug/serial.hpp"
+#include "kernel/keyboard/ps2.hpp"
 #include "kernel/error/error.hpp"
-#include "kernel/console/console.hpp"
 #include "kernel/time/time.hpp"
 #include "kernel/gdt/gdt.hpp"
-#include "kernel/pic/pic.hpp"
 
 #include <stdint.h>
 
@@ -78,7 +79,7 @@ extern "C" void isr_handler(interrupt_frame_t *frame) {
         switch (static_cast<IRQ>(irq)) {
             case IRQ::SYSTEM_TIMER: kernel::timerTick(); break;
             case IRQ::KEYBOARD: kernel::HandleKeyBoardIRQ(); break;
-            default: kernel::printf("Unknown IRQ: ", static_cast<uint32_t>(irq), '\n'); break;
+            default: kernel::serial::put("Unknown IRQ: ", static_cast<uint32_t>(irq), '\n'); break;
         }
 
         pic_eoi(irq);
@@ -87,18 +88,18 @@ extern "C" void isr_handler(interrupt_frame_t *frame) {
 
     const char* name = (frame->vector < 20) ? exception_names[frame->vector] : "Unknown";
 
-    kernel::printf("\n=== EXCEPTION ===\n");
-    kernel::printf("Vector: "); kernel::printfHex(frame->vector);
-    kernel::printf(" ("); kernel::printf(name); kernel::printf(")\n");
-    kernel::printf("Error:  "); kernel::printfHex(frame->error_code); kernel::printf("\n");
-    kernel::printf("RIP:    "); kernel::printfHex(frame->rip);        kernel::printf("\n");
-    kernel::printf("RSP:    "); kernel::printfHex(frame->rsp);        kernel::printf("\n");
-    kernel::printf("CS:     "); kernel::printfHex(frame->cs);         kernel::printf("\n");
+    kernel::serial::put("\n=== EXCEPTION ===\n");
+    kernel::serial::put("Vector: "); kernel::serial::putHex(frame->vector);
+    kernel::serial::put(" ("); kernel::serial::put(name); kernel::serial::put(")\n");
+    kernel::serial::put("Error:  "); kernel::serial::putHex(frame->error_code); kernel::serial::put("\n");
+    kernel::serial::put("RIP:    "); kernel::serial::putHex(frame->rip);        kernel::serial::put("\n");
+    kernel::serial::put("RSP:    "); kernel::serial::putHex(frame->rsp);        kernel::serial::put("\n");
+    kernel::serial::put("CS:     "); kernel::serial::putHex(frame->cs);         kernel::serial::put("\n");
 
     if (frame->vector == 14) {
         uint64_t cr2;
         asm volatile ("mov %%cr2, %0" : "=r"(cr2));
-        kernel::printf("CR2:    "); kernel::printfHex(cr2); kernel::printf("\n");
+        kernel::serial::put("CR2:    "); kernel::serial::put(cr2); kernel::serial::put("\n");
     }
 
     KERNEL_PANIC("CPU Exception");
@@ -125,8 +126,9 @@ void idt_load(void) {
 }
 
 void idt_init(void) {
-    pic_remap();
+    pic_remap(Interrupts{ .systemClock = true, .keyboard = true });
     pit_init(kernel::CLOCK_FREQ);
+    ps2_init();
 
     idt_set(0,  (void*)isr_stub_0,  IDT_TRAP_GATE);
     idt_set(1,  (void*)isr_stub_1,  IDT_TRAP_GATE);
