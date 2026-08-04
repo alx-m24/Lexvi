@@ -48,7 +48,10 @@ The legacy two-stage NASM BIOS bootloader has been retired from the active build
 - `nasm` — for any remaining low-level assembly stubs
 - `gnu-efi` headers — for building the UEFI bootloader
 - `objcopy` — converts the linked ELF into a PE32+ `.efi` image
-- `dd` — for writing the disk image
+- `dd` — for writing raw disk/partition images
+- `mtools` (`mmd`, `mcopy`, `mdir`) — populates the FAT32 ESP image without needing to mount it
+- `dosfstools` (`mkfs.vfat`) — formats the ESP image as FAT32
+- `gdisk` / `gptfdisk` (`sgdisk`) — writes the GPT partition table on the final disk image
 - `cmake` + a C++ compiler (e.g. `g++` or `clang++`)
 - `ovmf` — pre-built OVMF CODE/VARS firmware pair, for testing under QEMU
 
@@ -60,9 +63,15 @@ These tools are pre-installed or easily available on most Linux systems, making 
 
 ```bash
 ./scripts/build.sh
+./scripts/publish.sh
 ```
 
-This produces a bootable disk/USB image with an EFI System Partition containing `BOOTX64.EFI`, alongside the compiled kernel.
+`build.sh` compiles the bootloader and kernel. `publish.sh` then assembles the bootable disk image in two stages:
+
+1. **ESP image** (`build/esp.img`) — a 64 MB FAT32 volume populated via `mtools`, containing `/EFI/BOOT/BOOTX64.EFI` and `kernel.bin` at its root. Using `mtools` means the image never needs to be mounted with root privileges.
+2. **Disk image** (`build/lexvi.img`) — a 128 MB raw image with a GPT partition table written by `sgdisk`, containing a single `EF00` (EFI System) partition. The ESP image is then embedded at that partition's first sector via `dd`, with the offset parsed directly out of `sgdisk`'s own partition info rather than hardcoded, so it stays correct regardless of exact partition alignment.
+
+The result, `build/lexvi.img`, is a real GPT-partitioned UEFI-bootable disk image — writable to a USB drive or handed straight to QEMU.
 
 ---
 
@@ -95,7 +104,7 @@ This is one of the more technically demanding aspects of OS development, and it 
 
 ### QEMU (Recommended)
 
-QEMU works out of the box with OVMF firmware:
+QEMU works out of the box with OVMF firmware, pointed at the GPT image produced by `publish.sh`:
 
 ```bash
 qemu-system-x86_64 \
