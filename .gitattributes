@@ -1,0 +1,28 @@
+# --- Legacy BIOS boot files ---
+src/boot/boot-stage1.nasm merge=ours
+src/boot/boot-stage2.nasm merge=ours
+link/kernelEntry.ld merge=ours
+link/kernelMain.ld merge=ours
+scripts/build.sh merge=ours
+scripts/run.sh merge=ours
+scripts/buildAndRun.sh merge=ours
+
+# --- Memory management (BIOS-era PMM/VMM) ---
+src/kernel/memory/pmm.cpp merge=ours
+src/kernel/memory/vmm.cpp merge=ours
+include/kernel/memory/internals/pmm.hpp merge=ours
+include/kernel/memory/internals/vmm.hpp merge=ours
+
+# --- Serial / debug output ---
+src/kernel/debug/serial.cpp merge=ours
+include/kernel/debug/serial.hpp merge=ours
+
+# --- Interrupts / PIC ---
+src/kernel/interrupt/idt.cpp merge=ours
+include/kernel/interrupt/idt.hpp merge=ours
+src/kernel/interrupt/isr_stubs.nasm merge=ours
+src/kernel/pic/pic.cpp merge=ours
+include/kernel/pic/pic.hpp merge=ours
+
+# --- Build system ---
+CMakeLists.txt merge=ours
