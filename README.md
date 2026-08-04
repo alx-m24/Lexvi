@@ -14,13 +14,30 @@ The project is **open source**. Contributions, forks, and experiments are welcom
 
 ```mermaid
 pie title Languages
-    "Assembly (bootloader)" : 15.3
-    "C++ (kernel)" : 67.4
-    "Shell (build & utility scripts)" : 5.5
-    "CMake (C++ build scripts)" : 1.8
-    "Linker Script (manual memory placements)" : 1.0
-    "C (third-party header files)" : 9.0
+    "C++ (kernel & bootloader)" : 83.2
+    "Shell (build & utility scripts)" : 3.4
+    "CMake (C++ build scripts)" : 2.8
+    "Linker Script (manual memory placements)" : 0.9
+    "C (third-party header files)" : 7.1
+    "Assembly (low-level stubs)" : 2.6
 ```
+
+---
+
+## Boot Architecture
+
+Lexvi boots via **UEFI**, not legacy BIOS. `BOOTX64.EFI` is a PE32+ application built against `gnu-efi` headers — used purely for convenience (structs, calling conventions), not as an abstraction framework. The bootloader itself still does everything by hand: memory map retrieval, ACPI table discovery, and page table setup are all explicit.
+
+Key pieces:
+
+- **`src/boot-uefi/main.cpp`** — the UEFI entry point, compiled separately from the kernel's CMake build
+- **`elf_x86_64_efi.lds`** + **`objcopy`** — link the bootloader as an ELF, then convert to a PE32+ image UEFI firmware can load
+- **`EFI_MEMORY_DESCRIPTOR`** — replaces the old E820 memory map
+- **GOP framebuffer** — replaces VGA text mode
+- **RSDP via `ConfigurationTable`** — replaces EBDA scanning
+- **`KernelBootInfo`** — a struct handed from bootloader to kernel, replacing fixed physical address constants
+
+The legacy two-stage NASM BIOS bootloader has been retired from the active build and lives on in the `legacy` branch.
 
 ---
 
@@ -28,16 +45,16 @@ pie title Languages
 
 ### Prerequisites
 
-The build system relies on the following tools:
+- `nasm` — for any remaining low-level assembly stubs
+- `gnu-efi` headers — for building the UEFI bootloader
+- `objcopy` — converts the linked ELF into a PE32+ `.efi` image
+- `dd` — for writing the disk image
+- `cmake` + a C++ compiler (e.g. `g++` or `clang++`)
+- `ovmf` — pre-built OVMF CODE/VARS firmware pair, for testing under QEMU
 
-- `nasm` - Netwide Assembler, for compiling the Assembly portions
-- `dd` - for writing the binary image
-- `cat` - for concatenating binary blobs
-- `cmake` + a C++ compiler (e.g. `g++ or clang++`)
+> **OVMF note:** Use your distro's `ovmf` package for a matched CODE/VARS pair. Hand-rolled vars files (zero-filled or `0xFF`-filled) will fail firmware volume validation — only pre-built pairs are known-good.
 
-These tools come **pre-installed or are easily available on most Linux systems**, making Linux the recommended build environment.
-
-> **Windows users:** A Windows port is entirely feasible in the near future, only the `build.sh` script would need to be adapted (e.g. using PowerShell or WSL equivalents). The core C++ and Assembly source is platform-agnostic.
+These tools are pre-installed or easily available on most Linux systems, making Linux (or WSL on Windows) the recommended build environment.
 
 ### Running the Build
 
@@ -45,9 +62,7 @@ These tools come **pre-installed or are easily available on most Linux systems**
 ./scripts/build.sh
 ```
 
-By default, this produces a **virtual disk image (`.img`)** file. The build script automatically calculates the correct padding and sector counts for bootloader and kernel loading, you don't need to configure these manually.
-
-> **Note:** The build process runs **twice** as part of the offset calculation. You will see two CMake build outputs in your terminal, this is completely normal and expected.
+This produces a bootable disk/USB image with an EFI System Partition containing `BOOTX64.EFI`, alongside the compiled kernel.
 
 ---
 
@@ -65,11 +80,12 @@ That's it! No complex makefile archaeology required.
 
 ## Memory Layout & Linker Script
 
-Lexvi manually controls its own memory layout via a **custom linker script**. This means:
+Lexvi manually controls its own memory layout via custom linker scripts. This means:
 
 - The exact placement of the bootloader, kernel, and stack in memory is explicitly defined.
 - There is no OS to manage virtual memory on our behalf — every address is intentional.
 - Sections like `.text`, `.data`, `.bss`, and `.rodata` are mapped by hand.
+- Physical memory is requested through UEFI's `AllocatePages` / `AllocatePool` rather than fixed scratch addresses — a deliberate departure from the old BIOS-era approach of hardcoding scratch addresses like `0x7000`, which cannot be assumed safe once BIOS's fixed-address guarantees are gone.
 
 This is one of the more technically demanding aspects of OS development, and it keeps the system lean and fully transparent.
 
@@ -79,31 +95,21 @@ This is one of the more technically demanding aspects of OS development, and it 
 
 ### QEMU (Recommended)
 
-QEMU works out of the box with the generated `.img` file:
+QEMU works out of the box with OVMF firmware:
 
 ```bash
-qemu-system-i386 -drive format=raw,file=build/lexvi.img
+qemu-system-x86_64 \
+    -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE.fd \
+    -drive if=pflash,format=raw,file=/usr/share/OVMF/OVMF_VARS.fd \
+    -drive format=raw,file=build/lexvi.img \
+    -debugcon file:debug.log -global isa-debugcon.iobase=0x402
 ```
 
-No extra setup needed.
+The `-debugcon` line routes early boot narration (before the kernel's own console is up) to `debug.log` — useful for diagnosing anything that goes wrong before serial/VGA output is available.
 
-### VirtualBox
+### Real Hardware
 
-VirtualBox requires a `.vdi` (Virtual Disk Image) rather than a raw `.img`. The included `vboxAttach.sh` script handles the conversion and attachment automatically, **however it requires configuration before first use.**
-
-Open `vboxAttach.sh` and update the following variables to match your VirtualBox setup:
-
-- The **UUID** of your VM
-- The **name of your virtual machine**
-- The **name of the HDD** to attach to
-
-Once configured, running the script will generate the correct `.vdi` and attach it to your VM.
-
-```bash
-./scripts/vboxAttach.sh
-```
-
-> Do not run `vboxAttach.sh` without editing these variables first, it will not know which machine or disk to target.
+Since Lexvi now boots via standard UEFI, it can be written to a USB drive with an EFI System Partition and booted on real x86-64 hardware that supports UEFI boot, no BIOS compatibility mode required.
 
 ---
 
