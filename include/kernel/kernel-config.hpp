@@ -2,14 +2,19 @@
 
 #include "cstdint"
 
+#include "kernel/debug/gop.hpp"
+
 constexpr uint64_t KERNEL_MAIN_LOAD_ADDR = 0x100000;
 
 constexpr uint64_t MEMORY_MAP_ADDRESS = 0x7000;
-constexpr uint64_t MEMORY_MAP_ENTRY_COUNT_ADDRESS = 0x6FF8;
+constexpr uint64_t MEMORY_MAP_ENTRY_COUNT_ADDRESS = MEMORY_MAP_ADDRESS - sizeof(uint64_t);
 
-constexpr uint64_t PMM_BITMAP_PHYS_ADDRESS = 0x6FF0;
+constexpr uint64_t PMM_BITMAP_PHYS_ADDRESS = MEMORY_MAP_ENTRY_COUNT_ADDRESS - sizeof(uint64_t);
 
-constexpr uint64_t RSDP_ADDRESS_PHYS_ADDRESS = 0x6FE8;
+constexpr uint64_t RSDP_ADDRESS_PHYS_ADDRESS = PMM_BITMAP_PHYS_ADDRESS - sizeof(uint64_t);
+
+constexpr uint64_t GOP_PHYS_ADDRESS = RSDP_ADDRESS_PHYS_ADDRESS - sizeof(kernel::GOP);
+constexpr uint64_t GOP_INFO_PHYS_ADDRESS = GOP_PHYS_ADDRESS - sizeof(kernel::GOP_Info);
 
 namespace kernel {
     // Mirrors the `.header` section emitted by kernel.ld at the very start

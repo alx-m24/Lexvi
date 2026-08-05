@@ -73,6 +73,7 @@ add_executable(kernel
     src/kernel/error/error.cpp
     src/kernel/memory/pmm.cpp
     src/kernel/memory/vmm.cpp
+    src/kernel/debug/gop.cpp
     src/kernel/time/time.cpp
     src/kernel/acpi/rsdp.cpp
     src/kernel/acpi/hpet.cpp

@@ -5,6 +5,7 @@ extern "C" {
 
 #include "kernel/kernel-config.hpp"
 #include "kernel/debug/serial.hpp"
+#include "kernel/debug/gop.hpp"
 
 // just for auto-complete of some editors
 #ifndef BOOTLOADER
@@ -290,6 +291,17 @@ void* get_uefi_rsdp(EFI_SYSTEM_TABLE *SystemTable) {
     return rsdp; // Returns ACPI 1.0 table if 2.0 wasn't found
 }
 
+void* get_uefi_gop(EFI_SYSTEM_TABLE *SystemTable) {
+    void* gop;
+    EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+    EFI_STATUS status = uefi_call_wrapper((void*)SystemTable->BootServices->LocateProtocol, 3, &gop_guid, nullptr, &gop); 
+    if (EFI_ERROR(status)) {
+        Print((const CHAR16*)u"Failed to locate GOP\n");
+        return nullptr;
+    }
+    return gop;
+}
+
 extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
     kernel::serial::init();
 
@@ -299,6 +311,19 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
     Print((const CHAR16*)u"Getting RSDP\n");
     uint64_t rsdp_address = reinterpret_cast<uint64_t>(get_uefi_rsdp(SystemTable));
     *reinterpret_cast<uint64_t*>(RSDP_ADDRESS_PHYS_ADDRESS) = rsdp_address;
+
+    Print((const CHAR16*)u"Getting GOP\n");
+    EFI_GRAPHICS_OUTPUT_PROTOCOL* gop_ptr = reinterpret_cast<EFI_GRAPHICS_OUTPUT_PROTOCOL*>(get_uefi_gop(SystemTable));
+    kernel::GOP gop = *reinterpret_cast<kernel::GOP*>(gop_ptr->Mode);
+
+    *reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS) = *reinterpret_cast<kernel::GOP_Info*>(gop_ptr->Mode->Info);
+
+    gop.Info = reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS);
+    *reinterpret_cast<kernel::GOP*>(GOP_PHYS_ADDRESS) = gop;
+    if (!gop_ptr) {
+        Print((const CHAR16*)u"GOP PHYSICAL ADDRESS is NULL\n");
+        return EFI_STATUS{};
+    }
 
     Print((const CHAR16*)u"Loading kernel to memory...\n");
     UINTN ImageBase = 0;
