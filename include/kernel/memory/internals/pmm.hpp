@@ -5,8 +5,6 @@
 
 namespace kernel {
     class PMM {
-        public:
-
         private:
             Bytes m_totalMemory{};
             uint64_t m_totalPageNum{};

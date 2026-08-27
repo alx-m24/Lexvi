@@ -2,10 +2,10 @@
 
 #include "asm/instructions.hpp"
 
-#include "kernel/debug/serial.hpp"
+#include "kernel/debug/gop.hpp"
 
 void pic_remap(Interrupts interrupts) {
-    kernel::serial::put("       - Remapping PIC\n");
+    KERNEL_PRINT("       - Remapping PIC\n");
 
     outb(PIC1_CMD, 0x11);   // ICW1: start init, expect ICW4
     outb(PIC2_CMD, 0x11);
@@ -22,11 +22,11 @@ void pic_remap(Interrupts interrupts) {
     uint8_t data1 = inb(PIC1_DATA);
     uint8_t data2 = inb(PIC2_DATA);
 
-    kernel::serial::put("           Data1: ");
-    kernel::serial::putHex(data1);
-    kernel::serial::put(" data2: ");
-    kernel::serial::putHex(data2);
-    kernel::serial::put("\n");
+    KERNEL_PRINT("           Data1: ");
+    KERNEL_PRINTHEX(data1);
+    KERNEL_PRINT(" data2: ");
+    KERNEL_PRINTHEX(data2);
+    KERNEL_PRINT("\n");
 }
 
 void pic_eoi(uint8_t irq) {

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -e
 
-./scripts/build.sh && ./scripts/run.sh
+./scripts/build.sh "$1" && ./scripts/run.sh

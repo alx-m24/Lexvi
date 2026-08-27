@@ -5,21 +5,7 @@
 #include "kernel/memory/memory-defs.hpp"
 #include "kernel/kernel-config.hpp"
 #include "kernel/utils/memory.hpp"
-
-#ifndef BOOTLOADER
-#include "kernel/debug/serial.hpp"
-#define SAFE_PRINT(...) kernel::serial::put(__VA_ARGS__)
-#else
-#include <efi/efi.h>
-#include <efi/efilib.h>
-
-inline void kernel_printf(const char* msg) {
-    Print((const CHAR16*)msg);
-}
-
-// #define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
-#define SAFE_PRINT(...) do { } while (false)
-#endif
+#include "kernel/debug/gop.hpp"
 
 namespace kernel { 
     PageTable* PageTableEntry::getNextPageTable() const {
@@ -53,9 +39,6 @@ namespace kernel {
 
 #ifndef BOOTLOADER
     void VMM::Init(PageTable* existingPML4, PMM& pmm) {
-        SAFE_PRINT("[VMM] Initializing VMM\n");
-        SAFE_PRINT("[VMM] Using exsiting page tables\n");
-
         m_pmm = &pmm;
         m_pml4 = existingPML4;
         m_pml4Phys = TO_PHYS(existingPML4);
@@ -71,20 +54,14 @@ namespace kernel {
                 unmap(phys);
             }
         }
-
-        SAFE_PRINT("[VMM] Successfully initialized VMM\n");
     }
 #else
     void VMM::Init(PMM& pmm, Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
-        SAFE_PRINT("[VMM] Initializing VMM\n");
-        SAFE_PRINT("[VMM] Creating new page tables\n");
-
         m_pmm = &pmm;    
         m_pml4Phys = TO_PHYS(reinterpret_cast<uint64_t>(m_pmm->Alloc(1))); // 1 page == 4_kb which equal sizeof(PageTable)
         m_pml4 = reinterpret_cast<PageTable*>(TO_VIRT(m_pml4Phys));
         m_pml4->clear();
 
-        SAFE_PRINT("[VMM] Successfully created pml4\n");
 
         // Kernel image (slot 511)
         uint64_t kernelPhys = KERNEL_MAIN_LOAD_ADDR;  // 0x100000
@@ -94,7 +71,6 @@ namespace kernel {
             map(KERNEL_VIRT_BASE + off, kernelPhys + off, { .writable = true });
         }
 
-        SAFE_PRINT("[VMM] Successfully mapped kernel\n");
 
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
             const E820Entry entry = E820Entries[i];
@@ -123,8 +99,6 @@ namespace kernel {
             }
         }
 
-        SAFE_PRINT("[VMM] Successfully mapped physical memory to HHDM_BASE\n");
-
         for (uint64_t phys = 0; phys < 0x100000; phys += PAGE_SIZE.bytes().count()) {
             map(phys, phys, { .writable = true });
         }
@@ -135,11 +109,7 @@ namespace kernel {
             map(phys, phys, { .writable = true });
         }
 
-        SAFE_PRINT("[VMM] Successfully identity mapped lower 1MB and ImageBase\n");
-
         loadCR3();
-
-        SAFE_PRINT("[VMM] Successfully initialized VMM\n");
     }
 #endif
     
@@ -155,7 +125,7 @@ namespace kernel {
                 uint64_t newPhys = TO_PHYS(reinterpret_cast<uint64_t>(m_pmm->Alloc(1)));
                 PageTable* newTable = reinterpret_cast<PageTable*>(TO_VIRT(newPhys));
                 newTable->clear();
-                entry.set(newPhys, { .writable = true });
+                entry.set<{ .writable = true }>(newPhys);
             }
             return entry.getNextPageTable();
         };

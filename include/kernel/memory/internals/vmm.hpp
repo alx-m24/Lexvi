@@ -9,7 +9,8 @@ namespace kernel {
         bool noExecute{};
         bool hugePage{};
         bool cacheDisable{};  // PCD — bit 4
-        uint64_t operator()() const {
+
+        constexpr uint64_t operator()() const {
             uint64_t flags = (1 << 0);
             if (writable)     flags |= (1 << 1);
             if (user)         flags |= (1 << 2);
@@ -49,6 +50,12 @@ namespace kernel {
             bool isHugePage() const;
 
             void set(uint64_t physAddr, PageFlags flags);
+
+            template<PageFlags flags>
+            inline void set(uint64_t physAddr) {
+                m_raw = (physAddr & 0x000FFFFFFFFFF000ULL) | flags();
+            }
+
             void clear();
             
             uint64_t getPhys() const;

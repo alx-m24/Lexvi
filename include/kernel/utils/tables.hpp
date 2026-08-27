@@ -7,9 +7,16 @@
 
 #include "kernel/utils/string.hpp"
 
+#include <concepts>
+
 namespace kernel {
-    template<typename Table_T>
-    inline Table_T* findTable(const char* SIGNATURE) {
+    template <typename T>
+    concept Table_T = requires {
+        { T::getSignature() } -> std::same_as<const char*>;
+    };
+
+    template<Table_T T>
+    inline T* findTable() {
         KERNEL_ASSERT(sdtHeader != nullptr);
 
         bool isXsdt = rsdp.revision >= 2;
@@ -24,8 +31,8 @@ namespace kernel {
                 : *reinterpret_cast<uint32_t*>(entry_ptr + i * 4);
 
             SDTHeader* entry = reinterpret_cast<SDTHeader*>(TO_VIRT(entry_addr));
-            if (kernel::equalsN(entry->signature, SIGNATURE, 4)) {
-                return reinterpret_cast<Table_T*>(TO_VIRT(entry_addr));
+            if (kernel::equalsN(entry->signature, T::getSignature(), 4)) {
+                return reinterpret_cast<T*>(TO_VIRT(entry_addr));
             }
         }
 

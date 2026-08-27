@@ -14,11 +14,16 @@ struct HPETTable {
     uint8_t   register_bit_width;
     uint8_t   register_bit_offset;
     uint8_t   reserved2;
-    uint64_t  address;         // ← base address of HPET registers
+    uint64_t  address;         // base address of HPET registers
     uint8_t   hpet_number;
     uint16_t  minimum_tick;
     uint8_t   page_protection;
+
+    static const char* getSignature() {
+        return "HPET";
+    }
 } __attribute__((packed));
+
 extern uint64_t hpet_base;
 
 void hpet_load();

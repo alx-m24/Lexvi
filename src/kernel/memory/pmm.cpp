@@ -7,56 +7,20 @@
 #include "kernel/memory/memory-unit.hpp"
 #include "kernel/memory/internals/memory-map.hpp"
 
-#ifndef BOOTLOADER
-#include "kernel/debug/serial.hpp"
-#define SAFE_PRINT(...) kernel::serial::put(__VA_ARGS__);
-#else
-#include <efi/efi.h>
-#include <efi/efilib.h>
-
-inline void kernel_printf(const uint32_t& num) {
-    Print((const CHAR16*)u"%d", num);
-}
-
-inline void kernel_printf(const char* msg) {
-    Print((const CHAR16*)msg);
-}
-
-inline void kernel_printf() {}
-
-template<typename First, typename... Others>
-inline void kernel_printf(const First& first, const Others&... others) {
-    kernel_printf(first);
-    kernel_printf(others...);
-}
-
-// #define SAFE_PRINT(...) kernel_printf(__VA_ARGS__)
-#define SAFE_PRINT(...) do { } while (false)
-#endif
-
 namespace kernel { 
 
 #ifndef BOOTLOADER
     void PMM::Init() {
-        SAFE_PRINT("[PMM] Initializing\n");
         getTotalPageNum();
-        SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
     
         uint64_t bitmapPhys = *reinterpret_cast<uint64_t*>(TO_VIRT(PMM_BITMAP_PHYS_ADDRESS));
         m_bitMap = reinterpret_cast<uint8_t*>(TO_VIRT(bitmapPhys));
-        SAFE_PRINT("[PMM] m_bitMap: ", reinterpret_cast<uint64_t>(m_bitMap), "\n");
-
-        SAFE_PRINT("[PMM] Cleaning Bitmap\n");
 
         CleanBitMap();
-
-        SAFE_PRINT("[PMM] Successfully initialized\n");
     }
 #else
     void PMM::Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
-        SAFE_PRINT("[PMM] Initializing\n");
         getTotalPageNum();
-        SAFE_PRINT("[PMM] Page Num: ", m_totalPageNum, '\n');
 
         m_kernelSize = kernelSize;
         m_ImageBase = ImageBase;
@@ -67,19 +31,12 @@ namespace kernel {
         InitBitMap(kernelPhys + kernelSize);
         *reinterpret_cast<uint64_t*>(PMM_BITMAP_PHYS_ADDRESS) = reinterpret_cast<uint64_t>(m_bitMap);
 
-        SAFE_PRINT("[PMM] Cleaning Bitmap\n");
-        
         CleanBitMap();
-
-        SAFE_PRINT("[PMM] Successfully initialized\n");
     }
 #endif
 
     void PMM::getTotalPageNum() {
         uint32_t* raw = reinterpret_cast<uint32_t*>(MEMORY_MAP_ENTRY_COUNT_ADDRESS);
-
-        SAFE_PRINT("[PMM] Raw read in PMM: ", *raw, "\n");
-        SAFE_PRINT("[PMM] MEMORY_MAP_ENTRY_COUNT in PMM: ", MEMORY_MAP_ENTRY_COUNT, "\n");
 
         Bytes highestAddress = 0_B;
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
@@ -91,10 +48,6 @@ namespace kernel {
         }
 
         m_totalMemory = highestAddress;
-
-        SAFE_PRINT("[PMM] m_totalMemory bytes: ", m_totalMemory.count(), "\n");
-        SAFE_PRINT("[PMM] PAGE_SIZE bytes: ", PAGE_SIZE.bytes().count(), "\n");
-        SAFE_PRINT("[PMM] aligned: ", m_totalMemory.align_up(PAGE_SIZE).count(), "\n");
 
         m_totalPageNum = m_totalMemory.align_up(PAGE_SIZE) / PAGE_SIZE;
         m_bitMapSize = (m_totalPageNum + 7) / 8;
@@ -111,7 +64,6 @@ namespace kernel {
             
             uint64_t available = regionEnd - candidate;
             if (available >= m_bitMapSize) {
-                SAFE_PRINT("[PMM] Bitmap candidate phys: ", candidate, " in region type: ", (uint32_t)entry.type, "\n");
                 m_bitMap = reinterpret_cast<uint8_t*>(candidate);  // raw physical
                 break;
             }
@@ -124,29 +76,16 @@ namespace kernel {
     }
 
     void PMM::ZeroBitMap() {
-        SAFE_PRINT("[PMM] m_bitMapSize: ", m_bitMapSize, "\n");
-        SAFE_PRINT("[PMM] m_totalPageNum: ", m_totalPageNum, "\n");
-
         memset(m_bitMap, 0xFF, m_bitMapSize); // set all entries as used
 
         // free pages
         for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
             const E820Entry entry = E820Entries[i];
 
-#ifndef BOOTLOADER
-            SAFE_PRINT("[PMM][ZeroBitMap] EntryBase: ");
-            kernel::serial::putHex(entry.base);
-            SAFE_PRINT(" EntrySize: ");
-            kernel::serial::putHex(entry.length);
-            SAFE_PRINT(" EntryType: ", entry.type == EntryType::Usable ? "Usable" : "Other", '\n');
-#endif
-
             if (entry.type != EntryType::Usable) continue;
 
             MarkRangeFree(Bytes(entry.base), Bytes(entry.length));
         }
-
-        SAFE_PRINT("[PMM] Successfully Zeroed bitmap\n");
     }
 
     void PMM::MarkUsedPages() {

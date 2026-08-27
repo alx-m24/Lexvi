@@ -6,7 +6,7 @@
 uint64_t hpet_base = 0;
 
 void hpet_load() {
-    HPETTable* hpet = kernel::findTable<HPETTable>("HPET");
+    HPETTable* hpet = kernel::findTable<HPETTable>();
     KERNEL_ASSERT(hpet != nullptr);
     hpet_base = hpet->address;
 }

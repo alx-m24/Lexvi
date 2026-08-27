@@ -4,7 +4,7 @@
 
 #include "kernel/keyboard/keyboard.hpp"
 #include "kernel/syscall/syscall.hpp"
-#include "kernel/debug/serial.hpp"
+#include "kernel/debug/gop.hpp"
 #include "kernel/keyboard/ps2.hpp"
 #include "kernel/error/error.hpp"
 #include "kernel/time/time.hpp"
@@ -79,7 +79,7 @@ extern "C" void isr_handler(interrupt_frame_t *frame) {
         switch (static_cast<IRQ>(irq)) {
             case IRQ::SYSTEM_TIMER: kernel::timerTick(); break;
             case IRQ::KEYBOARD: kernel::HandleKeyBoardIRQ(); break;
-            default: kernel::serial::put("Unknown IRQ: ", static_cast<uint32_t>(irq), '\n'); break;
+            default: KERNEL_PRINT("Unknown IRQ: ", static_cast<uint32_t>(irq), '\n'); break;
         }
 
         pic_eoi(irq);
@@ -88,18 +88,18 @@ extern "C" void isr_handler(interrupt_frame_t *frame) {
 
     const char* name = (frame->vector < 20) ? exception_names[frame->vector] : "Unknown";
 
-    kernel::serial::put("\n=== EXCEPTION ===\n");
-    kernel::serial::put("Vector: "); kernel::serial::putHex(frame->vector);
-    kernel::serial::put(" ("); kernel::serial::put(name); kernel::serial::put(")\n");
-    kernel::serial::put("Error:  "); kernel::serial::putHex(frame->error_code); kernel::serial::put("\n");
-    kernel::serial::put("RIP:    "); kernel::serial::putHex(frame->rip);        kernel::serial::put("\n");
-    kernel::serial::put("RSP:    "); kernel::serial::putHex(frame->rsp);        kernel::serial::put("\n");
-    kernel::serial::put("CS:     "); kernel::serial::putHex(frame->cs);         kernel::serial::put("\n");
+    KERNEL_PRINT("\n=== EXCEPTION ===\n");
+    KERNEL_PRINT("Vector: "); KERNEL_PRINTHEX(frame->vector);
+    KERNEL_PRINT(" ("); KERNEL_PRINT(name); KERNEL_PRINT(")\n");
+    KERNEL_PRINT("Error:  "); KERNEL_PRINTHEX(frame->error_code); KERNEL_PRINT("\n");
+    KERNEL_PRINT("RIP:    "); KERNEL_PRINTHEX(frame->rip);        KERNEL_PRINT("\n");
+    KERNEL_PRINT("RSP:    "); KERNEL_PRINTHEX(frame->rsp);        KERNEL_PRINT("\n");
+    KERNEL_PRINT("CS:     "); KERNEL_PRINTHEX(frame->cs);         KERNEL_PRINT("\n");
 
     if (frame->vector == 14) {
         uint64_t cr2;
         asm volatile ("mov %%cr2, %0" : "=r"(cr2));
-        kernel::serial::put("CR2:    "); kernel::serial::put(cr2); kernel::serial::put("\n");
+        KERNEL_PRINT("CR2:    "); KERNEL_PRINT(cr2); KERNEL_PRINT("\n");
     }
 
     KERNEL_PANIC("CPU Exception");

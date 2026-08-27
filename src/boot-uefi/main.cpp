@@ -4,8 +4,10 @@ extern "C" {
 }
 
 #include "kernel/kernel-config.hpp"
-#include "kernel/debug/serial.hpp"
-#include "kernel/debug/gop.hpp"
+
+#ifdef NDEBUG
+#define Print(...) do { } while (false)
+#endif
 
 // just for auto-complete of some editors
 #ifndef BOOTLOADER
@@ -303,10 +305,8 @@ void* get_uefi_gop(EFI_SYSTEM_TABLE *SystemTable) {
 }
 
 extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable) {
-    kernel::serial::init();
-
     InitializeLib(ImageHandle, SystemTable);
-    Print((const CHAR16*)u"Hello from Lexvi UEFI bootloader\n");
+    Print((const CHAR16*)u"Hello from Lexvi UEFI bootloader - DEBUG\n");
 
     Print((const CHAR16*)u"Getting RSDP\n");
     uint64_t rsdp_address = reinterpret_cast<uint64_t>(get_uefi_rsdp(SystemTable));
@@ -349,6 +349,9 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
 
     Print((const CHAR16*)u"Successfully loaded kernel to memory\n");
 
+    Print((const CHAR16*)u"Disabling watchdog\n");
+    uefi_call_wrapper((void*)SystemTable->BootServices->SetWatchdogTimer, 4, 0, 0, 0, nullptr);
+
     Print((const CHAR16*)u"Loading memory map...\n");
     status = TranslateUefiToKernelE820(ImageHandle, SystemTable);
     if (EFI_ERROR(status)) {
@@ -360,13 +363,6 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
     }
     // NOTE: no Print/AllocatePool/etc. here: ExitBootServices has already succeeded
     // by the time we reach this line, so Boot Services no longer exist.
-
-    kernel::serial::put("ImageBase: ");
-    kernel::serial::putHex(ImageBase);
-    kernel::serial::put("\n");
-    kernel::serial::put("ImageSize: ");
-    kernel::serial::putHex(ImageSize);
-    kernel::serial::put("\n");
 
     kernel::MemoryManager memoryManager{};
     memoryManager.Init(Bytes(header->kernelSize), Bytes(ImageBase), Bytes(ImageSize));

@@ -2,7 +2,7 @@
 #include "kernel/memory/memory-defs.hpp"
 #include "kernel/memory/internals/pmm.hpp"
 #include "kernel/memory/internals/vmm.hpp"
-#include "kernel/debug/serial.hpp"
+#include "kernel/debug/gop.hpp"
 #include "kernel/error/error.hpp"
 
 namespace kernel::tests {
@@ -10,7 +10,7 @@ namespace kernel::tests {
 // ─── PMM tests ──────────────────────────────────────────────────────────────
 
 static void test_pmm(PMM& pmm) {
-    kernel::serial::put("[TEST] PMM\n");
+    KERNEL_PRINT("[TEST] PMM\n");
 
     // 1. single page alloc returns non-null
     void* p1 = pmm.Alloc(1);
@@ -56,13 +56,13 @@ static void test_pmm(PMM& pmm) {
     pmm.Free(p4);
     pmm.Free(p5);
 
-    kernel::serial::put("[TEST] PMM passed\n");
+    KERNEL_PRINT("[TEST] PMM passed\n");
 }
 
 // ─── VMM tests ──────────────────────────────────────────────────────────────
 
 static void test_vmm(VMM& vmm, PMM& pmm) {
-    kernel::serial::put("[TEST] VMM\n");
+    KERNEL_PRINT("[TEST] VMM\n");
 
     constexpr uint64_t TEST_VIRT = 0xFFFF900000000000ULL;
 
@@ -104,16 +104,16 @@ static void test_vmm(VMM& vmm, PMM& pmm) {
     pmm.Free(phys);
     pmm.Free(phys2);
 
-    kernel::serial::put("[TEST] VMM passed\n");
+    KERNEL_PRINT("[TEST] VMM passed\n");
 }
 
 // ─── entry point ────────────────────────────────────────────────────────────
 
 static void RunAll(PMM& pmm, VMM& vmm) {
-    kernel::serial::put("\n========== MEMORY TESTS ==========\n");
+    KERNEL_PRINT("\n========== MEMORY TESTS ==========\n");
     test_pmm(pmm);
     test_vmm(vmm, pmm);
-    kernel::serial::put("========== ALL PASSED ==========\n\n");
+    KERNEL_PRINT("========== ALL PASSED ==========\n\n");
 }
 #endif
 } // namespace kernel::tests

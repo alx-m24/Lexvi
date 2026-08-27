@@ -16,6 +16,20 @@ inline unsigned short inw(unsigned short port) {
     return result;
 }
 
+inline void outw(unsigned short port, unsigned short value) {
+    asm volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
+}
+
+inline unsigned int inl(unsigned short port) {
+    unsigned int result;
+    asm volatile ("inl %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+inline void outl(unsigned short port, unsigned int value) {
+    asm volatile ("outl %0, %1" : : "a"(value), "Nd"(port));
+}
+
 inline void io_wait() {
     outb(0x80, 0x00);
 }

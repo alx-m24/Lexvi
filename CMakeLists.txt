@@ -61,12 +61,12 @@ add_custom_target(bootx64 ALL DEPENDS ${BOOT_EFI})
 # Kernel (flat binary, custom linker script)
 add_executable(kernel
     src/kernel/memory/memory-manager.cpp
-    src/kernel/console/tui/window.cpp
     src/kernel/keyboard/keyboard.cpp
     src/kernel/syscall/syscall.cpp
-    src/kernel/console/console.cpp
     src/kernel/interrupt/idt.cpp
     src/kernel/interrupt/pic.cpp
+    src/kernel/acpi/pci/tco.cpp
+    src/kernel/acpi/pci/pci.cpp
     src/kernel/keyboard/ps2.cpp
     src/kernel/utils/memory.cpp
     src/kernel/kernel-main.cpp
@@ -76,6 +76,7 @@ add_executable(kernel
     src/kernel/debug/gop.cpp
     src/kernel/time/time.cpp
     src/kernel/acpi/rsdp.cpp
+    src/kernel/acpi/fadt.cpp
     src/kernel/acpi/hpet.cpp
     src/kernel/acpi/sdt.cpp
     src/kernel/gdt/gdt.cpp

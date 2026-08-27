@@ -2,11 +2,15 @@
 
 #include "kernel/memory/memory-defs.hpp"
 
-#include "kernel/debug/serial.hpp"
 #include "kernel/debug/gop.hpp"
 
+#include "kernel/acpi/pci/vendor_deviceID.hpp"
 #include "kernel/keyboard/keyboard.hpp"
 #include "kernel/interrupt/idt.hpp"
+#include "kernel/acpi/pci/pwmr.hpp"
+#include "kernel/acpi/pci/tco.hpp"
+#include "kernel/acpi/pci/pci.hpp"
+#include "kernel/acpi/fadt.hpp"
 #include "kernel/acpi/rsdp.hpp"
 #include "kernel/acpi/hpet.hpp"
 #include "kernel/acpi/sdt.hpp"
@@ -15,47 +19,67 @@
 #include "kernel/time/time.hpp"
 
 void Kernel::Init() {
-    kernel::serial::put("Reloading Memory Manager...\n");
     memoryManager.Init();
+
+    kernel::load_GOP();
+    memoryManager.m_vmm.mapMMIO(MMIO_TO_VIRT(kernel::gop.FrameBufferBase), kernel::gop.FrameBufferBase, Bytes(kernel::gop.FrameBufferSize));
+    kernel::init_FrameBuffer();
+    kernel::gop_fill(kernel::GOP::Color{ 0, 0, 0 });
+
     memoryManager.TestMemory();
+ 
+    KERNEL_PRINT("Initializing kernel...\n");
 
-    kernel::serial::put("Initializing kernel...\n");
-
-    kernel::serial::put("    - Setting up GDT\n");
+    KERNEL_PRINT("    - Setting up GDT\n");
     gdt_load();
 
-    kernel::serial::put("    - Setting up IDT\n");
+    KERNEL_PRINT("    - Setting up IDT\n");
     idt_init();
     kernel::setTickCallbacks(kernel::KeyBoardTick);
 
-    kernel::serial::put("    - Setting up RSDP\n");
+    KERNEL_PRINT("    - Setting up RSDP\n");
     rsdp_load();
 
-    kernel::serial::put("    - Setting up SDT\n");
+    KERNEL_PRINT("    - Setting up SDT\n");
     sdtHeader_load();
 
-    kernel::serial::put("    - Setting up HPET\n");
+    KERNEL_PRINT("   - Getting Device ID\n");
+    kernel::DeviceID deviceID{};
+    kernel::VendorID vendorID{};
+    kernel::getVendorDeviceID(&vendorID, &deviceID);
+    KERNEL_PRINT("      - Vendor: ", vendorID.getVendorName(), "\n");
+    KERNEL_PRINT("      - Device: ");
+    KERNEL_PRINTHEX(deviceID.getDeviceID());
+    KERNEL_PRINT('\n');
+
+    KERNEL_PRINT("  - Setting up FADT\n");
+    loadFADT();
+    // kernel::GOP::reset(); log_fadt();
+
+    if (kernel::disableTCO()) {
+        KERNEL_PRINT("      - TCO halted successfully\n");
+    }
+    else {
+        KERNEL_PRINT("\n=== FAILED TO HALT TCO ===\n\n");
+    }
+
+    kernel::getResetCause(memoryManager.m_vmm);
+
+
+    KERNEL_PRINT("    - Setting up HPET\n");
     hpet_load();
     memoryManager.m_vmm.mapMMIO(MMIO_TO_VIRT(hpet_base), hpet_base, KiB(4_KiB).bytes());
 
-    kernel::serial::put("    - Setting up Chrono\n");
+    KERNEL_PRINT("    - Setting up Chrono\n");
     kernel::chrono::init();
-        
-    kernel::serial::put("    - Setting up GOP\n");
-    kernel::load_GOP();
-    kernel::serial::put("    - Mapping GOP\n");
-    memoryManager.m_vmm.mapMMIO(MMIO_TO_VIRT(kernel::gop.FrameBufferBase), kernel::gop.FrameBufferBase, Bytes(kernel::gop.FrameBufferSize));
-    kernel::init_FrameBuffer();
-    kernel::serial::put("    - Testing GOP\n");
-    kernel::gop_test();
 
-    kernel::serial::put("\nSuccessfully initialized kernel!\n");
+    KERNEL_PRINT("\nSuccessfully initialized kernel!\n");
  }
 
 void Kernel::Run() {
     this->Init();
-    
-    kernel::serial::put("\n\n === Kernel Running ===", " \nKeyboard input: ");
+
+    KERNEL_PRINT("\n\n === Kernel Running ===", " \nKeyboard input: ");
 
     while (true) {
         char c = kernel::keyboard::getChar();
@@ -66,10 +90,10 @@ void Kernel::Run() {
                     // TODO
                 }
             }
-        } else if (c != '\0') {
-            kernel::serial::put(c);
+        } else {
+            if (c != '\0') kernel::GOP::print(c);
         }
 
-        // kernel::serial::put("Time: ", kernel::chrono::now().to<kernel::chrono::Unit::Milliseconds>().value, "ms\n");
+        // kernel::GOP::print("Time: ", kernel::chrono::now().to<kernel::chrono::Unit::Milliseconds>().value, "ms\n");
     }
 }

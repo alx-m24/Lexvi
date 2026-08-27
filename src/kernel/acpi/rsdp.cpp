@@ -1,7 +1,7 @@
 #include "kernel/acpi/rsdp.hpp"
 
 #include "kernel/error/error.hpp"
-#include "kernel/debug/serial.hpp"
+#include "kernel/debug/gop.hpp"
 #include "kernel/kernel-config.hpp"
 #include "kernel/memory/memory-defs.hpp"
 
@@ -16,21 +16,21 @@ static bool validateRSDP(const uint8_t* ptr) {
 
 void setRSDP(RSDP* rsdpAddr) {
     rsdp = *rsdpAddr;
-    kernel::serial::put("        - Signature: ");
-    for (int i = 0; i < 8; ++i) kernel::serial::put(rsdp.signature[i]);
-    kernel::serial::put('\n');
+    KERNEL_PRINT("        - Signature: ");
+    for (int i = 0; i < 8; ++i) KERNEL_PRINT(rsdp.signature[i]);
+    KERNEL_PRINT('\n');
 
-    kernel::serial::put("        - OEM ID: ");
-    for (int i = 0; i < 6; ++i) kernel::serial::put(rsdp.oem_id[i]);
-    kernel::serial::put('\n');
+    KERNEL_PRINT("        - OEM ID: ");
+    for (int i = 0; i < 6; ++i) KERNEL_PRINT(rsdp.oem_id[i]);
+    KERNEL_PRINT('\n');
 
-    kernel::serial::put("        - Revision: ", static_cast<uint32_t>(rsdp.revision), '\n');
+    KERNEL_PRINT("        - Revision: ", static_cast<uint32_t>(rsdp.revision), '\n');
 
-    kernel::serial::put("        - RSDT Address: "); kernel::serial::putHex(rsdp.rsdt_address); kernel::serial::put('\n');
+    KERNEL_PRINT("        - RSDT Address: "); KERNEL_PRINTHEX(rsdp.rsdt_address); KERNEL_PRINT('\n');
 
     if (rsdp.revision >= 2) {
-        kernel::serial::put("        - XSDT Address: "); kernel::serial::putHex(rsdp.xsdt_address); kernel::serial::put('\n');
-        kernel::serial::put("        - Length: ", rsdp.length, '\n');
+        KERNEL_PRINT("        - XSDT Address: "); KERNEL_PRINTHEX(rsdp.xsdt_address); KERNEL_PRINT('\n');
+        KERNEL_PRINT("        - Length: ", rsdp.length, '\n');
     }
 }
 
