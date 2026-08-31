@@ -1,6 +1,7 @@
 #include "kernel/acpi/pci/tco.hpp"
 
 #include "kernel/debug/gop.hpp"
+#include "asm/instructions.hpp"
 
 namespace kernel {
     bool disableTCO() {

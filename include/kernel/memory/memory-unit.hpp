@@ -76,6 +76,11 @@ class MemorySize {
             return MemorySize(this->count() - memory_cast<This_T>(other).count());
         }
 
+        template<ByteRep_T OtherRep, ByteMultiple_T OtherScale>
+        constexpr This_T operator*(const MemorySize<OtherRep, OtherScale>& other) const {
+            return MemorySize(this->count() * memory_cast<This_T>(other).count());
+        }
+
         template<ByteRep_T T>
         constexpr This_T operator*(T scalar) const {
             return MemorySize(this->count() * scalar);

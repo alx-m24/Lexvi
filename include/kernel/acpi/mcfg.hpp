@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "kernel/acpi/sdt.hpp"
+#include "kernel/memory/internals/vmm.hpp"
 
 struct MCFGEntry {
     uint64_t base_address;
@@ -14,9 +15,16 @@ struct MCFGEntry {
 struct MCFGTable {
     SDTHeader header;
     uint64_t  reserved;
+
+    static constexpr const char* getSignature() {
+        return "MCFG";
+    }
 } __attribute__((packed));
 
-extern uint64_t mcfg_base;
+extern MCFGEntry* mcfg_entries;
 extern uint64_t mcfg_count;
 
-void mcfg_load();
+void mcfg_load(kernel::VMM& vmm);
+
+// returns the mapped address of the MCFG entry owning this bus
+const MCFGEntry* mcfg_getEntry(uint8_t bus);

@@ -19,7 +19,7 @@ struct HPETTable {
     uint16_t  minimum_tick;
     uint8_t   page_protection;
 
-    static const char* getSignature() {
+    static constexpr const char* getSignature() {
         return "HPET";
     }
 } __attribute__((packed));

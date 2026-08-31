@@ -4,6 +4,8 @@
 #include <iterator>
 
 #include "pci.hpp"
+
+#include "kernel/utils/math.hpp"
 #include "kernel/register/register.hpp"
 
 #include "kernel/memory/internals/vmm.hpp"
@@ -45,7 +47,7 @@ namespace kernel {
         public ReadWriteRegister<uint32_t,
                                 getInvalidPCIRegisterState<uint32_t>(),
                                 PMC_RF_FUSA_ERR,
-                                CPU_THRM,
+                                CPU_THRM_WDT,
                                 SYSPWR_FLR,
                                 PCHPWR_FLR,
                                 PMC_FW,
@@ -54,6 +56,10 @@ namespace kernel {
                                 PBO> {
         GBLRST_CAUSE0() = default;
         constexpr GBLRST_CAUSE0(uint32_t val) : ReadWriteRegister(val) {}
+
+        static constexpr uint64_t getPWRMBaseOffset() {
+            return 0x1924;
+        }
     };
 
     using ESPI_TYPE8            = Field<C_Bit, uint32_t, 9>;
@@ -73,6 +79,10 @@ namespace kernel {
                                                     HOST_RESET_TIMEOUT> {
         GBLRST_CAUSE1() = default;
         constexpr GBLRST_CAUSE1(uint32_t val) : ReadWriteRegister(val) {}
+
+        static constexpr uint64_t getPWRMBaseOffset() {
+            return 0x1928;
+        }
     };
 
     using ESPI_HRWPC    = Field<bool, uint32_t, 17>;
@@ -100,6 +110,10 @@ namespace kernel {
                                                 CF9_ES> {
         HPR_CAUSE0() = default;
         constexpr HPR_CAUSE0(uint32_t val) : ReadOnlyRegister(val) {}
+
+        static constexpr uint64_t getPWRMBaseOffset() {
+            return 0x192C;
+        }
     };
 
     inline void getResetCause(VMM& vmm) {
@@ -124,14 +138,37 @@ namespace kernel {
             return;
         }
 
-        vmm.mapMMIO(MMIO_TO_VIRT(pwrmbase.get<BASEADDR>()), pwrmbase.get<BASEADDR>(), KiB(4).bytes());
+        constexpr auto GBLRST_CAUSE0_END =
+            GBLRST_CAUSE0::getPWRMBaseOffset() + GBLRST_CAUSE0::SIZE;
+        
+        constexpr auto GBLRST_CAUSE1_END =
+            GBLRST_CAUSE1::getPWRMBaseOffset() + GBLRST_CAUSE1::SIZE;
+        
+        constexpr auto HPR_CAUSE0_END =
+            HPR_CAUSE0::getPWRMBaseOffset() + HPR_CAUSE0::SIZE;
+        
+        constexpr Bytes REQUIRED_SIZE = Bytes(
+            max<GBLRST_CAUSE0_END, GBLRST_CAUSE1_END, HPR_CAUSE0_END>()
+        );
+        
+        constexpr Bytes PAGE_SIZE = KiB(4).bytes();
+        constexpr Bytes MMIO_SIZE = REQUIRED_SIZE.align_up(PAGE_SIZE);
+        
+        vmm.mapMMIO(MMIO_TO_VIRT(pwrmbase.get<BASEADDR>()), pwrmbase.get<BASEADDR>(), MMIO_SIZE);
 
-        volatile uint32_t* GBLRST_CAUSE0_ptr = reinterpret_cast<uint32_t*>(
-                MMIO_TO_VIRT(pwrmbase.get<BASEADDR>()) + 0x1924);
-        volatile uint32_t* GBLRST_CAUSE1_ptr = reinterpret_cast<uint32_t*>(
-                MMIO_TO_VIRT(pwrmbase.get<BASEADDR>()) + 0x1928);
-        volatile uint32_t* HPR_CAUSE0_ptr = reinterpret_cast<uint32_t*>(
-                MMIO_TO_VIRT(pwrmbase.get<BASEADDR>()) + 0x192C);
+        const auto pwrmBaseVirt = MMIO_TO_VIRT(pwrmbase.get<BASEADDR>());
+        
+        volatile uint32_t* GBLRST_CAUSE0_ptr =
+            reinterpret_cast<volatile uint32_t*>(
+                pwrmBaseVirt + GBLRST_CAUSE0::getPWRMBaseOffset());
+        
+        volatile uint32_t* GBLRST_CAUSE1_ptr =
+            reinterpret_cast<volatile uint32_t*>(
+                pwrmBaseVirt + GBLRST_CAUSE1::getPWRMBaseOffset());
+        
+        volatile uint32_t* HPR_CAUSE0_ptr =
+            reinterpret_cast<volatile uint32_t*>(
+                pwrmBaseVirt + HPR_CAUSE0::getPWRMBaseOffset());
 
         GBLRST_CAUSE0 gblrst_cause0 = { *GBLRST_CAUSE0_ptr };
         GBLRST_CAUSE1 gblrst_cause1 = { *GBLRST_CAUSE1_ptr };

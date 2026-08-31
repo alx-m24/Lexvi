@@ -6,10 +6,11 @@
 
 #include "kernel/acpi/pci/vendor_deviceID.hpp"
 #include "kernel/keyboard/keyboard.hpp"
+#include "kernel/acpi/pci/p2sb.hpp"
 #include "kernel/interrupt/idt.hpp"
 #include "kernel/acpi/pci/pwmr.hpp"
 #include "kernel/acpi/pci/tco.hpp"
-#include "kernel/acpi/pci/pci.hpp"
+#include "kernel/acpi/mcfg.hpp"
 #include "kernel/acpi/fadt.hpp"
 #include "kernel/acpi/rsdp.hpp"
 #include "kernel/acpi/hpet.hpp"
@@ -43,6 +44,9 @@ void Kernel::Init() {
     KERNEL_PRINT("    - Setting up SDT\n");
     sdtHeader_load();
 
+    KERNEL_PRINT("      - Setting up MCFG\n");
+    mcfg_load(memoryManager.m_vmm);
+
     KERNEL_PRINT("   - Getting Device ID\n");
     kernel::DeviceID deviceID{};
     kernel::VendorID vendorID{};
@@ -56,6 +60,22 @@ void Kernel::Init() {
     loadFADT();
     // kernel::GOP::reset(); log_fadt();
 
+    if (kernel::pciTestWrite()) {
+        KERNEL_PRINT("Writes on PCI successfull\n"); 
+    }
+    else {
+        KERNEL_PRINT("Writes on PCI fails\n"); 
+    }
+
+    KERNEL_PRINT("      - Unhidding P2SB\n");
+    if (kernel::unhide_p2sb()) {
+
+        KERNEL_PRINT("      - P2SB successfully unhidden\n");
+    }
+    else {
+        KERNEL_PRINT("\n=== FAILED TO UNHIDE P2SB ===\n\n");
+    }
+
     if (kernel::disableTCO()) {
         KERNEL_PRINT("      - TCO halted successfully\n");
     }
@@ -64,7 +84,6 @@ void Kernel::Init() {
     }
 
     kernel::getResetCause(memoryManager.m_vmm);
-
 
     KERNEL_PRINT("    - Setting up HPET\n");
     hpet_load();

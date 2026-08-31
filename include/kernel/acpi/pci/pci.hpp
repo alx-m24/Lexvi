@@ -6,8 +6,6 @@
 #include "kernel/error/error.hpp"
 #include "kernel/register/register.hpp"
 
-#include "asm/instructions.hpp"
-
 namespace kernel {
     template<RegType R>
     inline consteval R getInvalidPCIRegisterState() {
@@ -27,16 +25,11 @@ namespace kernel {
             KERNEL_ASSERT(offset % 4 == 0);
         }
 
-        constexpr uint32_t operator()() const {
-            uint32_t val{};
+        // returns the virtual address of the uint32_t register pointed to by this address
+        uint64_t operator()() const;
 
-            val |= (1u << 31); // enable bit
-            val |= (bus << 16);
-            val |= (device << 11);
-            val |= (function << 8);
-            val |= offset;
-
-            return val;
+        volatile uint32_t& operator*() const {
+            return *reinterpret_cast<volatile uint32_t*>((*this)());
         }
     };
 
@@ -51,43 +44,38 @@ namespace kernel {
 
     template<PCIConfigAddress address>
     inline uint32_t pciConfigRead32() {
-        outl(0xCF8, address());
-        return inl(0xCFC);
+        return *address;
     }
 
     template<PCIConfigAddress address>
     inline void pciConfigWrite32(uint32_t data) {
-        outl(0xCF8, address());
-        outl(0xCFC, data);
+        *address = data;
     }
 
     template<PCIConfigAddress address>
     inline uint8_t pciConfigRead8(uint8_t lane) {
         KERNEL_ASSERT(lane < 4);
         // Clear the bottom 2 bits of the address for alignment in CF8
-        outl(0xCF8, (address() & ~3)); 
-        // Add the byte lane directly to the data port
-        return inb(0xCFC + lane); 
+        return *reinterpret_cast<volatile uint8_t*>((address() & ~3) + lane); 
     }
     
     template<PCIConfigAddress address>
     inline void pciConfigWrite8(uint8_t lane, uint8_t data) {
         KERNEL_ASSERT(lane < 4);
-        outl(0xCF8, (address() & ~3));
-        outb(0xCFC + lane, data);
+        *reinterpret_cast<volatile uint8_t*>((address() & ~3) + lane) = data;
     }
     
     template<PCIConfigAddress address>
     inline uint16_t pciConfigRead16(uint8_t lane) {
         KERNEL_ASSERT(lane < 4 && lane % 2 == 0);
-        outl(0xCF8, (address() & ~3)); // lane must be 0 or 2
-        return inw(0xCFC + lane);
+        return *reinterpret_cast<volatile uint16_t*>((address() & ~3) + lane); // lane must be 0 or 2
     }
     
     template<PCIConfigAddress address>
     inline void pciConfigWrite16(uint8_t lane, uint16_t data) {
         KERNEL_ASSERT(lane < 4 && lane % 2 == 0);
-        outl(0xCF8, (address() & ~3)); // lane must be 0 or 2
-        outw(0xCFC + lane, data);
+        *reinterpret_cast<volatile uint16_t*>((address() & ~3) + lane) = data; // lane must be 0 or 2
     }
+
+    bool pciTestWrite();
 }

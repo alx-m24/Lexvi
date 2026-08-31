@@ -9,6 +9,7 @@ fi
 OVMF_VARS=$(wslpath -w build/OVMF_VARS.fd)
 
 qemu-system-x86_64.exe \
+    -machine q35 \
     -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
     -drive if=pflash,format=raw,file="$OVMF_VARS" \
     -drive file=fat:rw:$(wslpath -w build/esp),format=raw \

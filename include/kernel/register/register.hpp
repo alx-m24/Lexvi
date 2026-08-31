@@ -106,6 +106,8 @@ namespace kernel {
             Register() = default;
             constexpr Register(T val) : valid(val != INVALID_STATE), m_raw(val), m_fields(Fields::extract(val)...) {}
 
+            static constexpr uint64_t SIZE = sizeof(T);
+
         private:
             template<typename Wanted>
             static consteval std::size_t fieldIndex() {

@@ -2,7 +2,7 @@
 
 #include "kernel/kernel-config.hpp"
 #include "kernel/memory/memory-defs.hpp"
-#include "kernel//fonts/font8x16.h"
+#include "kernel/fonts/font8x16.h"
 
 #include "kernel/error/error.hpp"
 

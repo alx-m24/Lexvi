@@ -5,6 +5,7 @@
 #include "kernel/memory/memory-defs.hpp"
 #include "kernel/kernel-config.hpp"
 #include "kernel/utils/memory.hpp"
+#include "kernel/error/error.hpp"
 #include "kernel/debug/gop.hpp"
 
 namespace kernel { 
@@ -113,7 +114,78 @@ namespace kernel {
     }
 #endif
     
+#ifndef BOOTLOADER
+    void VMM::map(uint64_t virt, uint64_t phys, PageFlags flags) {
+        auto idx = [](uint64_t v, int shift) -> uint64_t {
+            return (v >> shift) & 0x1FF;
+        };
 
+        auto getOrAlloc = [&](PageTable* table, uint64_t index) -> PageTable* {
+            PageTableEntry& entry = table->entries[index];
+            if (!entry.isPresent()) {
+                uint64_t newPhys = TO_PHYS(reinterpret_cast<uint64_t>(m_pmm->Alloc(1)));
+                PageTable* newTable = reinterpret_cast<PageTable*>(TO_VIRT(newPhys));
+                newTable->clear();
+                entry.set<{ .writable = true }>(newPhys);
+            }
+            return entry.getNextPageTable();
+        };
+
+        PageTable* pdpt = getOrAlloc(m_pml4,  idx(virt, 39));
+        PageTable* pd   = getOrAlloc(pdpt,    idx(virt, 30));
+
+        if (flags.hugePage) {
+            KERNEL_ASSERT((virt & (MiB(2).bytes().count() - 1)) == 0);
+            KERNEL_ASSERT((phys & (MiB(2).bytes().count() - 1)) == 0);
+
+            PageTableEntry& entry = pd->entries[idx(virt, 21)];
+
+            if (entry.isPresent()) {
+                if (entry.isHugePage()) {
+                    if (entry.getPhys() != phys) {
+                        KERNEL_PRINT("MAP COLLISION virt="); KERNEL_PRINTHEX(virt);
+                        KERNEL_PRINT(" wanted="); KERNEL_PRINTHEX(phys);
+                        KERNEL_PRINT(" existing="); KERNEL_PRINTHEX(entry.getPhys());
+                        KERNEL_PRINT('\n');
+                    }
+                    KERNEL_ASSERT(entry.getPhys() == phys);
+                    return;
+                }
+            
+                KERNEL_PANIC("Cannot allocate huge page where small pages already exist");
+            }
+            
+            entry.set(phys, flags);
+        }
+        else {
+            KERNEL_ASSERT((virt & (PAGE_SIZE.bytes().count() - 1)) == 0);
+            KERNEL_ASSERT((phys & (PAGE_SIZE.bytes().count() - 1)) == 0);
+
+            PageTableEntry& pdEntry = pd->entries[idx(virt, 21)];
+            if (pdEntry.isPresent() && pdEntry.isHugePage()) {
+                KERNEL_PANIC("Cannot allocate small page inside existing huge page");
+            }
+
+            PageTable* pt   = getOrAlloc(pd,      idx(virt, 21));
+            PageTableEntry& entry = pt->entries[idx(virt, 12)];
+
+            if (entry.isPresent()) {
+                if (entry.getPhys() != phys) {
+                    KERNEL_PRINT("MAP COLLISION virt="); KERNEL_PRINTHEX(virt);
+                    KERNEL_PRINT(" wanted="); KERNEL_PRINTHEX(phys);
+                    KERNEL_PRINT(" existing="); KERNEL_PRINTHEX(entry.getPhys());
+                    KERNEL_PRINT('\n');
+                }
+                KERNEL_ASSERT(entry.getPhys() == phys);
+                return;
+            }
+            else {
+                entry.set(phys, flags);
+            }
+        }
+    }
+
+#else
     void VMM::map(uint64_t virt, uint64_t phys, PageFlags flags) {
         auto idx = [](uint64_t v, int shift) -> uint64_t {
             return (v >> shift) & 0x1FF;
@@ -141,6 +213,8 @@ namespace kernel {
             pt->entries[idx(virt, 12)].set(phys, flags);
         }
     }
+
+#endif
 
     void VMM::mapMMIO(uint64_t virtBase, uint64_t physBase, Bytes size) {
         uint64_t pages = alignUp(size.count(), PAGE_SIZE.bytes().count()) / PAGE_SIZE.bytes().count();

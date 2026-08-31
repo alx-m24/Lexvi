@@ -6,7 +6,7 @@
 namespace kernel {
     class DeviceID {
         public:
-            using FIELD = Field<uint16_t, uint32_t, 16, 31>;
+            using FIELD = Field<uint16_t, uint32_t, 16, 31, true>;
             using TYPE = FIELD::TYPE;
 
         private:
@@ -27,7 +27,7 @@ namespace kernel {
 
     class VendorID {
         public:
-            using FIELD = Field<uint16_t, uint32_t,  0, 15>;
+            using FIELD = Field<uint16_t, uint32_t,  0, 15, true>;
             using TYPE = FIELD::TYPE;
 
         private:

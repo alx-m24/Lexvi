@@ -15,8 +15,6 @@ namespace kernel {
     
         uint64_t bitmapPhys = *reinterpret_cast<uint64_t*>(TO_VIRT(PMM_BITMAP_PHYS_ADDRESS));
         m_bitMap = reinterpret_cast<uint8_t*>(TO_VIRT(bitmapPhys));
-
-        CleanBitMap();
     }
 #else
     void PMM::Init(Bytes kernelSize, Bytes ImageBase, Bytes ImageSize) {
