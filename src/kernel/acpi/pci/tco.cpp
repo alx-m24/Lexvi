@@ -7,7 +7,7 @@ namespace kernel {
     bool disableTCO() {
         KERNEL_PRINT("   - Disabling TCO\n");
 
-        kernel::TCO_BASE tcoBase = { kernel::pciConfigRead32<kernel::TCO_BASE::getPCIConfigAddress()>() };
+        kernel::TCO_BASE tcoBase = { kernel::pciConfigRead32(kernel::TCO_BASE::getPCIConfigAddress()) };
         if (!tcoBase) {
             KERNEL_PRINT("      - Invalid TCO_BASE: Likely Hidden\n");
             return false;
@@ -17,7 +17,7 @@ namespace kernel {
         KERNEL_PRINTHEX(tcoBase.get<TCO_BASE_ADDRESS>());
         KERNEL_PRINT('\n');
 
-        kernel::TCO_CTL tcoCTL = { kernel::pciConfigRead32<kernel::TCO_CTL::getPCIConfigAddress()>() };
+        kernel::TCO_CTL tcoCTL = { kernel::pciConfigRead32(kernel::TCO_CTL::getPCIConfigAddress()) };
         if (!tcoCTL) {
             KERNEL_PRINT("      - Invalid TCO_CTL: Likely Hidden\n");
             return false;

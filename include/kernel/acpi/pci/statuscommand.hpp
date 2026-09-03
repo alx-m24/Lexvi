@@ -4,9 +4,9 @@
 #include "kernel/register/register.hpp"
 
 namespace kernel {
-    using RMA           = Field<bool, uint32_t, 29>;
-    using RTA           = Field<bool, uint32_t, 28>;
-    using INTR_STATUS   = Field<bool, uint32_t, 19>;
+    using RMA           = Field<C_Bit, uint32_t, 29>;
+    using RTA           = Field<C_Bit, uint32_t, 28>;
+    using INTR_STATUS   = Field<const bool, uint32_t, 19>;
     using INTR_DISABLE  = Field<bool, uint32_t, 10>;
     using SERR_ENABLE   = Field<bool, uint32_t, 8>;
     using BME           = Field<bool, uint32_t, 2>;

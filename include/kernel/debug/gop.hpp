@@ -55,6 +55,8 @@ namespace kernel {
                 printIntegral(static_cast<uint64_t>(n));
         }
 
+        static void print(bool n);
+
         static void printHex(uint64_t n);
 
         static void print() {}

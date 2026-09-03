@@ -251,6 +251,10 @@ namespace kernel {
         print(static_cast<uint64_t>(n));
     }
 
+    void GOP::print(bool n) {
+        GOP::print(n ? "True" : "False");
+    }
+
     void GOP::printHex(uint64_t n) {
         print("0x");
         for (int i = 15; i >= 0; --i) {

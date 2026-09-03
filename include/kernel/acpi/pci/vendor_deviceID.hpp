@@ -61,9 +61,20 @@ namespace kernel {
         }
     };
 
-    inline void getVendorDeviceID(VendorID* out_vendorID, DeviceID* out_deviceID) {
-        ESPI_DID_VID espi_did_vid = pciConfigRead32<ESPI_DID_VID::getPCIConfigAddress()>();
+    inline bool getVendorDeviceID(PCIConfigAddress::AccessType accessType, VendorID* out_vendorID, DeviceID* out_deviceID) {
+        PCIConfigAddress espiConfigAddress = ESPI_DID_VID::getPCIConfigAddress();
+        ESPI_DID_VID espi_did_vid;
+        switch (accessType) {
+            case PCIConfigAddress::AccessType::LEGACY:
+                espi_did_vid = ESPI_DID_VID(pciConfigRead32(espiConfigAddress));
+                break;
+            case PCIConfigAddress::AccessType::MMIO:
+                espi_did_vid = *espiConfigAddress;
+                break;
+        }
         *out_vendorID = espi_did_vid.get<VendorID::FIELD>();
         *out_deviceID = espi_did_vid.get<DeviceID::FIELD>();
+
+        return static_cast<bool>(espi_did_vid);
     }
 }

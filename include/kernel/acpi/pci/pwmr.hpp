@@ -119,7 +119,7 @@ namespace kernel {
     inline void getResetCause(VMM& vmm) {
         KERNEL_PRINT("    - Checking reset cause registers:\n");
         kernel::STATUSCOMMAND statusCommandReg { 
-            kernel::pciConfigRead32<kernel::STATUSCOMMAND::getPCIConfigAddress()>()
+            kernel::pciConfigRead32(kernel::STATUSCOMMAND::getPCIConfigAddress())
         };
 
         if (!statusCommandReg) {
@@ -132,7 +132,7 @@ namespace kernel {
             return;
         }
 
-        PWRMBASE pwrmbase = { pciConfigRead32<PWRMBASE::getPCIConfigAddress()>() };
+        PWRMBASE pwrmbase = { pciConfigRead32(PWRMBASE::getPCIConfigAddress()) };
         if (!pwrmbase) {
             KERNEL_PRINT("        - PWRMBASE register INVALID: Likely hidden\n");
             return;

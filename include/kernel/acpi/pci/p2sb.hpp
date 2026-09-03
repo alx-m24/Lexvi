@@ -23,4 +23,23 @@ namespace kernel {
     };
 
     bool unhide_p2sb();                                            
+    bool hide_p2sb();
+
+    class ScopedP2SBCUnhide {
+        public:
+            ScopedP2SBCUnhide() { 
+                bool unhideSuccess = unhide_p2sb();
+                KERNEL_ASSERT(unhideSuccess == true);
+            }
+            ~ScopedP2SBCUnhide() { 
+                bool hideSuccess = hide_p2sb();
+                KERNEL_ASSERT(hideSuccess == true);
+            }
+
+            ScopedP2SBCUnhide(const ScopedP2SBCUnhide&) = delete;
+            ScopedP2SBCUnhide& operator=(const ScopedP2SBCUnhide&) = delete;
+
+            ScopedP2SBCUnhide(ScopedP2SBCUnhide&&) = delete;
+            ScopedP2SBCUnhide& operator=(ScopedP2SBCUnhide&&) = delete;
+    };
 }

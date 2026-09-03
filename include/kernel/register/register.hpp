@@ -46,6 +46,8 @@ namespace kernel {
     template<FieldType T, RegType R, uint8_t StartBit, uint8_t EndBit = StartBit, bool AlignRight = StartBit == EndBit>
     struct Field {
         using TYPE = T;
+        using RegisterType = R;
+        const uint8_t& start_bit = StartBit;
 
         static_assert(EndBit >= StartBit);
         static_assert(EndBit < std::numeric_limits<R>::digits);
@@ -76,6 +78,8 @@ namespace kernel {
     template<RegType R, uint8_t StartBit>
     struct Field<C_Bit, R, StartBit, StartBit, true> {
         using TYPE = C_Bit;
+        using RegisterType = R;
+        const uint8_t& start_bit = StartBit;
     
         static constexpr R MASK = R{1} << StartBit;
     
@@ -87,24 +91,59 @@ namespace kernel {
             return value() ? MASK : R{0};
         }
     };
-    
+
+    template <typename F>
+    concept Field_T = requires {
+        typename F::TYPE;
+        typename F::RegisterType;
+        { F::start_bit } -> std::same_as<const std::uint8_t&>;
+    };
+
     template<RegType R, typename... Fields>
     struct FieldMask {
         static constexpr R VALUE = (R{0} | ... | Fields::MASK);
     };
 
-    template<RegType T, T INVALID_STATE, typename... Fields>
-    class Register {
-        private:
-            const bool valid{};
+    class RegisterBase {
+        protected:
+            RegisterBase() = default;
+            ~RegisterBase() = default;
+    };
 
+
+    template<RegType T, T INVALID_STATE, typename... Fields>
+    class Register : public RegisterBase {
         protected:
             T m_raw;
             std::tuple<typename Fields::TYPE...> m_fields{};
 
         public:
             Register() = default;
-            constexpr Register(T val) : valid(val != INVALID_STATE), m_raw(val), m_fields(Fields::extract(val)...) {}
+            constexpr Register(T val) : m_raw(val), m_fields(Fields::extract(val)...) {}
+
+            Register(const Register<T, INVALID_STATE, Fields...>& other) {
+                this->m_raw = other.m_raw;
+                this->m_fields = other.m_fields;
+            }
+            Register& operator=(const Register<T, INVALID_STATE, Fields...>& other) {
+                this->m_raw = other.m_raw;
+                this->m_fields = other.m_fields;
+                return *this;
+            }
+
+            Register(Register<T, INVALID_STATE, Fields...>&& other) {
+                this->m_raw = other.m_raw;
+                other.m_raw = {};
+
+                this->m_fields = std::move(other.m_fields);
+            }
+            Register& operator=(Register<T, INVALID_STATE, Fields...>&& other) {
+                this->m_raw = other.m_raw;
+                other.m_raw = {};
+
+                this->m_fields = std::move(other.m_fields);
+                return *this;
+            }
 
             static constexpr uint64_t SIZE = sizeof(T);
 
@@ -163,13 +202,16 @@ namespace kernel {
             }
 
             explicit operator bool() const {
-                return valid;
+                return m_raw != INVALID_STATE;
             }
 
             bool operator==(bool) const {
                 return static_cast<bool>(*this);
             }
     };
+
+    template<typename T>
+    inline constexpr bool is_derived_from_register_v = std::is_base_of_v<RegisterBase, T>;
 
     template<RegType T, T INVALID_STATE, typename... Fields>
     class ReadOnlyRegister : public Register<T, INVALID_STATE, Fields...> {
@@ -216,4 +258,16 @@ namespace kernel {
                 return this->template field<Field>();
             }
     };
+
+    template<typename Reg, typename F>
+    concept isWritable =
+        requires(Reg reg, typename F::TYPE value) {
+            { reg.template set<F>(value) } -> std::same_as<void>;
+        };
+    
+    template<typename Reg, typename F>
+    concept isReadable =
+        requires(const Reg reg) {
+            { reg.template get<F>() } -> std::same_as<const typename F::TYPE&>;
+        };
 }

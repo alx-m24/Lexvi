@@ -3,26 +3,48 @@
 #include "kernel/debug/gop.hpp"
 
 namespace kernel {
+#ifndef NDEBUG
     bool unhide_p2sb() {
-        KERNEL_PRINT("          - P2SBC before: ");
-        KERNEL_PRINTHEX(pciConfigRead32<P2SBC::getPCIConfigAddress()>());
-        KERNEL_PRINT('\n');
+        pciConfigWrite8(P2SBC::getPCIConfigAddress(), 1, 0x00); // clears HIDE only, byte-lane write
 
-        P2SBC p2sbc{0};
-
-        p2sbc.set<SBILOCK>(0);
-        p2sbc.set<MASKLOCK>(0);
-        p2sbc.set<HIDE>(false);
-
-        pciConfigWrite32<P2SBC::getPCIConfigAddress()>(p2sbc());
-
-        P2SBC p2sbc_after = { pciConfigRead32<P2SBC::getPCIConfigAddress()>() };
+        P2SBC p2sbc_after = { pciConfigRead32(P2SBC::getPCIConfigAddress()) };
 
         KERNEL_PRINT("          - P2SBC after:  ");
         KERNEL_PRINTHEX(p2sbc_after());
         KERNEL_PRINT('\n');
 
-        return (p2sbc_after.get<HIDE>() == false);
+        uint32_t p2sb_id = pciConfigRead32(PCIConfigAddress(0, 31, 1, 0x00));
 
+        KERNEL_PRINT("          - P2SB ID:      ");
+        KERNEL_PRINTHEX(p2sb_id);
+        KERNEL_PRINT('\n');
+
+        // return (p2sbc_after.get<HIDE>() == false);
+        return (p2sb_id != getInvalidPCIRegisterState<uint32_t>());
     }
+
+    bool hide_p2sb() {
+        pciConfigWrite8(P2SBC::getPCIConfigAddress(), 1, 0x01); // sets HIDE only, byte-lane write
+
+        P2SBC p2sbc_after = { pciConfigRead32(P2SBC::getPCIConfigAddress()) };
+
+        KERNEL_PRINT("          - P2SBC after:  ");
+        KERNEL_PRINTHEX(p2sbc_after());
+        KERNEL_PRINT('\n');
+
+        return (p2sbc_after.get<HIDE>() == true);
+    }
+#else
+    bool unhide_p2sb() {
+        pciConfigWrite8(P2SBC::getPCIConfigAddress(), 1, 0x00); // clears HIDE only, byte-lane write
+
+        return true;
+    }
+
+    bool hide_p2sb() {
+        pciConfigWrite8(P2SBC::getPCIConfigAddress(), 1, 0x01); // sets HIDE only, byte-lane write
+        
+        return true;
+    }
+#endif
 }

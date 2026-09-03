@@ -11,6 +11,10 @@ extern _bss_start
 extern _bss_end
 
 kernel_main:
+    ; ── Memory Map Address ────────────────────────────────────────────────────────────────
+    ; RDI = MEMORY_MAP_ADDRESS
+    mov r13, rdi
+
     ; ── stack ────────────────────────────────────────────────────────────────
     lea rax, [rel stack_top]
     mov rsp, rax
@@ -44,6 +48,8 @@ kernel_main:
 .ctor_done:
 
     ; ── jump to C++ kernel ────────────────────────────────────────────────────
+    ; RDI = argument 1
+    mov rdi, r13 ; moving Memory map Address to argument 1 of kernel_main_cpp
     call kernel_main_cpp
 
 .hang:

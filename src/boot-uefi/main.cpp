@@ -1,9 +1,11 @@
+// BOOT_UEFI.cpp
 extern "C" {
-#include <efi/efi.h>
-#include <efi/efilib.h>
+    #include <efi/efi.h>
+    #include <efi/efilib.h>
 }
 
 #include "kernel/kernel-config.hpp"
+#include "kernel/debug/gop.hpp"
 
 #ifdef NDEBUG
 #define Print(...) do { } while (false)
@@ -134,7 +136,7 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
     
     Print((const CHAR16*)u"Successfully read kernel to staging buffer\n");
 
-    // 7. Allocate pages directly at your explicit custom address link boundary
+    // 7. Allocate pages directly at explicit custom address link boundary
     EFI_PHYSICAL_ADDRESS kernel_addr = KERNEL_MAIN_LOAD_ADDR;
     UINTN pages = (kernel_size + 4095) / 4096;
     status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePages, 4,
@@ -149,7 +151,7 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
         return status;
     }
 
-    // === PATCH 2: BLAST DATA FROM STAGING TO YOUR FIXED KERNEL LOAD DESTINATION ===
+    // === PATCH 2: BLAST DATA FROM STAGING TO FIXED KERNEL LOAD DESTINATION ===
     uefi_call_wrapper((void*)SystemTable->BootServices->CopyMem, 3, reinterpret_cast<void*>(KERNEL_MAIN_LOAD_ADDR), staging_buffer, kernel_size);
 
     Print((const CHAR16*)u"Successfully copied kernel to 1MB mark\n");
@@ -175,17 +177,53 @@ EFI_STATUS TranslateUefiToKernelE820(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* S
         UINTN descriptor_size = 0;
         UINT32 descriptor_version = 0;
 
-        // 1. Ask UEFI for the map space size
-        uefi_call_wrapper((void*)SystemTable->BootServices->GetMemoryMap, 5,
-            &memory_map_size, nullptr, &map_key, &descriptor_size, &descriptor_version);
+        { // 1. Ask UEFI for the map space size
+            uefi_call_wrapper((void*)SystemTable->BootServices->GetMemoryMap, 5,
+                &memory_map_size, nullptr, &map_key, &descriptor_size, &descriptor_version);
 
-        // Pad the buffer slightly to account for the allocation change overhead
-        memory_map_size += 2 * descriptor_size;
-        status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePool, 3,
-            EfiLoaderData, memory_map_size, reinterpret_cast<void**>(&uefi_map));
+            // Pad the buffer slightly to account for the allocation change overhead
+            memory_map_size += 4 * descriptor_size;
+        }
+
+        // accounts for memory-map as well as variables
+        const uint64_t BYTES_TO_ALLOC = memory_map_size + TOTAL_ADDRESSES_SIZE;
+        // memory-map is above variables with MEMORY_MAP_ADDRESS as the 'pivot'
+        const UINTN PagesNeeded = EFI_SIZE_TO_PAGES(BYTES_TO_ALLOC);
+        // limiting allocation to 1MB mark
+        EFI_PHYSICAL_ADDRESS MemoryLimit = KERNEL_MAIN_LOAD_ADDR;
+
+        status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePages, 4, 
+                AllocateMaxAddress, // The allocation type
+                EfiRuntimeServicesData, // <- Preserves memory past ExitBootServices
+                PagesNeeded, // Number of pages
+                &MemoryLimit // IN: Max address limit / OUT: Allocated address
+        );
+
         if (EFI_ERROR(status)) {
-            Print((const CHAR16*)u"AllocatePool(uefi_map) failed: %r\n", status);
+            Print((const CHAR16*)u"Failed to allocate space for memory map and address variables: %r\n", status);
             return status;
+        }
+
+        Print((const CHAR16*)u"Allocated Space for Memory map and address variables: 0x%lx\n", MemoryLimit);
+
+        // 4. MemoryLimit now holds the actual starting address of the allocated buffer.
+        MEMORY_MAP_ADDRESS = MemoryLimit + (TOTAL_ADDRESSES_SIZE - sizeof(MEMORY_MAP_ADDRESS));
+
+        Print((const CHAR16*)u"MEMORY_MAP_ADDRESS: 0x%lx\n", MEMORY_MAP_ADDRESS);
+
+        { // Re-calculate size
+            memory_map_size = 0;
+            uefi_call_wrapper((void*)SystemTable->BootServices->GetMemoryMap, 5,
+                &memory_map_size, nullptr, &map_key, &descriptor_size, &descriptor_version);
+
+            // Pad the buffer slightly to account for the allocation change overhead
+            memory_map_size += 2 * descriptor_size;
+            status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePool, 3,
+                EfiLoaderData, memory_map_size, reinterpret_cast<void**>(&uefi_map));
+            if (EFI_ERROR(status)) {
+                Print((const CHAR16*)u"AllocatePool(uefi_map) failed: %r\n", status);
+                return status;
+            }
         }
 
         // Fetch the absolute, clean layout matrix
@@ -197,7 +235,7 @@ EFI_STATUS TranslateUefiToKernelE820(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* S
             return status;
         }
 
-        // 2. Set pointers directly to your hardware targets
+        // 2. Set pointers directly to hardware targets
         auto* e820_dest_buffer = reinterpret_cast<kernel::E820Entry*>(MEMORY_MAP_ADDRESS);
         uint32_t translated_entry_count = 0;
         uint64_t total_uefi_descriptors = memory_map_size / descriptor_size;
@@ -310,16 +348,9 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
 
     Print((const CHAR16*)u"Getting RSDP\n");
     uint64_t rsdp_address = reinterpret_cast<uint64_t>(get_uefi_rsdp(SystemTable));
-    *reinterpret_cast<uint64_t*>(RSDP_ADDRESS_PHYS_ADDRESS) = rsdp_address;
 
     Print((const CHAR16*)u"Getting GOP\n");
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop_ptr = reinterpret_cast<EFI_GRAPHICS_OUTPUT_PROTOCOL*>(get_uefi_gop(SystemTable));
-    kernel::GOP gop = *reinterpret_cast<kernel::GOP*>(gop_ptr->Mode);
-
-    *reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS) = *reinterpret_cast<kernel::GOP_Info*>(gop_ptr->Mode->Info);
-
-    gop.Info = reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS);
-    *reinterpret_cast<kernel::GOP*>(GOP_PHYS_ADDRESS) = gop;
     if (!gop_ptr) {
         Print((const CHAR16*)u"GOP PHYSICAL ADDRESS is NULL\n");
         return EFI_STATUS{};
@@ -345,8 +376,6 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
         return EFI_LOAD_ERROR;
     }
 
-    auto kernel_entry = reinterpret_cast<void (*)()>(KERNEL_VIRT_BASE + sizeof(kernel::KernelHeader));
-
     Print((const CHAR16*)u"Successfully loaded kernel to memory\n");
 
     Print((const CHAR16*)u"Disabling watchdog\n");
@@ -364,10 +393,22 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
     // NOTE: no Print/AllocatePool/etc. here: ExitBootServices has already succeeded
     // by the time we reach this line, so Boot Services no longer exist.
 
+    *reinterpret_cast<uint64_t*>(RSDP_ADDRESS_PHYS_ADDRESS) = rsdp_address;
+
+    kernel::GOP gop = *reinterpret_cast<kernel::GOP*>(gop_ptr->Mode);
+    *reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS) = *reinterpret_cast<kernel::GOP_Info*>(gop_ptr->Mode->Info);
+
+    gop.Info = reinterpret_cast<kernel::GOP_Info*>(GOP_INFO_PHYS_ADDRESS);
+    *reinterpret_cast<kernel::GOP*>(GOP_PHYS_ADDRESS) = gop;
+
     kernel::MemoryManager memoryManager{};
     memoryManager.Init(Bytes(header->kernelSize), Bytes(ImageBase), Bytes(ImageSize));
 
-    kernel_entry();
+    using KernelEntry = void (*)(uint64_t);
+
+    auto kernel_entry = reinterpret_cast<KernelEntry>(KERNEL_VIRT_BASE + sizeof(kernel::KernelHeader));
+    
+    kernel_entry(MEMORY_MAP_ADDRESS);
 
     return EFI_SUCCESS;
 }

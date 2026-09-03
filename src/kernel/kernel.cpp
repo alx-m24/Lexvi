@@ -4,7 +4,6 @@
 
 #include "kernel/debug/gop.hpp"
 
-#include "kernel/acpi/pci/vendor_deviceID.hpp"
 #include "kernel/keyboard/keyboard.hpp"
 #include "kernel/acpi/pci/p2sb.hpp"
 #include "kernel/interrupt/idt.hpp"
@@ -18,6 +17,8 @@
 #include "kernel/gdt/gdt.hpp"
 
 #include "kernel/time/time.hpp"
+
+#include "kernel/acpi/pci/pci-test.hpp"
 
 void Kernel::Init() {
     memoryManager.Init();
@@ -47,30 +48,20 @@ void Kernel::Init() {
     KERNEL_PRINT("      - Setting up MCFG\n");
     mcfg_load(memoryManager.m_vmm);
 
-    KERNEL_PRINT("   - Getting Device ID\n");
-    kernel::DeviceID deviceID{};
-    kernel::VendorID vendorID{};
-    kernel::getVendorDeviceID(&vendorID, &deviceID);
-    KERNEL_PRINT("      - Vendor: ", vendorID.getVendorName(), "\n");
-    KERNEL_PRINT("      - Device: ");
-    KERNEL_PRINTHEX(deviceID.getDeviceID());
-    KERNEL_PRINT('\n');
+    KERNEL_PRINT("      - Testing PCI reads\n");
+    kernel::tests::testPCIRead();
 
     KERNEL_PRINT("  - Setting up FADT\n");
     loadFADT();
     // kernel::GOP::reset(); log_fadt();
 
-    if (kernel::pciTestWrite()) {
-        KERNEL_PRINT("Writes on PCI successfull\n"); 
-    }
-    else {
-        KERNEL_PRINT("Writes on PCI fails\n"); 
-    }
+    KERNEL_PRINT("      - Testing PCI writes\n");
+    kernel::tests::pciWriteTestRoutine();
 
     KERNEL_PRINT("      - Unhidding P2SB\n");
     if (kernel::unhide_p2sb()) {
-
         KERNEL_PRINT("      - P2SB successfully unhidden\n");
+        kernel::hide_p2sb();
     }
     else {
         KERNEL_PRINT("\n=== FAILED TO UNHIDE P2SB ===\n\n");
@@ -83,7 +74,10 @@ void Kernel::Init() {
         KERNEL_PRINT("\n=== FAILED TO HALT TCO ===\n\n");
     }
 
-    kernel::getResetCause(memoryManager.m_vmm);
+    {
+        kernel::ScopedP2SBCUnhide scopedUnhide{};
+        kernel::getResetCause(memoryManager.m_vmm);
+    }
 
     KERNEL_PRINT("    - Setting up HPET\n");
     hpet_load();
@@ -98,7 +92,7 @@ void Kernel::Init() {
 void Kernel::Run() {
     this->Init();
 
-    KERNEL_PRINT("\n\n === Kernel Running ===", " \nKeyboard input: ");
+    kernel::GOP::print("=== Kernel Running ===", " \nKeyboard input: ");
 
     while (true) {
         char c = kernel::keyboard::getChar();

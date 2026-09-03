@@ -24,7 +24,7 @@ void mcfg_load(kernel::VMM& vmm) {
         const MCFGEntry& entry = mcfg_entries[i];
         KERNEL_ASSERT(entry.segment_group == 0);
 
-        KERNEL_PRINT("MCFG Entry ", i, ": BaseAddress");
+        KERNEL_PRINT("          - MCFG Entry ", i, ": BaseAddress");
         KERNEL_PRINTHEX(entry.base_address);
         KERNEL_PRINT(" start_bus=", entry.start_bus, " end_bus=", entry.end_bus, '\n');
 

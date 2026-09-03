@@ -25,10 +25,6 @@ namespace kernel {
         return reinterpret_cast<uint64_t>(_kernel_end);
     }
 
-    inline uint64_t GetPMMBitMapPhysicalAddress() {
-        return PMM_BITMAP_PHYS_ADDRESS;
-    }
-
     inline uint32_t GetMemoryMapEntryCount() {
         return *reinterpret_cast<uint32_t*>(TO_VIRT(MEMORY_MAP_ENTRY_COUNT_ADDRESS));
     }
@@ -40,4 +36,3 @@ namespace kernel {
 #define MEMORY_MAP_ENTRY_COUNT kernel::GetMemoryMapEntryCount()
 #define E820Entries kernel::GetE820Entries()
 #define KERNEL_END_ADDRESS kernel::GetKernelEndAddress()
-#define PMM_BITMAP_PHYS_ADDRESS kernel::GetPMMBitMapPhysicalAddress()

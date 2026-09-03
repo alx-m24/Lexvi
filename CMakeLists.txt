@@ -14,6 +14,7 @@ add_library(bootloader_obj OBJECT
     src/kernel/memory/pmm.cpp
     src/kernel/memory/vmm.cpp
     src/kernel/error/error.cpp
+    src/kernel/kernel-config.cpp
     src/kernel/memory/memory-manager.cpp
 )
 
@@ -64,6 +65,7 @@ add_executable(kernel
     src/kernel/memory/memory-manager.cpp
     src/kernel/keyboard/keyboard.cpp
     src/kernel/syscall/syscall.cpp
+    src/kernel/kernel-config.cpp
     src/kernel/interrupt/idt.cpp
     src/kernel/interrupt/pic.cpp
     src/kernel/acpi/pci/p2sb.cpp
