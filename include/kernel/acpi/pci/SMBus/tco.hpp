@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pci.hpp"
+#include "kernel/acpi/pci/pci.hpp"
 #include "kernel/register/register.hpp"
 
-namespace kernel {
+namespace kernel::SMBus {
     using TCO_BASE_ADDRESS  = Field<uint16_t,   uint32_t, 5, 15>;
     using IOS               = Field<const bool, uint32_t, 0>;
 

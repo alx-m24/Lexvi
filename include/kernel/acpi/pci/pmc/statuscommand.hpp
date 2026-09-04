@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pci.hpp"
+#include "kernel/acpi/pci/pci.hpp"
 #include "kernel/register/register.hpp"
 
-namespace kernel {
+namespace kernel::PMC {
     using RMA           = Field<C_Bit, uint32_t, 29>;
     using RTA           = Field<C_Bit, uint32_t, 28>;
     using INTR_STATUS   = Field<const bool, uint32_t, 19>;

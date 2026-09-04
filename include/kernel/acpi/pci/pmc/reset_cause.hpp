@@ -1,39 +1,19 @@
-// PWMR - Power Management Controller MMIO Space
 #pragma once
 
-#include <iterator>
+#include "pwmr.hpp"
+#include "statuscommand.hpp"
 
-#include "pci.hpp"
-
-#include "kernel/utils/math.hpp"
 #include "kernel/register/register.hpp"
+#include "kernel/acpi/pci/pci.hpp"
 
 #include "kernel/memory/internals/vmm.hpp"
 #include "kernel/memory/memory-defs.hpp"
-#include "statuscommand.hpp"
+#include "kernel/utils/math.hpp"
 #include "kernel/debug/gop.hpp"
 
-namespace kernel {
-    using BASEADDR      = Field<uint32_t, uint32_t, 13, 31>;
-    using SIZEINDICATOR = Field<uint16_t, uint32_t,  4, 12>;
-    using TYPE          = Field<uint8_t,  uint32_t,  1,  2>;
-    using MESSAGE_SPACE = Field<bool,     uint32_t,  0>;
+#include <iterator>
 
-    struct PWRMBASE : 
-        public ReadWriteRegister<uint32_t,
-                                getInvalidPCIRegisterState<uint32_t>(),
-                                BASEADDR,
-                                SIZEINDICATOR,
-                                TYPE,
-                                MESSAGE_SPACE> {
-        PWRMBASE() = default;
-        constexpr PWRMBASE(uint32_t val) : ReadWriteRegister(val) {}
-        
-        static constexpr PCIConfigAddress getPCIConfigAddress() {
-            return { 0, 31, 2, 0x10 };
-        }
-    };
-
+namespace kernel::PMC {
     using PMC_RF_FUSA_ERR   = Field<C_Bit, uint32_t, 24>;
     using CPU_THRM_WDT      = Field<C_Bit, uint32_t, 16>;
     using SYSPWR_FLR        = Field<C_Bit, uint32_t, 12>;
@@ -118,8 +98,8 @@ namespace kernel {
 
     inline void getResetCause(VMM& vmm) {
         KERNEL_PRINT("    - Checking reset cause registers:\n");
-        kernel::STATUSCOMMAND statusCommandReg { 
-            kernel::pciConfigRead32(kernel::STATUSCOMMAND::getPCIConfigAddress())
+        STATUSCOMMAND statusCommandReg { 
+            kernel::pciConfigRead32(STATUSCOMMAND::getPCIConfigAddress())
         };
 
         if (!statusCommandReg) {

@@ -3,7 +3,7 @@
 #include "kernel/acpi/pci/pci.hpp"
 #include "kernel/register/register.hpp"
 
-namespace kernel {
+namespace kernel::SPI {
     class DeviceID {
         public:
             using FIELD = Field<uint16_t, uint32_t, 16, 31, true>;

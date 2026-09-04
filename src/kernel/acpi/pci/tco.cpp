@@ -1,13 +1,13 @@
-#include "kernel/acpi/pci/tco.hpp"
+#include "kernel/acpi/pci/SMBus/tco.hpp"
 
 #include "kernel/debug/gop.hpp"
 #include "asm/instructions.hpp"
 
-namespace kernel {
+namespace kernel::SMBus {
     bool disableTCO() {
         KERNEL_PRINT("   - Disabling TCO\n");
 
-        kernel::TCO_BASE tcoBase = { kernel::pciConfigRead32(kernel::TCO_BASE::getPCIConfigAddress()) };
+        TCO_BASE tcoBase = { kernel::pciConfigRead32(TCO_BASE::getPCIConfigAddress()) };
         if (!tcoBase) {
             KERNEL_PRINT("      - Invalid TCO_BASE: Likely Hidden\n");
             return false;
@@ -17,7 +17,7 @@ namespace kernel {
         KERNEL_PRINTHEX(tcoBase.get<TCO_BASE_ADDRESS>());
         KERNEL_PRINT('\n');
 
-        kernel::TCO_CTL tcoCTL = { kernel::pciConfigRead32(kernel::TCO_CTL::getPCIConfigAddress()) };
+        TCO_CTL tcoCTL = { kernel::pciConfigRead32(TCO_CTL::getPCIConfigAddress()) };
         if (!tcoCTL) {
             KERNEL_PRINT("      - Invalid TCO_CTL: Likely Hidden\n");
             return false;
@@ -28,7 +28,7 @@ namespace kernel {
             return false;
         }
 
-        kernel::TCO1_CNT tco1_cnt = inw(tcoBase.get<TCO_BASE_ADDRESS>() + 0x08);
+        TCO1_CNT tco1_cnt = inw(tcoBase.get<TCO_BASE_ADDRESS>() + 0x08);
         if (!tco1_cnt) {
             KERNEL_PRINT("      - Invalid TCO1_CNT: Likely Hidden\n");
             return false;

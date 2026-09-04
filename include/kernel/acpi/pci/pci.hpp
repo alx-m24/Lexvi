@@ -74,6 +74,4 @@ namespace kernel {
 
     uint16_t pciConfigRead16(PCIConfigAddress address, uint8_t lane);
     void pciConfigWrite16(PCIConfigAddress address, uint8_t lane, uint16_t data);
-
-    bool pciTestWrite(PCIConfigAddress::AccessType accessType);
 }

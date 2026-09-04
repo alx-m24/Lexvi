@@ -3,9 +3,9 @@
 #include <tuple>
 
 #include "pci.hpp"
-#include "vendor_deviceID.hpp"
-#include "statuscommand.hpp"
-#include "espi_status_command.hpp"
+#include "spi/vendor_deviceID.hpp"
+#include "spi/status_command.hpp"
+#include "pmc/statuscommand.hpp"
 
 #include "kernel/debug/gop.hpp"
 #include "kernel/utils/tests.hpp"
@@ -66,8 +66,8 @@ namespace kernel::tests {
         using FieldType = Field;
     };
 
-    using STATUSCOMMAND_INTR_DISABLE = PCIWriteTestCase<STATUSCOMMAND, INTR_DISABLE>;
-    using ESPI_STATUSCOMMAND_BME = PCIWriteTestCase<ESPI::ESPI_STS_CMD, ESPI::BME>;
+    using STATUSCOMMAND_INTR_DISABLE = PCIWriteTestCase<PMC::STATUSCOMMAND, PMC::INTR_DISABLE>;
+    using ESPI_STATUSCOMMAND_BME = PCIWriteTestCase<SPI::STATUS_COMMAND, SPI::BME>;
 
     using PCI_Write_TestCases = std::tuple<STATUSCOMMAND_INTR_DISABLE, ESPI_STATUSCOMMAND_BME>;
 
@@ -131,8 +131,8 @@ namespace kernel::tests {
         testPCIRead,
         void,
         (), {
-            VendorID vendorID{};
-            DeviceID deviceID{};
+            SPI::VendorID vendorID{};
+            SPI::DeviceID deviceID{};
 
             KERNEL_PRINT("\t\t- Getting Device ID LEGACY\n");
             bool successFullRead = getVendorDeviceID(PCIConfigAddress::AccessType::LEGACY, &vendorID, &deviceID);

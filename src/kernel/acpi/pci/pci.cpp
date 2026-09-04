@@ -1,8 +1,6 @@
 #include "kernel/acpi/pci/pci.hpp"
 
 #include "asm/instructions.hpp"
-#include "kernel/debug/gop.hpp"
-#include "kernel/acpi/pci/statuscommand.hpp"
 #include "kernel/acpi/mcfg.hpp"
 #include "kernel/memory/memory-defs.hpp"
 
@@ -106,50 +104,5 @@ namespace kernel {
         KERNEL_ASSERT(lane < 4 && lane % 2 == 0);
         outl(0xCF8, (address(PCIConfigAddress::AccessType::LEGACY) & ~3)); // lane must be 0 or 2
         outw(0xCFC + lane, data);
-    }
-
-    bool pciTestWriteLegacy() {
-        auto testAddr = STATUSCOMMAND::getPCIConfigAddress();
-
-        uint32_t before = kernel::pciConfigRead32(testAddr);
-        KERNEL_PRINT("      - before: "); KERNEL_PRINTHEX(before); KERNEL_PRINT('\n');
-        
-        kernel::STATUSCOMMAND tmp = { before };   // reuse the existing Field definitions
-        tmp.set<kernel::INTR_DISABLE>(!tmp.get<kernel::INTR_DISABLE>()); // flip just this one bit
-        kernel::pciConfigWrite32(testAddr, tmp());
-        
-        uint32_t after = kernel::pciConfigRead32(testAddr);
-        KERNEL_PRINT("      - after:  "); KERNEL_PRINTHEX(after); KERNEL_PRINT('\n');
-        
-        // restore original value regardless of outcome
-        kernel::pciConfigWrite32(testAddr, before);
-
-        return tmp() == after;
-    }
-
-    bool pciTestWriteMMIO() {
-        auto testAddr = STATUSCOMMAND::getPCIConfigAddress();
-
-        uint32_t before = *testAddr;
-        KERNEL_PRINT("      - before: "); KERNEL_PRINTHEX(before); KERNEL_PRINT('\n');
-        
-        kernel::STATUSCOMMAND tmp = { before };   // reuse the existing Field definitions
-        tmp.set<kernel::INTR_DISABLE>(!tmp.get<kernel::INTR_DISABLE>()); // flip just this one bit
-        *testAddr = tmp();
-        
-        uint32_t after = *testAddr;
-        KERNEL_PRINT("      - after:  "); KERNEL_PRINTHEX(after); KERNEL_PRINT('\n');
-        
-        // restore original value regardless of outcome
-        *testAddr = before;
-
-        return tmp() == after;
-    }
-
-    bool pciTestWrite(PCIConfigAddress::AccessType accessType) {
-        switch (accessType) {
-            case PCIConfigAddress::AccessType::MMIO: return pciTestWriteMMIO();
-            case PCIConfigAddress::AccessType::LEGACY: return pciTestWriteLegacy();
-        }
     }
 }

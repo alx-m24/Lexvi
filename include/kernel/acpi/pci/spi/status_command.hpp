@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pci.hpp"
+#include "kernel/acpi/pci/pci.hpp"
 #include "kernel/register/register.hpp"
 
-namespace kernel::ESPI {
+namespace kernel::SPI {
     using DPE = Field<C_Bit, uint32_t, 31>;
     using SSE = Field<C_Bit, uint32_t, 30>;
     using RMA = Field<C_Bit, uint32_t, 29>;
@@ -24,7 +24,7 @@ namespace kernel::ESPI {
     using MSE = Field<const bool, uint32_t, 1>;
     using IOSE = Field<const bool, uint32_t, 0>;
 
-    struct ESPI_STS_CMD : 
+    struct STATUS_COMMAND : 
         public ReadWriteRegister<uint32_t,
                         getInvalidPCIRegisterState<uint32_t>(),
                         DPE,
@@ -45,8 +45,8 @@ namespace kernel::ESPI {
                         BME,
                         MSE,
                         IOSE> {
-        ESPI_STS_CMD() = default;
-        ESPI_STS_CMD(uint32_t val) : ReadWriteRegister(val) {}
+        STATUS_COMMAND() = default;
+        STATUS_COMMAND(uint32_t val) : ReadWriteRegister(val) {}
 
         static constexpr PCIConfigAddress getPCIConfigAddress() {
             return { 0, 31, 0, 0x04 };

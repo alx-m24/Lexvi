@@ -4,11 +4,11 @@
 
 #include "kernel/debug/gop.hpp"
 
+#include "kernel/acpi/pci/pmc/reset_cause.hpp"
+#include "kernel/acpi/pci/p2sb/p2sbc.hpp"
+#include "kernel/acpi/pci/SMBus/tco.hpp"
 #include "kernel/keyboard/keyboard.hpp"
-#include "kernel/acpi/pci/p2sb.hpp"
 #include "kernel/interrupt/idt.hpp"
-#include "kernel/acpi/pci/pwmr.hpp"
-#include "kernel/acpi/pci/tco.hpp"
 #include "kernel/acpi/mcfg.hpp"
 #include "kernel/acpi/fadt.hpp"
 #include "kernel/acpi/rsdp.hpp"
@@ -58,16 +58,17 @@ void Kernel::Init() {
     KERNEL_PRINT("      - Testing PCI writes\n");
     kernel::tests::pciWriteTestRoutine();
 
+    kernel::GOP::reset();
     KERNEL_PRINT("      - Unhidding P2SB\n");
-    if (kernel::unhide_p2sb()) {
+    if (kernel::P2SB::unhide_p2sb()) {
         KERNEL_PRINT("      - P2SB successfully unhidden\n");
-        kernel::hide_p2sb();
+        kernel::P2SB::hide_p2sb();
     }
     else {
         KERNEL_PRINT("\n=== FAILED TO UNHIDE P2SB ===\n\n");
     }
 
-    if (kernel::disableTCO()) {
+    if (kernel::SMBus::disableTCO()) {
         KERNEL_PRINT("      - TCO halted successfully\n");
     }
     else {
@@ -75,8 +76,8 @@ void Kernel::Init() {
     }
 
     {
-        kernel::ScopedP2SBCUnhide scopedUnhide{};
-        kernel::getResetCause(memoryManager.m_vmm);
+        kernel::P2SB::ScopedP2SBCUnhide scopedUnhide{};
+        kernel::PMC::getResetCause(memoryManager.m_vmm);
     }
 
     KERNEL_PRINT("    - Setting up HPET\n");

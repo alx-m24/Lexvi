@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pci.hpp"
+#include "kernel/acpi/pci/pci.hpp"
 #include "kernel/register/register.hpp"
 
-namespace kernel {
+namespace kernel::P2SB {
     using SBILOCK   = Field<bool, uint32_t, 31>;
     using MASKLOCK  = Field<bool, uint32_t, 17>;
     using HIDE      = Field<bool, uint32_t,  8>;
