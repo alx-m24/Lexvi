@@ -29,11 +29,11 @@ namespace kernel::P2SB {
         public:
             ScopedP2SBCUnhide() { 
                 bool unhideSuccess = unhide_p2sb();
-                KERNEL_ASSERT(unhideSuccess == true);
+                // KERNEL_ASSERT(unhideSuccess == true);
             }
             ~ScopedP2SBCUnhide() { 
                 bool hideSuccess = hide_p2sb();
-                KERNEL_ASSERT(hideSuccess == true);
+                // KERNEL_ASSERT(hideSuccess == true);
             }
 
             ScopedP2SBCUnhide(const ScopedP2SBCUnhide&) = delete;

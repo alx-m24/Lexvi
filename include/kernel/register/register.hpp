@@ -55,10 +55,11 @@ namespace kernel {
         static constexpr uint8_t Width = (EndBit - StartBit) + 1;
         static constexpr uint8_t Offset = StartBit;
 
-        static_assert(Width != std::numeric_limits<R>::digits);
         static_assert(!AlignRight || std::numeric_limits<T>::digits >= Width);
 
-        static constexpr R MASK = ((R{1} << Width) - R{1}) << Offset;
+        static constexpr R MASK = (Width == std::numeric_limits<R>::digits)
+            ? static_cast<R>(~R{0})
+            : static_cast<R>(((R{1} << Width) - R{1}) << Offset);
     
         static constexpr T extract(R raw) {
             if constexpr (AlignRight)

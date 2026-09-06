@@ -5,8 +5,7 @@
 #include "kernel/debug/gop.hpp"
 
 #include "kernel/acpi/pci/pmc/reset_cause.hpp"
-#include "kernel/acpi/pci/p2sb/p2sbc.hpp"
-#include "kernel/acpi/pci/SMBus/tco.hpp"
+#include "kernel/acpi/pci/p2sb/sbreg_bar.hpp"
 #include "kernel/keyboard/keyboard.hpp"
 #include "kernel/interrupt/idt.hpp"
 #include "kernel/acpi/mcfg.hpp"
@@ -58,27 +57,16 @@ void Kernel::Init() {
     KERNEL_PRINT("      - Testing PCI writes\n");
     kernel::tests::pciWriteTestRoutine();
 
+    // kernel::GOP::reset();
+    KERNEL_PRINT("      - Getting SBREG_Bar\n");
+    uint64_t sbreg_bar = kernel::P2SB::get_SBREG_BAR();
+    KERNEL_PRINT("          - SBREG_Bar: ");
+    KERNEL_PRINTHEX(sbreg_bar);
+    KERNEL_PRINT('\n');
+
     kernel::GOP::reset();
-    KERNEL_PRINT("      - Unhidding P2SB\n");
-    if (kernel::P2SB::unhide_p2sb()) {
-        KERNEL_PRINT("      - P2SB successfully unhidden\n");
-        kernel::P2SB::hide_p2sb();
-    }
-    else {
-        KERNEL_PRINT("\n=== FAILED TO UNHIDE P2SB ===\n\n");
-    }
-
-    if (kernel::SMBus::disableTCO()) {
-        KERNEL_PRINT("      - TCO halted successfully\n");
-    }
-    else {
-        KERNEL_PRINT("\n=== FAILED TO HALT TCO ===\n\n");
-    }
-
-    {
-        kernel::P2SB::ScopedP2SBCUnhide scopedUnhide{};
-        kernel::PMC::getResetCause(memoryManager.m_vmm);
-    }
+    KERNEL_PRINT("      - Getting reset cause(if any)\n");
+    kernel::PMC::getResetCause(memoryManager.m_vmm);
 
     KERNEL_PRINT("    - Setting up HPET\n");
     hpet_load();

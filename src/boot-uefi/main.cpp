@@ -106,14 +106,14 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
         return status;
     }
 
-    UINTN kernel_size = file_info->FileSize;
+    UINTN kernel_file_size = file_info->FileSize;
     SystemTable->BootServices->FreePool(file_info);
 
-    Print((const CHAR16*)u"Successfully read kernel size\n");
+    Print((const CHAR16*)u"Successfully read kernel file size (%d bytes)\n", kernel_file_size);
 
-    // 6. Allocate a safe staging pool buffer guaranteed to be valid in UEFI page tables
+    // 6. Allocate staging pool buffer to stream kernel.bin into
     void* staging_buffer = nullptr;
-    status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePool, 3, EfiLoaderData, kernel_size, &staging_buffer);
+    status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePool, 3, EfiLoaderData, kernel_file_size, &staging_buffer);
     if (EFI_ERROR(status)) {
         Print((const CHAR16*)u"AllocatePool(staging_buffer) failed: %r\n", status);
         Print((const CHAR16*)u"status raw = %lx\n", (UINTN)status);
@@ -122,8 +122,7 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
         return status;
     }
 
-    // === PATCH 1: STREAM THE FILE INTO STAGING BUFFER ===
-    UINTN bytes_to_read = kernel_size;
+    UINTN bytes_to_read = kernel_file_size;
     status = uefi_call_wrapper((void*)kernel_file->Read, 3, kernel_file, &bytes_to_read, staging_buffer);
     if (EFI_ERROR(status)) {
         Print((const CHAR16*)u"kernel_file->Read failed: %r\n", status);
@@ -136,14 +135,28 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
     
     Print((const CHAR16*)u"Successfully read kernel to staging buffer\n");
 
-    // 7. Allocate pages directly at explicit custom address link boundary
+    // 7. Parse total runtime size from kernel header in staging buffer BEFORE allocating pages
+    auto* staging_header = reinterpret_cast<kernel::KernelHeader*>(staging_buffer);
+    if (staging_header->magic != kernel::KERNEL_HEADER_MAGIC) {
+        Print((const CHAR16*)u"CRITICAL ERROR: Invalid kernel header magic in staging (0x%lx)\n", 
+              (UINTN)staging_header->magic);
+        SystemTable->BootServices->FreePool(staging_buffer);
+        kernel_file->Close(kernel_file);
+        root_dir->Close(root_dir);
+        return EFI_LOAD_ERROR;
+    }
+
+    // Read total runtime size (including .bss and .stack) defined by the linker script
+    UINTN total_kernel_memory_size = staging_header->kernelSize;
+
+    // 8. Allocate pages for the FULL runtime footprint (.text + .rodata + .data + .bss + .stack)
     EFI_PHYSICAL_ADDRESS kernel_addr = KERNEL_MAIN_LOAD_ADDR;
-    UINTN pages = (kernel_size + 4095) / 4096;
+    UINTN pages = (total_kernel_memory_size + 4095) / 4096;
     status = uefi_call_wrapper((void*)SystemTable->BootServices->AllocatePages, 4,
         AllocateAddress, EfiLoaderData, pages, &kernel_addr);
     if (EFI_ERROR(status)) {
-        Print((const CHAR16*)u"AllocatePages failed: %r (addr=0x%lx, pages=%d, size=%d)\n",
-          status, kernel_addr, pages, kernel_size);
+        Print((const CHAR16*)u"AllocatePages failed: %r (addr=0x%lx, pages=%d, total_size=%d)\n",
+          status, kernel_addr, pages, total_kernel_memory_size);
         Print((const CHAR16*)u"status raw = %lx\n", (UINTN)status);
         SystemTable->BootServices->FreePool(staging_buffer);
         kernel_file->Close(kernel_file);
@@ -151,12 +164,20 @@ EFI_STATUS LoadKernelBinary(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTabl
         return status;
     }
 
-    // === PATCH 2: BLAST DATA FROM STAGING TO FIXED KERNEL LOAD DESTINATION ===
-    uefi_call_wrapper((void*)SystemTable->BootServices->CopyMem, 3, reinterpret_cast<void*>(KERNEL_MAIN_LOAD_ADDR), staging_buffer, kernel_size);
+    // 9. Copy initialized binary data into destination 1MB mark
+    uefi_call_wrapper((void*)SystemTable->BootServices->CopyMem, 3, 
+                      reinterpret_cast<void*>(KERNEL_MAIN_LOAD_ADDR), staging_buffer, kernel_file_size);
 
-    Print((const CHAR16*)u"Successfully copied kernel to 1MB mark\n");
+    // 10. Zero-fill remaining unreserved memory (.bss and .stack)
+    if (total_kernel_memory_size > kernel_file_size) {
+        uefi_call_wrapper((void*)SystemTable->BootServices->SetMem, 3,
+                          reinterpret_cast<void*>(KERNEL_MAIN_LOAD_ADDR + kernel_file_size),
+                          total_kernel_memory_size - kernel_file_size, 0);
+    }
+
+    Print((const CHAR16*)u"Successfully loaded %d pages (0x%lx bytes) at 1MB mark\n", pages, total_kernel_memory_size);
     
-    // 8. Free the staging memory and close references cleanly
+    // 11. Free staging memory and close files
     uefi_call_wrapper((void*)SystemTable->BootServices->FreePool, 1, staging_buffer);
     uefi_call_wrapper((void*)kernel_file->Close, 1, kernel_file);
     uefi_call_wrapper((void*)root_dir->Close, 1, root_dir);
@@ -365,10 +386,7 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
         return status;
     }
 
-    // Read the authoritative image/stack size straight out of the loaded
-    // kernel image instead of trusting the flat-binary FileSize, which can
-    // silently diverge from the linker's own layout (alignment, .bss/objcopy
-    // truncation behavior).
+    // Read the kernel header straight out of the loaded memory
     auto* header = reinterpret_cast<kernel::KernelHeader*>(KERNEL_MAIN_LOAD_ADDR);
     if (header->magic != kernel::KERNEL_HEADER_MAGIC) {
         Print((const CHAR16*)u"CRITICAL ERROR: kernel header magic mismatch (got 0x%lx)\n",
@@ -384,14 +402,9 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
     Print((const CHAR16*)u"Loading memory map...\n");
     status = TranslateUefiToKernelE820(ImageHandle, SystemTable);
     if (EFI_ERROR(status)) {
-        // Boot Services may or may not still be available depending on which branch
-        // returned this, but Print is safe in every failure path above since none of
-        // them return an error after a successful ExitBootServices.
         Print((const CHAR16*)u"CRITICAL ERROR: Failed to build memory map (%r)\n", status);
         return status;
     }
-    // NOTE: no Print/AllocatePool/etc. here: ExitBootServices has already succeeded
-    // by the time we reach this line, so Boot Services no longer exist.
 
     *reinterpret_cast<uint64_t*>(RSDP_ADDRESS_PHYS_ADDRESS) = rsdp_address;
 

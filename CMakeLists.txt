@@ -13,7 +13,6 @@ add_library(bootloader_obj OBJECT
     src/boot-uefi/main.cpp
     src/kernel/memory/pmm.cpp
     src/kernel/memory/vmm.cpp
-    src/kernel/error/error.cpp
     src/kernel/kernel-config.cpp
     src/kernel/memory/memory-manager.cpp
 )
@@ -69,8 +68,8 @@ add_executable(kernel
     src/kernel/interrupt/idt.cpp
     src/kernel/interrupt/pic.cpp
     src/kernel/acpi/pci/p2sb.cpp
-    src/kernel/acpi/pci/tco.cpp
     src/kernel/acpi/pci/pci.cpp
+    src/kernel/acpi/pci/tco.cpp
     src/kernel/keyboard/ps2.cpp
     src/kernel/utils/memory.cpp
     src/kernel/kernel-main.cpp

@@ -79,10 +79,23 @@ namespace kernel {
     void displayGlyph(uint32_t x, uint32_t y, char c, GOP::Color color, GOP::Color background = { 0, 0, 0 }, bool overWriteBackground = false);
 }
 
+#ifndef BOOTLOADER
+
 #ifdef NDEBUG
 #define KERNEL_PRINT(...) do { } while (false)
 #define KERNEL_PRINTHEX(x) do { } while (false)
 #else
 #define KERNEL_PRINT(...) kernel::GOP::print(__VA_ARGS__)
 #define KERNEL_PRINTHEX(x) kernel::GOP::printHex(static_cast<uint64_t>(x))
+
+#endif
+
+#else // Guards accidental GOP prints in early BOOTLOADER
+
+#include <efi/efi.h>
+#include <efi/efilib.h>
+
+#define KERNEL_PRINT(...) Print(__VA_ARGS__)
+#define KERNEL_PRINTHEX(x) do { } while (false)
+
 #endif

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "pwmr.hpp"
-#include "statuscommand.hpp"
 
 #include "kernel/register/register.hpp"
 #include "kernel/acpi/pci/pci.hpp"
+#include "kernel/acpi/fadt.hpp"
 
 #include "kernel/memory/internals/vmm.hpp"
 #include "kernel/memory/memory-defs.hpp"
@@ -12,6 +12,7 @@
 #include "kernel/debug/gop.hpp"
 
 #include <iterator>
+#include <cstddef>
 
 namespace kernel::PMC {
     using PMC_RF_FUSA_ERR   = Field<C_Bit, uint32_t, 24>;
@@ -96,26 +97,48 @@ namespace kernel::PMC {
         }
     };
 
+    inline uint64_t getPwrmBaseFromFadt(const FADT* fadt_ptr) {
+        if (!fadt_ptr) return 0;
+    
+        uint64_t pm_tmr_addr = 0;
+        uint8_t space_id = 1; // Default to System I/O (1)
+    
+        // Check 64-bit Generic Address Structure (ACPI 2.0+)
+        if (fadt_ptr->header.length >= offsetof(FADT, X_PMTimerBlock) + sizeof(GenericAddressStructure) 
+            && fadt_ptr->X_PMTimerBlock.Address != 0) {
+            pm_tmr_addr = fadt_ptr->X_PMTimerBlock.Address;
+            space_id = fadt_ptr->X_PMTimerBlock.AddressSpace;
+        } else {
+            pm_tmr_addr = fadt_ptr->PMTimerBlock;
+            space_id = 1; // 32-bit legacy PMTimerBlock is always System I/O
+        }
+    
+        // PWRMBASE extraction only applies if ACPI PM timer is MMIO (SystemMemory = 0)
+        if (pm_tmr_addr == 0 || space_id != 0) {
+            return 0; // Not MMIO mapped
+        }
+    
+        if (pm_tmr_addr < 0x18FC) {
+            return 0; // Underflow guard
+        }
+    
+        // Modern Intel PCH PMC MMIO Offset for ACPI PMTMR (ACPI_TMR_CTL) is 0x18FC
+        uint64_t pwrm_base = (pm_tmr_addr - 0x18FC) & ~0xFFFULL; // Mask to 4KiB page boundary
+    
+        return pwrm_base;
+    }
+
     inline void getResetCause(VMM& vmm) {
-        KERNEL_PRINT("    - Checking reset cause registers:\n");
-        STATUSCOMMAND statusCommandReg { 
-            kernel::pciConfigRead32(STATUSCOMMAND::getPCIConfigAddress())
-        };
-
-        if (!statusCommandReg) {
-            KERNEL_PRINT("        - STATUS_COMMAND register INVALID: Likely hidden\n");
-            return;
-        }
-
-        if (!statusCommandReg.get<MSE>()) {
-            KERNEL_PRINT("        - MSE Disabled: NO MMIO registers\n");
-            return;
-        }
-
         PWRMBASE pwrmbase = { pciConfigRead32(PWRMBASE::getPCIConfigAddress()) };
         if (!pwrmbase) {
             KERNEL_PRINT("        - PWRMBASE register INVALID: Likely hidden\n");
-            return;
+            KERNEL_PRINT("          - Getting PWRMBASE from FADT\n");
+            uint64_t pwrm_base = getPwrmBaseFromFadt(fadt);
+            if (pwrm_base == 0) {
+                KERNEL_PRINT("              - Failed to get PWRMBASE from FADT\n");
+                return;
+            }
+            pwrmbase.set<BASEADDR>(pwrm_base);
         }
 
         constexpr auto GBLRST_CAUSE0_END =
