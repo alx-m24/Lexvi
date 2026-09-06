@@ -1,0 +1,5 @@
+/home/alexa/dev/Lexvi/build/auto/CMakeFiles/bootloader_obj.dir
+/home/alexa/dev/Lexvi/build/auto/CMakeFiles/bootx64.dir
+/home/alexa/dev/Lexvi/build/auto/CMakeFiles/esp.dir
+/home/alexa/dev/Lexvi/build/auto/CMakeFiles/edit_cache.dir
+/home/alexa/dev/Lexvi/build/auto/CMakeFiles/rebuild_cache.dir

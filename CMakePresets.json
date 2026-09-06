@@ -1,0 +1,47 @@
+{
+  "version": 6,
+
+  "configurePresets": [
+    {
+      "name": "intel",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/intel",
+      "cacheVariables": {
+        "LEXVI_PLATFORM": "INTEL"
+      }
+    },
+
+    {
+      "name": "amd",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/amd",
+      "cacheVariables": {
+        "LEXVI_PLATFORM": "AMD"
+      }
+    },
+
+    {
+      "name": "auto",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/auto",
+      "cacheVariables": {
+        "LEXVI_PLATFORM": "AUTO"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "intel",
+      "configurePreset": "intel"
+    },
+    {
+      "name": "amd",
+      "configurePreset": "amd"
+    },
+    {
+      "name": "auto",
+      "configurePreset": "auto"
+    }
+  ]
+}
