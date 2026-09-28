@@ -4,7 +4,9 @@
 #include <concepts>
 #include <type_traits>
 
-namespace Lexvi {
+#include "common/types/result.hpp"
+
+namespace Lexvi::Output {
     enum class GOP_PixelFormat : uint32_t {
         PixelRedGreenBlueReserved8BitPerColor = 0,
         PixelBlueGreenRedReserved8BitPerColor = 1,
@@ -21,14 +23,16 @@ namespace Lexvi {
          uint32_t PixelsPerScanLine{};
      };
 
-    struct GOP {
+    struct GOP_Data {
         uint32_t MaxMode{};
         uint32_t Mode{};
         GOP_Info* Info{};
         uint64_t SizeOfInfo{};
         uint64_t FrameBufferBase{};
         uint64_t FrameBufferSize{};
+    };
 
+    struct GOP {
         struct Color {
             uint8_t r{}; 
             uint8_t g{}; 
@@ -38,6 +42,9 @@ namespace Lexvi {
 
             constexpr uint32_t operator()(const GOP_Info& info) const;
         };
+
+        static Types::Result Init();
+        static void Shutdown();
 
         static void reset();
 
@@ -55,6 +62,7 @@ namespace Lexvi {
                 printIntegral(static_cast<uint64_t>(n));
         }
 
+
         static void print(bool n);
 
         static void printHex(uint64_t n);
@@ -66,23 +74,13 @@ namespace Lexvi {
             GOP::print(first);
             GOP::print(others...);
         } 
+
+        static void test();
+        static void fill(GOP::Color color);
+        static void fill(uint32_t x, uint32_t y, uint32_t w, uint32_t h, GOP::Color color);
+        static void drawPixel(uint32_t x, uint32_t y, GOP::Color color); 
+        static void displayGlyph(uint32_t x, uint32_t y, char c, GOP::Color color, GOP::Color background = { 0, 0, 0 }, bool overWriteBackground = false);
     };
 
-    extern GOP gop;
-
-    void load_GOP();
-    void init_FrameBuffer();
-    void gop_test();
-    void gop_fill(GOP::Color color);
-    void gop_fill(uint32_t x, uint32_t y, uint32_t w, uint32_t h, GOP::Color color);
-    void drawPixel(uint32_t x, uint32_t y, GOP::Color color); 
-    void displayGlyph(uint32_t x, uint32_t y, char c, GOP::Color color, GOP::Color background = { 0, 0, 0 }, bool overWriteBackground = false);
+    extern GOP_Data gop;
 }
-
-#ifdef NDEBUG
-#define LEXVI_PRINT(...) do { } while (false)
-#define LEXVI_PRINTHEX(x) do { } while (false)
-#else
-#define LEXVI_PRINT(...) Lexvi::GOP::print(__VA_ARGS__)
-#define LEXVI_PRINTHEX(x) Lexvi::GOP::printHex(static_cast<uint64_t>(x))
-#endif

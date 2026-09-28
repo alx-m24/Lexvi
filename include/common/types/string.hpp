@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Lexvi {
+namespace Lexvi::Types {
     // Non-owning view on const char* strings
     // Should be preferred over raw const char*
     class cstring_view {

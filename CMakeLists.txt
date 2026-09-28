@@ -54,6 +54,7 @@ target_compile_options(bootloader_obj PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
     $<$<COMPILE_LANGUAGE:CXX>:-ffunction-sections>
     $<$<COMPILE_LANGUAGE:CXX>:-fno-builtin>
+    $<$<COMPILE_LANGUAGE:CXX>:-fPIC>
 )
 target_include_directories(bootloader_obj PRIVATE
     ${GNUEFI_INC}
@@ -90,6 +91,9 @@ add_custom_command(
 )
 
 add_custom_target(bootx64 ALL DEPENDS ${BOOT_EFI})
+
+set(CMAKE_CXX_LINK_EXECUTABLE
+    "ld -m elf_x86_64 -T ${CMAKE_SOURCE_DIR}/linker/kernel.ld <OBJECTS> -o <TARGET>")
 
 # ESP staging
 set(ESP_DIR ${CMAKE_BINARY_DIR}/esp)

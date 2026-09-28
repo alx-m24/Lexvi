@@ -1,18 +1,13 @@
-#include "common/gop.hpp"
+#include "common/output/gop.hpp"
 
-#include "kernel/kernel-config.hpp"
-#include "kernel/memory/memory-defs.hpp"
-#include "kernel/fonts/font8x16.h"
-
-#include "kernel/error/error.hpp"
+#include "common/error/assert.hpp"
+#include "common/fonts/font8x16.hpp"
 
 #define VALIDATE_GOP() \
-    KERNEL_ASSERT(gop.Info || gop.FrameBufferBase != 0); \
-    KERNEL_ASSERT(gop.Info->PixelFormat != GOP_PixelFormat::PixelBltOnly); 
+        LEXVI_ASSERT(Lexvi::Output::gop.Info || Lexvi::Output::gop.FrameBufferBase != 0) \
+        LEXVI_ASSERT(Lexvi::Output::gop.Info->PixelFormat != GOP_PixelFormat::PixelBltOnly) \
 
-namespace Lexvi {
-    GOP gop{};
-
+namespace Lexvi::Output {
     namespace {
         // Simple HSV -> RGB, h in [0,360), s/v in [0,1]. Returns 0-255 components.
         void hsv_to_rgb(float h, float s, float v, uint8_t& r, uint8_t& g, uint8_t& b) {
@@ -44,18 +39,6 @@ namespace Lexvi {
         uint32_t cursor_cell_X = 0;
         uint32_t cursor_cell_Y = 0;
     }
-
-    void load_GOP() {
-        gop = *reinterpret_cast<GOP*>(TO_VIRT(GOP_PHYS_ADDRESS));
-        gop.Info = reinterpret_cast<GOP_Info*>(TO_VIRT(gop.Info));
-
-        CELL_NUM_X = gop.Info->HorizontalResolution / GLYPH_COL_COUNT;
-        CELL_NUM_Y = gop.Info->VerticalResolution / GLYPH_ROW_COUNT;
-    }
-
-    void init_FrameBuffer() {
-        gop.FrameBufferBase = MMIO_TO_VIRT(gop.FrameBufferBase);
-    }    
 
     constexpr uint32_t GOP::Color::operator()(const GOP_Info& info) const {
         switch (info.PixelFormat) {
@@ -103,10 +86,9 @@ namespace Lexvi {
                 return 0;
         }
     }
+
     
-    void gop_test() {
-        VALIDATE_GOP();
-    
+    void GOP::test() {
         const uint32_t width  = gop.Info->HorizontalResolution;
         const uint32_t height = gop.Info->VerticalResolution;
         const uint32_t pitch  = gop.Info->PixelsPerScanLine;
@@ -124,17 +106,11 @@ namespace Lexvi {
         }
     }
 
-    void gop_fill(GOP::Color color) {
-        VALIDATE_GOP();
-        gop_fill(0, 0, gop.Info->HorizontalResolution, gop.Info->VerticalResolution, color);
+    void GOP::fill(GOP::Color color) {
+        GOP::fill(0, 0, gop.Info->HorizontalResolution, gop.Info->VerticalResolution, color);
     }
 
-    void gop_fill(uint32_t x, uint32_t y, uint32_t w, uint32_t h, GOP::Color color) {
-        VALIDATE_GOP();
-
-        KERNEL_ASSERT(x < gop.Info->HorizontalResolution);
-        KERNEL_ASSERT(y < gop.Info->VerticalResolution);
-
+    void GOP::fill(uint32_t x, uint32_t y, uint32_t w, uint32_t h, GOP::Color color) {
         uint32_t* fb = reinterpret_cast<uint32_t*>(gop.FrameBufferBase);
         for (uint32_t y_ = y; y_ < gop.Info->VerticalResolution && y_ < y + h; ++y_) {
             for (uint32_t x_ = x; x_ < gop.Info->HorizontalResolution && x_ < x + w; ++x_) {
@@ -143,23 +119,16 @@ namespace Lexvi {
         }
     }
 
-    void drawPixel(uint32_t x, uint32_t y, GOP::Color color) {
-        VALIDATE_GOP();
-
-        KERNEL_ASSERT(x < gop.Info->HorizontalResolution);
-        KERNEL_ASSERT(y < gop.Info->VerticalResolution);
-
+    void GOP::drawPixel(uint32_t x, uint32_t y, GOP::Color color) {
         uint32_t* fb = reinterpret_cast<uint32_t*>(gop.FrameBufferBase);
         uint32_t* row = fb + y * gop.Info->PixelsPerScanLine;
         row[x] = color(*gop.Info);
     }
 
-    void displayGlyph(uint32_t x, uint32_t y, char c, GOP::Color color, GOP::Color background, bool overWriteBackground) {
-        VALIDATE_GOP();
-
+    void GOP::displayGlyph(uint32_t x, uint32_t y, char c, GOP::Color color, GOP::Color background, bool overWriteBackground) {
         for (uint8_t row = 0; row < GLYPH_ROW_COUNT; ++row) {
             for (uint8_t col = 0; col < GLYPH_COL_COUNT; ++col) {
-                bool set = (font8x16[c][row] >> (GLYPH_COL_COUNT - col)) & 1;
+                bool set = (Font::font8x16[c][row] >> (GLYPH_COL_COUNT - col)) & 1;
                 if (set) {
                     drawPixel(x + col, y + row, color);
                 }
@@ -171,7 +140,7 @@ namespace Lexvi {
     }
 
     void GOP::reset() {
-        gop_fill(Color(0, 0, 0));
+        GOP::fill(Color(0, 0, 0));
         cursor_cell_X = cursor_cell_Y = 0;
     }
 

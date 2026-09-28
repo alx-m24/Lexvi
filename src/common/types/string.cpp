@@ -1,8 +1,8 @@
-#include "common/string.hpp"
+#include "common/types/string.hpp"
 
 #include <cstdint>
 
-namespace Lexvi {
+namespace Lexvi::Types {
     bool cstring_view::operator==(const cstring_view& other) const {
         if (m_str == other.m_str) return true;
     
