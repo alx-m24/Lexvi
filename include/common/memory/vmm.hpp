@@ -80,11 +80,8 @@ namespace Lexvi::Memory {
         public:
             VMM() = default;
 
-#ifndef BOOTLOADER
-            void Init(PageTable* existingPML4, PMM& pmm);
-#else
-            void Init(PMM& pmm, Bytes kernelSize, Bytes ImageBase, Bytes ImageSize);
-#endif
+            Types::Result Init();
+            void Shutdown() { }
 
         public:
             void map(uint64_t virt, uint64_t phys, PageFlags flags);

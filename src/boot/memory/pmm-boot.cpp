@@ -6,6 +6,7 @@ extern "C" {
 }
 
 #include "common/utils/math.hpp"
+
 #include "boot/bootContext.hpp"
 #include "boot/memory/alloc.hpp"
 
@@ -26,7 +27,7 @@ namespace Lexvi::Memory {
         return (pageCount + BitsPerByte - 1) / BitsPerByte;
     }
 
-    static Result getMemoryMap(BootContext& bootContext, EFI_MEMORY_DESCRIPTOR*& out_memoryMap, uint64_t& out_EntryCount, uint64_t& out_DescriptorSize) {
+    static Result getMemoryMap(BootContext& bootContext, UINTN& out_map_key, EFI_MEMORY_DESCRIPTOR*& out_memoryMap, uint64_t& out_EntryCount, uint64_t& out_DescriptorSize) {
         UINTN memory_map_size = 0;
         EFI_MEMORY_DESCRIPTOR* uefi_map = nullptr;
         UINTN map_key = 0;
@@ -55,6 +56,7 @@ namespace Lexvi::Memory {
 
         const uint64_t total_uefi_descriptors = memory_map_size / descriptor_size;
 
+        out_map_key = map_key;
         out_memoryMap = uefi_map;
         out_EntryCount = total_uefi_descriptors;
         out_DescriptorSize = descriptor_size;
@@ -66,8 +68,9 @@ namespace Lexvi::Memory {
         EFI_MEMORY_DESCRIPTOR* uefi_map = nullptr;
         uint64_t total_uefi_descriptors = 0;
         UINTN descriptor_size = 0;
+        UINTN map_key;
 
-        getMemoryMap(bootContext, uefi_map, total_uefi_descriptors, descriptor_size);
+        getMemoryMap(bootContext, map_key, uefi_map, total_uefi_descriptors, descriptor_size);
 
         out_highestAddress = 0;
 
@@ -112,11 +115,13 @@ namespace Lexvi::Memory {
 
     Result PMM::SyncBitMap() {
         EFI_MEMORY_DESCRIPTOR* uefi_map = nullptr;
+        UINTN map_key{};
         uint64_t total_uefi_descriptors = 0;
         UINTN descriptor_size = 0;
     
         const Result result = getMemoryMap(
             bootContext,
+            map_key,
             uefi_map,
             total_uefi_descriptors,
             descriptor_size
@@ -169,6 +174,9 @@ namespace Lexvi::Memory {
         }
     
         uefi_call_wrapper((void*)bootContext.system_table->BootServices->FreePool, 1, uefi_map);
+
+        this->map_key = map_key;
+        this->uefi_map = uefi_map;
 
         return {};
     }

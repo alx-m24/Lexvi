@@ -4,6 +4,13 @@
 #include "common/memory/address.hpp"
 #include "common/memory/memory-unit.hpp"
 
+#ifdef BOOTLOADER
+extern "C" {
+    #include <efi/efi.h>
+    #include <efi/efilib.h>
+}
+#endif
+
 namespace Lexvi::Memory {
     // Construct's bitmap
     // Mirrors Allocations that outlive efi bootloader in bitmap
@@ -23,8 +30,18 @@ namespace Lexvi::Memory {
             Types::Result Init(); 
             void Shutdown();
 
-        private:
+        public:
+            PhysicalAddress Alloc(uint64_t pageNum);
+            void Free(PhysicalAddress address);
+
+        public:
             Types::Result SyncBitMap();
+#ifdef BOOTLOADER
+            void getUEFIMap(UINTN& out_map_key, EFI_MEMORY_DESCRIPTOR*& out_uefi_map);
+        private:
+            UINTN map_key{};
+            EFI_MEMORY_DESCRIPTOR* uefi_map{};
+#endif
 
         private:
             void MarkRangeFree(Memory::Bytes base, Memory::Bytes length);

@@ -39,4 +39,24 @@ namespace Lexvi::Memory {
     PhysicalAddress PMM::getBitMapPhys() const {
         return m_bitMap;
     }
+
+    PhysicalAddress PMM::Alloc(uint64_t pageNum) {
+        for (uint64_t i = 0; i < m_TotalPageNum; ++i) {
+            bool found = true;
+            for (uint64_t j = 0; j < m_TotalPageNum && found; ++j) {
+                found = !TestBit(i + j); // TestBit() return TRUE if used -> FOUND should be true when EMPTY
+            }
+
+            if (found) {
+                const Bytes startPageAddress = PAGE_SIZE.bytes() * i;
+                MarkRangeUsed(startPageAddress, startPageAddress + (PAGE_SIZE.bytes() * m_TotalPageNum));
+                return startPageAddress.bytes().count();
+            }
+        }
+        return nullptr;
+    }
+
+    void PMM::Free(PhysicalAddress address) {
+        MarkRangeFree(address.getBytes(), PAGE_SIZE.bytes());
+    }
 }

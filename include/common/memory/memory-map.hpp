@@ -4,7 +4,7 @@
 
 #include "kernel/header.hpp"
 
-namespace Lexvi {
+namespace Lexvi::Memory {
     enum class EntryType : uint32_t {
         Usable = 1,
         Reserved = 2,

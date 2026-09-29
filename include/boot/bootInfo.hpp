@@ -11,5 +11,6 @@ namespace Lexvi::Boot {
         Lexvi::Memory::PhysicalAddress HPET_Address{};
         Lexvi::Memory::PhysicalAddress MCFG_Address{};
         Lexvi::Memory::PhysicalAddress GOP_Address{};
+        Lexvi::Memory::PhysicalAddress PML4_Address{};
     };
 }
