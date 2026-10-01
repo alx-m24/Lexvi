@@ -3,24 +3,7 @@ set -e
 
 source scripts/color.sh
 
-preset="${1:-}"
-
-# Check preset
-case "${preset,,}" in
-    intel|amd|auto)
-        buildDir="build/${preset,,}"
-        ;;
-    "")
-        print_color yellow "Warning: No preset specified. Defaulting to auto"
-        buildDir="build/auto"
-        ;;
-    *)
-        print_color red "Error: Unknown preset '${preset}'."
-        echo "Valid presets: intel, amd, auto"
-        exit 1
-        ;;
-esac
-
+buildDir="build/"
 ESP_DIR="${buildDir}/esp"
 OVMF_VARS="${buildDir}/OVMF_VARS.fd"
 

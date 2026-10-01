@@ -17,21 +17,21 @@ namespace Lexvi::Memory {
 
     Types::Result VMM::Init() {
         // Read PMM and existing page tables from bootInfo
-        m_pmm = &pmm;
-        m_pml4 = existingPML4;
-        m_pml4Phys = TO_PHYS(existingPML4);
+        // m_pmm = &pmm;
+        // m_pml4 = existingPML4;
+        // m_pml4Phys = TO_PHYS(existingPML4);
 
-        for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
-            const E820Entry entry = E820Entries[i];
+        // for (uint32_t i = 0; i < MEMORY_MAP_ENTRY_COUNT; ++i) {
+        //     const E820Entry entry = E820Entries[i];
 
-            uint64_t base = alignDown(entry.base, MiB(2).bytes().count());
-            uint64_t end  = alignUp(entry.base + entry.length, MiB(2).bytes().count());
+        //     uint64_t base = alignDown(entry.base, MiB(2).bytes().count());
+        //     uint64_t end  = alignUp(entry.base + entry.length, MiB(2).bytes().count());
 
-            for (uint64_t phys = base; phys < end; phys += MiB(2).bytes().count()) {
-                if (entry.type != EntryType::Usable) continue;
-                unmap(phys);
-            }
-        }
+        //     for (uint64_t phys = base; phys < end; phys += MiB(2).bytes().count()) {
+        //         if (entry.type != EntryType::Usable) continue;
+        //         unmap(phys);
+        //     }
+        // }
     }
 
     void VMM::map(uint64_t virt, uint64_t phys, PageFlags flags) {

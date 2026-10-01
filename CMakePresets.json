@@ -1,47 +1,16 @@
 {
   "version": 6,
-
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
   "configurePresets": [
-    {
-      "name": "intel",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/intel",
-      "cacheVariables": {
-        "LEXVI_PLATFORM": "INTEL"
-      }
-    },
-
-    {
-      "name": "amd",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/amd",
-      "cacheVariables": {
-        "LEXVI_PLATFORM": "AMD"
-      }
-    },
-
-    {
-      "name": "auto",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/auto",
-      "cacheVariables": {
-        "LEXVI_PLATFORM": "AUTO"
-      }
-    }
+    { "name": "bootloader", "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/bootloader" }
   ],
-
   "buildPresets": [
-    {
-      "name": "intel",
-      "configurePreset": "intel"
-    },
-    {
-      "name": "amd",
-      "configurePreset": "amd"
-    },
-    {
-      "name": "auto",
-      "configurePreset": "auto"
-    }
+    { "name": "bootloader", "configurePreset": "bootloader" }
+  ],
+  "workflowPresets": [
+    { "name": "bootloader", "steps": [
+        { "type": "configure", "name": "bootloader" },
+        { "type": "build", "name": "bootloader" } ] }
   ]
 }

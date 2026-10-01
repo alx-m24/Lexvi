@@ -1,0 +1,838 @@
+Folder PATH listing
+Volume serial number is 0000-0000
+\\wsl.localhost\Ubuntu.
+¦   .gitignore
+¦   CMakePresets.json
+¦   CMakeLists.txt
+¦   README.md
+¦   Tree.txt
+¦   
++---linker
+¦       kernel.ld
+¦       
++---include
+¦   +---common
+¦   ¦   ¦   asm.hpp
+¦   ¦   ¦   
+¦   ¦   +---error
+¦   ¦   ¦       panic.hpp
+¦   ¦   ¦       assert.hpp
+¦   ¦   ¦       
+¦   ¦   +---syscall
+¦   ¦   ¦       syscall.hpp
+¦   ¦   ¦       
+¦   ¦   +---fonts
+¦   ¦   ¦       font8x16.hpp
+¦   ¦   ¦       
+¦   ¦   +---keyboard
+¦   ¦   ¦       ps2.hpp
+¦   ¦   ¦       keyboard.hpp
+¦   ¦   ¦       
+¦   ¦   +---output
+¦   ¦   ¦       output-defs.hpp
+¦   ¦   ¦       gop.hpp
+¦   ¦   ¦       
+¦   ¦   +---memory
+¦   ¦   ¦       address.hpp
+¦   ¦   ¦       pmm.hpp
+¦   ¦   ¦       vmm.hpp
+¦   ¦   ¦       memory-unit.hpp
+¦   ¦   ¦       allocator.hpp
+¦   ¦   ¦       memory-map.hpp
+¦   ¦   ¦       memory-defs.hpp
+¦   ¦   ¦       
+¦   ¦   +---gdt
+¦   ¦   ¦       gdt.hpp
+¦   ¦   ¦       
+¦   ¦   +---time
+¦   ¦   ¦       time.hpp
+¦   ¦   ¦       
+¦   ¦   +---acpi
+¦   ¦   ¦       GenericAddress.hpp
+¦   ¦   ¦       hpet.hpp
+¦   ¦   ¦       mcfg.hpp
+¦   ¦   ¦       rsdp.hpp
+¦   ¦   ¦       fadt.hpp
+¦   ¦   ¦       sdt.hpp
+¦   ¦   ¦       
+¦   ¦   +---interrupt
+¦   ¦   ¦       pic.hpp
+¦   ¦   ¦       idt.hpp
+¦   ¦   ¦       frame.hpp
+¦   ¦   ¦       
+¦   ¦   +---utils
+¦   ¦   ¦       memory.hpp
+¦   ¦   ¦       string.hpp
+¦   ¦   ¦       math.hpp
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           result.hpp
+¦   ¦           string.hpp
+¦   ¦           service.hpp
+¦   ¦           
+¦   +---kernel
+¦   ¦   ¦   header.hpp
+¦   ¦   ¦   
+¦   ¦   +---hal
+¦   ¦   ¦       init.hpp
+¦   ¦   ¦       reset_cause.hpp
+¦   ¦   ¦       
+¦   ¦   +---memory
+¦   ¦           pmm.hpp
+¦   ¦           
+¦   +---vendor
+¦   ¦   +---intel
+¦   ¦   ¦   +---common
+¦   ¦   ¦   +---600
+¦   ¦   ¦       +---pci
+¦   ¦   ¦           ¦   pci.hpp
+¦   ¦   ¦           ¦   pci-test.hpp
+¦   ¦   ¦           ¦   
+¦   ¦   ¦           +---spi
+¦   ¦   ¦           ¦       status_command.hpp
+¦   ¦   ¦           ¦       vendor_deviceID.hpp
+¦   ¦   ¦           ¦       
+¦   ¦   ¦           +---SMBus
+¦   ¦   ¦           ¦       tco.hpp
+¦   ¦   ¦           ¦       
+¦   ¦   ¦           +---p2sb
+¦   ¦   ¦           ¦       sbreg_bar.hpp
+¦   ¦   ¦           ¦       p2sbc.hpp
+¦   ¦   ¦           ¦       
+¦   ¦   ¦           +---pmc
+¦   ¦   ¦                   statuscommand.hpp
+¦   ¦   ¦                   pwmr.hpp
+¦   ¦   ¦                   reset_cause.hpp
+¦   ¦   ¦                   
+¦   ¦   +---amd
+¦   +---boot
+¦       ¦   bootInfo.hpp
+¦       ¦   bootContext.hpp
+¦       ¦   
+¦       +---stages
+¦       ¦       stage1.hpp
+¦       ¦       stage3.hpp
+¦       ¦       stage2.hpp
+¦       ¦       
+¦       +---output
+¦       ¦       print.hpp
+¦       ¦       
+¦       +---memory
+¦       ¦       alloc.hpp
+¦       ¦       
+¦       +---acpi
+¦               tables.hpp
+¦               
++---scripts
+¦       build.sh
+¦       color.sh
+¦       buildAndRun.sh
+¦       run.sh
+¦       
++---src
+¦   +---common
+¦   ¦   ¦   asm.cpp
+¦   ¦   ¦   
+¦   ¦   +---error
+¦   ¦   ¦       panic.cpp
+¦   ¦   ¦       
+¦   ¦   +---syscall
+¦   ¦   ¦       syscall.cpp
+¦   ¦   ¦       
+¦   ¦   +---keyboard
+¦   ¦   ¦       keyboard.cpp
+¦   ¦   ¦       ps2.cpp
+¦   ¦   ¦       
+¦   ¦   +---output
+¦   ¦   ¦       gop-common.cpp
+¦   ¦   ¦       
+¦   ¦   +---memory
+¦   ¦   ¦       pmm.cpp
+¦   ¦   ¦       vmm.cpp
+¦   ¦   ¦       
+¦   ¦   +---time
+¦   ¦   ¦       time.cpp
+¦   ¦   ¦       
+¦   ¦   +---interrupt
+¦   ¦   ¦       idt.cpp
+¦   ¦   ¦       pic.cpp
+¦   ¦   ¦       isr_stubs.nasm
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           string.cpp
+¦   ¦           
+¦   +---kernel
+¦   ¦   ¦   kernel-main.cpp
+¦   ¦   ¦   kernel-main.nasm
+¦   ¦   ¦   
+¦   ¦   +---output
+¦   ¦   ¦       gop-kernel.cpp
+¦   ¦   ¦       
+¦   ¦   +---memory
+¦   ¦           vmm-kernel.cpp
+¦   ¦           pmm-kernel.cpp
+¦   ¦           
+¦   +---vendor
+¦   ¦   +---intel
+¦   ¦   ¦   +---common
+¦   ¦   ¦   +---600
+¦   ¦   ¦       +---pci
+¦   ¦   ¦       ¦       p2sb.cpp
+¦   ¦   ¦       ¦       pci.cpp
+¦   ¦   ¦       ¦       tco.cpp
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---hal
+¦   ¦   ¦               hal-init.cpp
+¦   ¦   ¦               
+¦   ¦   +---amd
+¦   +---boot
+¦       ¦   boot-main.cpp
+¦       ¦   
+¦       +---stages
+¦       ¦       stage3.cpp
+¦       ¦       stage1.cpp
+¦       ¦       stage2.cpp
+¦       ¦       
+¦       +---output
+¦       ¦       print.cpp
+¦       ¦       gop-boot.cpp
+¦       ¦       
+¦       +---memory
+¦       ¦       pmm-boot.cpp
+¦       ¦       vmm-boot.cpp
+¦       ¦       allocator.cpp
+¦       ¦       
+¦       +---gdt
+¦       ¦       gdt-boot.cpp
+¦       ¦       
+¦       +---bootContext
+¦       ¦       bootContext.cpp
+¦       ¦       
+¦       +---acpi
+¦               sdt-boot.cpp
+¦               rsdp-boot.cpp
+¦               
++---.git
+¦   ¦   config
+¦   ¦   COMMIT_EDITMSG
+¦   ¦   index
+¦   ¦   HEAD
+¦   ¦   description
+¦   ¦   
+¦   +---logs
+¦   ¦   ¦   HEAD
+¦   ¦   ¦   
+¦   ¦   +---refs
+¦   ¦       +---remotes
+¦   ¦       ¦   +---origin
+¦   ¦       ¦           Portability
+¦   ¦       ¦           
+¦   ¦       +---heads
+¦   ¦               Portability
+¦   ¦               
+¦   +---info
+¦   ¦       exclude
+¦   ¦       
+¦   +---branches
+¦   +---refs
+¦   ¦   +---remotes
+¦   ¦   ¦   +---origin
+¦   ¦   ¦           Portability
+¦   ¦   ¦           
+¦   ¦   +---heads
+¦   ¦   ¦       Portability
+¦   ¦   ¦       
+¦   ¦   +---tags
+¦   +---objects
+¦   ¦   +---e3
+¦   ¦   ¦       a4b58bb1232de33a78f41a49f2b0e060726b3f
+¦   ¦   ¦       
+¦   ¦   +---26
+¦   ¦   ¦       0a975a74b93cff413d26222b70bc4cc10e5315
+¦   ¦   ¦       
+¦   ¦   +---fc
+¦   ¦   ¦       f31fbc960ae7c30adea75e61303c030a593c52
+¦   ¦   ¦       
+¦   ¦   +---fd
+¦   ¦   ¦       f3978290542d90fe324d3b1af619a16d8fda70
+¦   ¦   ¦       1bd0b613a523486409b4d22850972a496e7968
+¦   ¦   ¦       
+¦   ¦   +---b2
+¦   ¦   ¦       3260ff73d7fd08be4ab150c446fa037bb591f5
+¦   ¦   ¦       
+¦   ¦   +---8a
+¦   ¦   ¦       7ea1c3d28560249831734961af106df63feea9
+¦   ¦   ¦       8484860ba8637dd9d9eca873b658816b88265e
+¦   ¦   ¦       
+¦   ¦   +---70
+¦   ¦   ¦       dc5fed858efbc97ea57a7e8e07ca65b70f6f21
+¦   ¦   ¦       2584f7cfac61e9cf8c5adce7e4eff4363a5287
+¦   ¦   ¦       
+¦   ¦   +---bb
+¦   ¦   ¦       c96387fb06f999dd04563ed45085b2631c7b5b
+¦   ¦   ¦       
+¦   ¦   +---9e
+¦   ¦   ¦       830f1a855339c7e5b53d2665714fb3c9a49430
+¦   ¦   ¦       
+¦   ¦   +---5d
+¦   ¦   ¦       8e928feb07a8737e4ae4613f8bcf2b79740e07
+¦   ¦   ¦       
+¦   ¦   +---c0
+¦   ¦   ¦       1aac31a67464d8cbeddcef4d2704a3f268a64b
+¦   ¦   ¦       
+¦   ¦   +---c2
+¦   ¦   ¦       c432f8f6228d9a8c5644215d0a61929b8384b2
+¦   ¦   ¦       5eaf812f50ea9956f389865984cd2829689e7f
+¦   ¦   ¦       
+¦   ¦   +---b8
+¦   ¦   ¦       96c5db0ea36f06f1ced91acb61ab2045d7b0c4
+¦   ¦   ¦       
+¦   ¦   +---81
+¦   ¦   ¦       2940621344176621b50bf25ecbdafb43faf5c6
+¦   ¦   ¦       5cdb4773ef85d4506e0d6f88077908c8ff237a
+¦   ¦   ¦       
+¦   ¦   +---67
+¦   ¦   ¦       6285df4a648d5b0a2bd706c990a47be91ce8dd
+¦   ¦   ¦       42846c6e7ae31c487cb3c353a32af2e42e42f2
+¦   ¦   ¦       
+¦   ¦   +---e9
+¦   ¦   ¦       e9aa2f80b658431593bfcdebb1ddbd7cb7e7d7
+¦   ¦   ¦       26ed95aca95fa7a394ccb140ffe97fb42360fe
+¦   ¦   ¦       7773e7b9539f0811a5dbac7a15d9a5c794f4e0
+¦   ¦   ¦       cef5bebc29c2dcf4269eecc43d3701b7a49ff6
+¦   ¦   ¦       f2f7b1671587a1ac4fca6dee8370058a3326f0
+¦   ¦   ¦       
+¦   ¦   +---03
+¦   ¦   ¦       310da864152bae054e47e494f9ab88da3877c4
+¦   ¦   ¦       c8bab64d8f65c237656e9a59d6428489e57bc7
+¦   ¦   ¦       
+¦   ¦   +---57
+¦   ¦   ¦       fe1cb78e99c842f8348541ea027acd878d0a40
+¦   ¦   ¦       
+¦   ¦   +---08
+¦   ¦   ¦       dcce60381c4398dd221d3341178ddafec36ea2
+¦   ¦   ¦       
+¦   ¦   +---ab
+¦   ¦   ¦       f73aedca76a406cb1cb1de6f16a6f528c7614f
+¦   ¦   ¦       
+¦   ¦   +---de
+¦   ¦   ¦       f84a989d85eb19148b1011cc6e9e8795cab11f
+¦   ¦   ¦       
+¦   ¦   +---4d
+¦   ¦   ¦       672df0a6e6836c87d419ae72e95ff43e32065e
+¦   ¦   ¦       ad270d6f43c2c2b8bfa798561009c5ac616af5
+¦   ¦   ¦       97ade4b898813507717c39f04b871afa2fdc99
+¦   ¦   ¦       
+¦   ¦   +---49
+¦   ¦   ¦       a0b7f26736b2eb38a35dd11a78b14f766851e3
+¦   ¦   ¦       
+¦   ¦   +---8d
+¦   ¦   ¦       bc9d3e67bccd0384fab2cc85349d0b3c954ea4
+¦   ¦   ¦       
+¦   ¦   +---7c
+¦   ¦   ¦       bc459dfc87ad7d9f056ce770738a516fd175b8
+¦   ¦   ¦       
+¦   ¦   +---54
+¦   ¦   ¦       9911ecdcb68f56585847c7c3f3c76a065da348
+¦   ¦   ¦       
+¦   ¦   +---34
+¦   ¦   ¦       5f851b13c6882e118ccac61921432e49672559
+¦   ¦   ¦       
+¦   ¦   +---6c
+¦   ¦   ¦       006965bbc7a44a2a983a72bdbe6b3e6450ae14
+¦   ¦   ¦       bb2ff502c5d21daa97ee66f18a82f41776c1e7
+¦   ¦   ¦       
+¦   ¦   +---db
+¦   ¦   ¦       e136aa64c3d916f5936b640fae1999591f066d
+¦   ¦   ¦       3a5f490438df4564413be1170b14148dd9c572
+¦   ¦   ¦       e08c18c34dfc9b75a3b693396a0b9cba77aea3
+¦   ¦   ¦       6a08e8944958fc5331462d71061e8a1742c3cc
+¦   ¦   ¦       
+¦   ¦   +---48
+¦   ¦   ¦       050166de7b667d3afdc021b8f0bba83a02efaf
+¦   ¦   ¦       584ce539440d055547c7566f3dcb952b0ae419
+¦   ¦   ¦       8a934b054b9a9fc8ba11d87c1122e22326aa94
+¦   ¦   ¦       
+¦   ¦   +---80
+¦   ¦   ¦       10d00e12fdfffd68aa2eeef6d84dba0b3a94be
+¦   ¦   ¦       
+¦   ¦   +---9b
+¦   ¦   ¦       2a21668202648b6fca6db5a84331b241e881a3
+¦   ¦   ¦       6050a1111df587197c9effdfafab81b05a756b
+¦   ¦   ¦       
+¦   ¦   +---9c
+¦   ¦   ¦       9c90eaffe6bb0799f322938350b76c08c676dc
+¦   ¦   ¦       
+¦   ¦   +---6b
+¦   ¦   ¦       fc59591735ffe56482da2882e2eb803b37755e
+¦   ¦   ¦       
+¦   ¦   +---fb
+¦   ¦   ¦       d4c05642b3e4aa2d87b48f40f63ca4a924a35b
+¦   ¦   ¦       
+¦   ¦   +---a6
+¦   ¦   ¦       ac154a02fe0a048fd7726fc6a880c57e36c15d
+¦   ¦   ¦       
+¦   ¦   +---info
+¦   ¦   +---72
+¦   ¦   ¦       a616d85bbd38949eee7c6965bd9ff0a68a6fc4
+¦   ¦   ¦       
+¦   ¦   +---15
+¦   ¦   ¦       37d76e6f0010357140abb3a488bd1a85c4c3de
+¦   ¦   ¦       
+¦   ¦   +---f3
+¦   ¦   ¦       e903da01ad6c47a52efae1c27e53f14f53e939
+¦   ¦   ¦       
+¦   ¦   +---92
+¦   ¦   ¦       7753ca3162dbbe07eb6d23a2d4218dec0a6415
+¦   ¦   ¦       c0a36edbe7dbd229d68cb6239ce001d43b266e
+¦   ¦   ¦       
+¦   ¦   +---c3
+¦   ¦   ¦       76b0a98fcbbe8c8c41f4d224ea80c85f576340
+¦   ¦   ¦       
+¦   ¦   +---31
+¦   ¦   ¦       e4272beb228e1b307b036f5eb7d3f0c8a367a2
+¦   ¦   ¦       
+¦   ¦   +---66
+¦   ¦   ¦       dc8f1770c0cf6d62cdb7b23c45746fac5b3f3d
+¦   ¦   ¦       
+¦   ¦   +---04
+¦   ¦   ¦       8b8bd363704f3f4bc7d0771fe4ec035536028b
+¦   ¦   ¦       c102b51506edc74f1e25c2434685f85f099372
+¦   ¦   ¦       
+¦   ¦   +---ff
+¦   ¦   ¦       0745fb6f548a0fe427d8d8d33f23aec55d99c3
+¦   ¦   ¦       161d236e16ee20a5c9328e8e73a62c0548c4ab
+¦   ¦   ¦       
+¦   ¦   +---7e
+¦   ¦   ¦       4fa2ded780f963ffe408cc765c16878d27ff7d
+¦   ¦   ¦       
+¦   ¦   +---82
+¦   ¦   ¦       d0b39d5e47271ffd51e8b6db9ffb557172c298
+¦   ¦   ¦       
+¦   ¦   +---46
+¦   ¦   ¦       c2efe8c2f5e7cfb6cd0496100a22d8a4047d12
+¦   ¦   ¦       57a80e6ba10c5904594811397b503419b6cc42
+¦   ¦   ¦       
+¦   ¦   +---3b
+¦   ¦   ¦       6b0c04936ae339fa95cea7765fa9b38da05f69
+¦   ¦   ¦       
+¦   ¦   +---f5
+¦   ¦   ¦       69ddb1d6fd92f0494305d0939fa8e1d957dd15
+¦   ¦   ¦       
+¦   ¦   +---fa
+¦   ¦   ¦       5fde1d25cc95832668813058d75bb1e71f1801
+¦   ¦   ¦       
+¦   ¦   +---32
+¦   ¦   ¦       66273c45c6faa8dac115dcaf0c42e7274282fc
+¦   ¦   ¦       39a86db01f2129013747e993ea8ec0dcd7c2e8
+¦   ¦   ¦       015ffc53ea866256556a6d21beef6a23540675
+¦   ¦   ¦       703d8460593ee91bbe1c43f81eb5580b8f7a8a
+¦   ¦   ¦       
+¦   ¦   +---a9
+¦   ¦   ¦       947674d719147c9c5b0368bc0ec51849c6296d
+¦   ¦   ¦       
+¦   ¦   +---78
+¦   ¦   ¦       36452c561e3595c5560afa1328df42ffe05f8f
+¦   ¦   ¦       
+¦   ¦   +---30
+¦   ¦   ¦       bd8d652d213f06aed082844be528b23fc30fea
+¦   ¦   ¦       
+¦   ¦   +---d0
+¦   ¦   ¦       77d377ef2ba4282feac0c8d922a2a90be36c37
+¦   ¦   ¦       d9da19ac251ed54b3f34e5e09fbdb447c12185
+¦   ¦   ¦       
+¦   ¦   +---6f
+¦   ¦   ¦       111885b9b6185c8ceac01bdb2dec2d65b46db7
+¦   ¦   ¦       24dcb65e00c043bc2ffa7e1e95507aeda0a191
+¦   ¦   ¦       
+¦   ¦   +---d5
+¦   ¦   ¦       84cb0aec5aed9aacc8aeff01b8dffc7cbfe680
+¦   ¦   ¦       
+¦   ¦   +---35
+¦   ¦   ¦       c568715f4d1a10a7b55a7be3d026dfe0232692
+¦   ¦   ¦       5ffaa17e6972473c8bf4fd934c1fec5a129101
+¦   ¦   ¦       
+¦   ¦   +---c7
+¦   ¦   ¦       2b830bed4c0e99ccce3000db2e9e71238bfff7
+¦   ¦   ¦       
+¦   ¦   +---27
+¦   ¦   ¦       dfdfc8ec79d6cc6e354a147bbfb8f23e7eef20
+¦   ¦   ¦       
+¦   ¦   +---74
+¦   ¦   ¦       93c1d172fa8bde93401500b817cceb03057339
+¦   ¦   ¦       f7602bf989f24f8e0a246231a7982026b2d85a
+¦   ¦   ¦       
+¦   ¦   +---7d
+¦   ¦   ¦       4b9b80ad1c7971d34aeb25ab04769d79e2a64c
+¦   ¦   ¦       
+¦   ¦   +---13
+¦   ¦   ¦       bbfe1a6e5b34887e9115239f1d703eedeb950c
+¦   ¦   ¦       
+¦   ¦   +---cd
+¦   ¦   ¦       4bc52bc1f74fb676035336c1b5cda0f46ffbb5
+¦   ¦   ¦       c523b01aef4d9b11287486b3d13b3c8218769e
+¦   ¦   ¦       
+¦   ¦   +---6e
+¦   ¦   ¦       3c39afb977e5ff974f495b39ecdc6520347321
+¦   ¦   ¦       
+¦   ¦   +---2f
+¦   ¦   ¦       6f1bb1732f7db2325f39cf32f5dea7565e00da
+¦   ¦   ¦       7ed46e4b4c68dad184980e9092eba65756bf3b
+¦   ¦   ¦       
+¦   ¦   +---ee
+¦   ¦   ¦       5b2478622ec3852827fd20bb1dfb628708a7bf
+¦   ¦   ¦       
+¦   ¦   +---4a
+¦   ¦   ¦       7fb8302aa25fdda38b7e1adbf6a0bdcfbb2784
+¦   ¦   ¦       
+¦   ¦   +---95
+¦   ¦   ¦       9f66e0893c2e5375ed2633609dfa07bf3dd62a
+¦   ¦   ¦       
+¦   ¦   +---3e
+¦   ¦   ¦       a5ffa1d9216376c6a6afcdc5f1346100686770
+¦   ¦   ¦       a936d31a80e1d30cd1102b4c652b61080d2a76
+¦   ¦   ¦       26651b5692990be76eb163b3117a8a7f7d54a7
+¦   ¦   ¦       
+¦   ¦   +---4f
+¦   ¦   ¦       35532f3aeb6f1cd516ea8ea9d7cc6baec9b778
+¦   ¦   ¦       1f5ad6471668a11f2fd6dd213a178c2f069395
+¦   ¦   ¦       
+¦   ¦   +---bd
+¦   ¦   ¦       312a64d07f2a9456dc17626274780231899773
+¦   ¦   ¦       38692c8795aa26eea273fa4c00a22837b46102
+¦   ¦   ¦       
+¦   ¦   +---05
+¦   ¦   ¦       e275df6c9fd1cba97fbc0ccef22c087a016df8
+¦   ¦   ¦       
+¦   ¦   +---09
+¦   ¦   ¦       03c26ec92e08dbb96932018e2d81472c1a8d85
+¦   ¦   ¦       
+¦   ¦   +---2c
+¦   ¦   ¦       e0ad083505a6bc6ab64160f1cbf4ae90ba9a32
+¦   ¦   ¦       
+¦   ¦   +---d9
+¦   ¦   ¦       6aad4ffa78de192d9fbc013ebc64765002a950
+¦   ¦   ¦       34ce270798662ac2c81051af02c9582a2633a6
+¦   ¦   ¦       
+¦   ¦   +---pack
+¦   ¦   +---99
+¦   ¦   ¦       23e5fbcf722d7f0ea230f5ab353db3839d43c4
+¦   ¦   ¦       
+¦   ¦   +---f7
+¦   ¦   ¦       ff45ac8b8a9d0002696de6e4ef387dccb67050
+¦   ¦   ¦       
+¦   ¦   +---b3
+¦   ¦   ¦       fe38080164529f690d9aa349d83bed173f47a0
+¦   ¦   ¦       
+¦   ¦   +---3d
+¦   ¦   ¦       ccd731726d7faa8b29d8d7dba3b981a53ca497
+¦   ¦   ¦       
+¦   ¦   +---e2
+¦   ¦   ¦       66dd4d2182db999deebf4d193f51fed05d9d51
+¦   ¦   ¦       
+¦   ¦   +---c8
+¦   ¦   ¦       43bf26f689bdacbbaf2e3c0bfa602cab2bef64
+¦   ¦   ¦       
+¦   ¦   +---1c
+¦   ¦   ¦       fa6e5297101b02dbded11c0e2c6c2356cc6091
+¦   ¦   ¦       
+¦   ¦   +---22
+¦   ¦   ¦       a8c9b0568c17cd0700e74975c29e07cdc00513
+¦   ¦   ¦       e75d8c9f88e096a4f5a4ec2a4a8a503243e116
+¦   ¦   ¦       
+¦   ¦   +---dd
+¦   ¦   ¦       6e7230720be80fc2406769d4ff0aca990c9307
+¦   ¦   ¦       
+¦   ¦   +---84
+¦   ¦   ¦       64d2082b289b0068fb4004ce65f22549013e40
+¦   ¦   ¦       
+¦   ¦   +---96
+¦   ¦   ¦       8820ba07e77534da83ecf4f429bee1ab3ab57d
+¦   ¦   ¦       
+¦   ¦   +---4c
+¦   ¦   ¦       e63ed4ecc77ea6a0b24d39c79cf8452a266611
+¦   ¦   ¦       1f5f2ae3d07ec60cd28626911f7832e251ea1d
+¦   ¦   ¦       
+¦   ¦   +---d1
+¦   ¦   ¦       0fe5de6089a005f1dba3bcad4a5f4a2b78102e
+¦   ¦   ¦       
+¦   ¦   +---ef
+¦   ¦   ¦       6165ec0b2f6499d0b233b59069c4f36d1705ec
+¦   ¦   ¦       
+¦   ¦   +---45
+¦   ¦   ¦       ee806fb3c66fd27f4c82bc73545ee71bd12653
+¦   ¦   ¦       7e63b596adacd258a24d0ab45cb94a66c38f1c
+¦   ¦   ¦       
+¦   ¦   +---44
+¦   ¦   ¦       67c3f6c14aab7f4c5820c36b481d1840b60427
+¦   ¦   ¦       
+¦   ¦   +---7b
+¦   ¦   ¦       b1787a1afb91338818c1d50b80251308a44e2a
+¦   ¦   ¦       
+¦   ¦   +---f4
+¦   ¦   ¦       cf2d078593a787edde6ab8d524e4f543fa2d66
+¦   ¦   ¦       
+¦   ¦   +---91
+¦   ¦   ¦       8485d2432baf18b7723de1b136890dd539ee6c
+¦   ¦   ¦       
+¦   ¦   +---cf
+¦   ¦   ¦       33d1fa6010243a51b8cfb18850aa200f2af93c
+¦   ¦   ¦       2e544ad4f5bc77a6382889e211039215d2e138
+¦   ¦   ¦       
+¦   ¦   +---2b
+¦   ¦   ¦       38facb6bfee752a1f2d6fd6f1a50afd0bb354c
+¦   ¦   ¦       
+¦   ¦   +---a5
+¦   ¦   ¦       5961a18f36240e823744360a3a4e56eb882907
+¦   ¦   ¦       
+¦   ¦   +---a1
+¦   ¦   ¦       184f67fa321ff718dd4c17d7381414afd1d805
+¦   ¦   ¦       
+¦   ¦   +---12
+¦   ¦   ¦       d0783638f46e41762fc608edb86a85097d1e60
+¦   ¦   ¦       
+¦   ¦   +---86
+¦   ¦   ¦       f033abd8c2866f1c7f92793ba9edc1a4a8ec8b
+¦   ¦   ¦       
+¦   ¦   +---5a
+¦   ¦   ¦       0ec8f64a62faf6aa6faa68791b45e4c85b704e
+¦   ¦   ¦       
+¦   ¦   +---f0
+¦   ¦   ¦       0e2a9e5cf89248bdf9678127d5e022b64f824e
+¦   ¦   ¦       26722b4d049a7d9435caed010b0321fa176815
+¦   ¦   ¦       
+¦   ¦   +---e0
+¦   ¦   ¦       4e1a40c0ae3a36c650f755ad93c45fc991e83c
+¦   ¦   ¦       
+¦   ¦   +---cc
+¦   ¦   ¦       2ab5529ed416a9677236394894ee3390bfe028
+¦   ¦   ¦       168c0b0e11d159a19ecc2510f943e3edc78755
+¦   ¦   ¦       
+¦   ¦   +---97
+¦   ¦   ¦       4d0a3b8f2108ad4dd8365b399b177e78d16f25
+¦   ¦   ¦       
+¦   ¦   +---dc
+¦   ¦   ¦       57e881e6896c6195cd4d9ac17c9715b8784521
+¦   ¦   ¦       d8576b5f606b983f6ddee4b7ccba4a0d3d3c8a
+¦   ¦   ¦       056910a40880449652e80cec2340c102bfa95d
+¦   ¦   ¦       
+¦   ¦   +---53
+¦   ¦   ¦       a9ebd480973c63d86e3a9677a5c4c97cd6151f
+¦   ¦   ¦       
+¦   ¦   +---98
+¦   ¦   ¦       8c57bdbac236561486fd89b811ec1e04363071
+¦   ¦   ¦       
+¦   ¦   +---a7
+¦   ¦   ¦       1a2ce9ec379b7ba44b800e32645f9b08971d54
+¦   ¦   ¦       06b6547ec8e3ac19d5f7a3844e3bb97ac90ffc
+¦   ¦   ¦       
+¦   ¦   +---0f
+¦   ¦   ¦       5880cab4459115be87ef08cb5886b67513a556
+¦   ¦   ¦       
+¦   ¦   +---73
+¦   ¦   ¦       015282a1a402c7589307dd93966bae1da12421
+¦   ¦   ¦       32397e4c95d31f35cffe5f424aab54c77cc8d2
+¦   ¦   ¦       c3ad647fb7763bb607d77357e5cec29c0fae77
+¦   ¦   ¦       
+¦   ¦   +---ba
+¦   ¦   ¦       0fa7c1186b95827e09de8fa48356a38f961046
+¦   ¦   ¦       5f8f5e480627fc312d77dc6c669c5ee5ac5749
+¦   ¦   ¦       a7416372dac8613fa5bb49bf15cf561524d925
+¦   ¦   ¦       
+¦   ¦   +---d8
+¦   ¦   ¦       3ee31848f29398d78a99b85befabfd7bba0b88
+¦   ¦   ¦       
+¦   ¦   +---0a
+¦   ¦   ¦       b9791a1cdf614ad6580144fa946c2402116fb3
+¦   ¦   ¦       
+¦   ¦   +---e4
+¦   ¦   ¦       c355170efd16c76f430915e2e1b6a04b66dfd5
+¦   ¦   ¦       
+¦   ¦   +---d4
+¦   ¦   ¦       c7fccbf1442111712334e4f12692340e5c4581
+¦   ¦   ¦       
+¦   ¦   +---39
+¦   ¦   ¦       55c2b014b42317c6dd1aedf995e0da7084557d
+¦   ¦   ¦       
+¦   ¦   +---0c
+¦   ¦   ¦       04471c31d15f98be9c5ddbcce49939a9ea8e37
+¦   ¦   ¦       8c3b1cbf69ae0ed398013d6a97afb7608dc870
+¦   ¦   ¦       
+¦   ¦   +---c1
+¦   ¦   ¦       8c257d18f57c3c8b0d11089582e88dcd0bd927
+¦   ¦   ¦       051379d2a9eff6cad322981c100bda53d5002e
+¦   ¦   ¦       cdfc80fb8fa465ff7b32c7f7d633bb0b8c85d0
+¦   ¦   ¦       
+¦   ¦   +---3f
+¦   ¦   ¦       8e6e10c41fdadd571eab3b7ae16d7c18768035
+¦   ¦   ¦       
+¦   ¦   +---e1
+¦   ¦   ¦       b70a97fce30ad3af73ceb7e9efb4e282835eca
+¦   ¦   ¦       
+¦   ¦   +---79
+¦   ¦   ¦       26cf69e7669d94710ea36cf894d5f011acfef9
+¦   ¦   ¦       
+¦   ¦   +---18
+¦   ¦   ¦       eb33ee081a4570fff4f14b2ed4a15d4d0b2afe
+¦   ¦   ¦       8f476a3c10dc062dcc3396faafda1629a2fc27
+¦   ¦   ¦       
+¦   ¦   +---58
+¦   ¦   ¦       d97362d71dc2e6af110f1eb3204a4a5ae04845
+¦   ¦   ¦       82fb7023abb049b1ceab0448d79970f1510730
+¦   ¦   ¦       ee9fc1bcd2aa0fd33936982ae5274fe162fe80
+¦   ¦   ¦       f8fd29ab047fa248e80a95896208aa19cb85d8
+¦   ¦   ¦       9d6d95b1aeb7d50a81c9f3194facb5baf7290e
+¦   ¦   ¦       
+¦   ¦   +---77
+¦   ¦   ¦       482fa2f6e3346e0d4521006cc6c1e13c87ad60
+¦   ¦   ¦       
+¦   ¦   +---4b
+¦   ¦   ¦       f8edcb0e762c9a9b6f7fedd791e4d4ef5d1c5f
+¦   ¦   ¦       
+¦   ¦   +---33
+¦   ¦   ¦       d109b5a68c504d554d4f21e9d1b894e344bfa7
+¦   ¦   ¦       
+¦   ¦   +---55
+¦   ¦   ¦       38598f0cddd771736104ce8c13b00950ffb389
+¦   ¦   ¦       
+¦   ¦   +---0e
+¦   ¦   ¦       ab1138166aeffdf6797d55c4e770f5c718b42a
+¦   ¦   ¦       
+¦   ¦   +---43
+¦   ¦   ¦       cdbfb20c19248e4cdc9fc03dcefd8907888434
+¦   ¦   ¦       3aa7e2f9b88c12879a990c4c4a5bf087b8cd72
+¦   ¦   ¦       8afaae24d855c364e9b7b10403858abe935ea1
+¦   ¦   ¦       
+¦   ¦   +---bf
+¦   ¦   ¦       48e8861150d091ac8e63aa6668089be1857957
+¦   ¦   ¦       
+¦   ¦   +---71
+¦   ¦   ¦       40f35e989a8b30090781fbe61d1a76cf9c17e2
+¦   ¦   ¦       3e0fa8c869745ce5c39e5ade5168ec9b337610
+¦   ¦   ¦       
+¦   ¦   +---60
+¦   ¦   ¦       6a840666f93911fa437ccf7358280aad4ca242
+¦   ¦   ¦       a071b6c7e55b71ba713d73e9d6d0732ec505dd
+¦   ¦   ¦       
+¦   ¦   +---bc
+¦   ¦   ¦       b64808e2d73411c83f338ffd51831f9a707651
+¦   ¦   ¦       
+¦   ¦   +---d7
+¦   ¦   ¦       2a572ee3f43dbeea787720adfdc2d2e51ebbab
+¦   ¦   ¦       
+¦   ¦   +---a2
+¦   ¦   ¦       a8f3ee0714fe3ee4eacf930db13cfd77b96f7b
+¦   ¦   ¦       fa556496bceb6d8d99fc69a49b36a3e999185f
+¦   ¦   ¦       
+¦   ¦   +---65
+¦   ¦   ¦       fe34b842ddacbdf256fa0b0a29303a9ccc0e70
+¦   ¦   ¦       
+¦   ¦   +---28
+¦   ¦   ¦       00cefb9085d065195292e1d9e5f69d65e405ef
+¦   ¦   ¦       1330b3b30dc31ebfd0f8264463717a3ff4dad4
+¦   ¦   ¦       
+¦   ¦   +---b4
+¦   ¦   ¦       fe69e34b7fddd842346ad42fb9b54d8a06bb35
+¦   ¦   ¦       bb09b25b8f87de122f78da2c426ae891335880
+¦   ¦   ¦       37ba42ab01178eeb3e47101cdb9e57cab66e1c
+¦   ¦   ¦       
+¦   ¦   +---9a
+¦   ¦   ¦       5509e645d354f4caf9ddbcb8e63116963b1a00
+¦   ¦   ¦       
+¦   ¦   +---38
+¦   ¦   ¦       8e4e0ec90b2da7d079fa192a319e74001ce65a
+¦   ¦   ¦       
+¦   ¦   +---0d
+¦   ¦   ¦       1ca8311bf3636eda568ffa5311f35e30744072
+¦   ¦   ¦       
+¦   ¦   +---ad
+¦   ¦   ¦       20dcd73dd762b23c098399dd62349b8b0f31a0
+¦   ¦   ¦       
+¦   ¦   +---8e
+¦   ¦   ¦       f2a64cfea86da40703416742bea1e85b58e721
+¦   ¦   ¦       ea8b052c79653b5ca9c5e1ae99614e9de11eb3
+¦   ¦   ¦       
+¦   ¦   +---4e
+¦   ¦   ¦       0013c549a895048a4ea565c3823a6ab283180e
+¦   ¦   ¦       
+¦   ¦   +---ae
+¦   ¦   ¦       69d0e76cc643b3993f63818c9e631ebfe8e294
+¦   ¦   ¦       
+¦   ¦   +---62
+¦   ¦   ¦       147c6fdc56a8cf4e8cd5b4b304ef74730adc92
+¦   ¦   ¦       ed7bf5a5ef55173235d8667e0b441c7f3d00fc
+¦   ¦   ¦       
+¦   ¦   +---e6
+¦   ¦   ¦       9e756c722b170e12b34b671e87f38c0fd15076
+¦   ¦   ¦       9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+¦   ¦   ¦       1a5bb283a780de8b65c97c6866fc307069353e
+¦   ¦   ¦       
+¦   ¦   +---1a
+¦   ¦   ¦       3d565f6559d12a2f158dcd84615031369e1976
+¦   ¦   ¦       ed8abc9b00af1146956130da3c35ba1e0c837f
+¦   ¦   ¦       
+¦   ¦   +---63
+¦   ¦   ¦       1c9ac47e35575c396fa010d9b7b9df90165656
+¦   ¦   ¦       7fcdc897ff22e5a183b80528644c9af4c2bd30
+¦   ¦   ¦       
+¦   ¦   +---b1
+¦   ¦   ¦       d002d0f03abfea913ba6ce01f4985ce50e32de
+¦   ¦   ¦       090180a0443460d942169e85b0d5d2a4ca9110
+¦   ¦   ¦       
+¦   ¦   +---0b
+¦   ¦   ¦       8dd95a26f0e7f5018a07778cf46c73da83f75d
+¦   ¦   ¦       b35787ef7f3cb772a527d6173801e04c1810f2
+¦   ¦   ¦       
+¦   ¦   +---3a
+¦   ¦   ¦       cb135cf29b5418c00a4fd6b05063032be79d86
+¦   ¦   ¦       
+¦   ¦   +---eb
+¦   ¦   ¦       7253609b4d8381f4b5f1420eda1becbb9aa791
+¦   ¦   ¦       
+¦   ¦   +---e7
+¦   ¦   ¦       3ad9c32fde7aaed43e703cfecbd838b443376b
+¦   ¦   ¦       
+¦   ¦   +---c5
+¦   ¦   ¦       dae3b6081b524936c86744e0ae11ba1e4fb143
+¦   ¦   ¦       
+¦   ¦   +---f2
+¦   ¦   ¦       f4202713819993e31ce93125e9d15f9bcf1005
+¦   ¦   ¦       
+¦   ¦   +---e5
+¦   ¦   ¦       97d145ed57a05cb13956456b013eefc4e75464
+¦   ¦   ¦       ddab66f30df09e617d93b5d67788446f17a8ce
+¦   ¦   ¦       470691e74934c0a6e3d9f26cba483f84eee9f6
+¦   ¦   ¦       
+¦   ¦   +---76
+¦   ¦   ¦       8d318ad04e18e555119a49fa73e18a5363730b
+¦   ¦   ¦       85ba2948181d6408f4ccb759bd38289660e9e1
+¦   ¦   ¦       
+¦   ¦   +---47
+¦   ¦   ¦       70070041e519a6f45099389521577219297c97
+¦   ¦   ¦       
+¦   ¦   +---88
+¦   ¦   ¦       71e5c6e93ba5223b4d3a7f0379023fb69fc88f
+¦   ¦   ¦       
+¦   ¦   +---ec
+¦   ¦           4a203e5aa1d4ba9f7d47dbe9cccbb7ec93254a
+¦   ¦           
+¦   +---hooks
+¦           applypatch-msg.sample
+¦           prepare-commit-msg.sample
+¦           sendemail-validate.sample
+¦           pre-push.sample
+¦           push-to-checkout.sample
+¦           pre-applypatch.sample
+¦           pre-rebase.sample
+¦           update.sample
+¦           pre-commit.sample
+¦           pre-merge-commit.sample
+¦           pre-receive.sample
+¦           post-update.sample
+¦           fsmonitor-watchman.sample
+¦           commit-msg.sample
+¦           
++---log
+        serial.log
+        qemu.log
+        

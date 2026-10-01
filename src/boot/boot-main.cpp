@@ -12,7 +12,9 @@ extern "C" {
 
 #include "boot/bootContext.hpp"
 #include "boot/memory/alloc.hpp"
+
 #include "boot/stages/stage1.hpp"
+#include "boot/stages/stage2.hpp"
 #include "boot/stages/stage3.hpp"
 
 using namespace Lexvi;
@@ -47,7 +49,14 @@ extern "C" EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemT
         LEXVI_BOOT_FAILURE();
     }
 
-    // Stage 2 -> load kernel
+    while (true) { }
+
+    // Stage 2 -> load kernel & platform specific init
+    result = Boot::Stage2::Run(*bootInfo);
+    if (result.IsError()) {
+        LEXVI_PRINT("Failed to init Lexvi (stage 2): ", result.getError(), '\n');
+        LEXVI_BOOT_FAILURE();
+    }
 
     // Stage 3 -> Exit boot service & post boot init
     result = Boot::Stage3::Run(*bootInfo);

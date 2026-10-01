@@ -8,21 +8,26 @@ extern "C" {
 #include "boot/memory/alloc.hpp"
 #include "boot/bootInfo.hpp"
 
-#include "common/asm.hpp"
-
-#include "common/gdt/gdt.hpp"
-#include "common/memory/pmm.hpp"
-#include "common/memory/vmm.hpp"
-#include "common/interrupt/idt.hpp"
-#include "common/types/service.hpp"
+#include "common/cpuid/cpuid.hpp"
 #include "common/output/output-defs.hpp"
 
-using namespace Lexvi::Memory;
 using namespace Lexvi::Types;
 
 namespace Lexvi::Boot::Stage2 {
     Result Run(BootInfo& bootInfo) {
         Result result{};
+
+        if (CPUID<0>{}.vendor == Vendor::INTEL) {
+            LEXVI_PRINT("INTEL\n");
+        }
+        else if (CPUID<0>{}.vendor == Vendor::AMD) {
+            LEXVI_PRINT("AMD\n");
+        }
+        else {
+            LEXVI_PRINT("UNKNOWN\n");
+        }
+
+        while (true) {}
 
         return result;
     }
